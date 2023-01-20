@@ -1,0 +1,23 @@
+# IDE
+.idea
+.project
+.settings
+.vscode
+nbproject
+
+# Dependencies
+node_modules
+vendor
+
+# Tests
+coverage
+
+# Others
+*.cache
+*.env
+*.log
+*.zip
+.vagrant
+
+# Keep folders that are needed
+!.gitkeep
