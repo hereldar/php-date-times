@@ -11,7 +11,7 @@ use Stringable;
 
 interface IPeriod extends Stringable
 {
-    final public const ISO8601 = 'P%yY%mM%dDT%hH%iM%s.%fS';
+    final public const ISO8601 = 'P%yY%mM%dDT%hH%iM%s%fS';
 
     public function format(string $format = self::ISO8601): string;
 

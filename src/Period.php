@@ -54,7 +54,7 @@ class Period implements IPeriod
         /xS
     REGEX;
 
-    private const FORMAT_PATTERN = '/%[%YyMmDdHhIiSsFf]/';
+    private const FORMAT_PATTERN = '/%([%a-zA-Z])/';
 
     public function __construct(
         private readonly int $years,
@@ -165,23 +165,30 @@ class Period implements IPeriod
 
         return preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
-            callback: static fn (array $matches) => match ($matches[0]) {
+            callback: fn (array $matches) => match ($matches[1]) {
                 '%' => '%',
-                'Y' => sprintf('%02d', $this->years),
+                'Y' => sprintf('%04d', $this->years),
                 'y' => $this->years,
                 'M' => sprintf('%02d', $this->months),
                 'm' => $this->months,
+                'W' => sprintf('%02d', intdiv($this->days, 7)),
+                'w' => intdiv($this->days, 7),
                 'D' => sprintf('%02d', $this->days),
                 'd' => $this->days,
+                'E' => sprintf('%02d', $this->days % 7),
+                'e' => $this->days % 7,
                 'H' => sprintf('%02d', $this->hours),
                 'h' => $this->hours,
                 'I' => sprintf('%02d', $this->minutes),
                 'i' => $this->minutes,
                 'S' => sprintf('%02d', $this->seconds),
                 's' => $this->seconds,
-                'F', 'U' => sprintf('%06d', $this->microseconds),
-                'f' => rtrim(sprintf('%06d', $this->microseconds), '0'),
+                'F' => ($this->microseconds) ? sprintf('.%06d', $this->microseconds) : '',
+                'f' => ($this->microseconds) ? rtrim(sprintf('.%06d', $this->microseconds), '0') : '',
+                'U' => sprintf('%06d', $this->microseconds),
                 'u' => $this->microseconds,
+                'V' => sprintf('%03d', intdiv($this->microseconds, 1_000)),
+                'v' => intdiv($this->microseconds, 1_000),
                 default => $matches[0],
             },
             subject: $format

@@ -25,6 +25,7 @@ final class PeriodIso8601Test extends TestCase
         self::assertEquals($expected, $period->toIso8601());
         self::assertEquals($expected, $period->format(IPeriod::ISO8601));
         self::assertEquals($expected, $period->format());
+        self::assertEquals($expected, (string) $period);
 
         $period = $period->negated();
         $expected = Period::fromIso8601($expected)->negated()->toIso8601();
@@ -36,6 +37,7 @@ final class PeriodIso8601Test extends TestCase
         self::assertEquals($expected, $period->toIso8601());
         self::assertEquals($expected, $period->format(IPeriod::ISO8601));
         self::assertEquals($expected, $period->format());
+        self::assertEquals($expected, (string) $period);
     }
 
     public function dataForIso8601(): Generator
