@@ -2,6 +2,7 @@
     "name": "hereldar/date-times",
     "type": "library",
     "description": "...",
+    "keywords": ["date", "time", "datetime", "hereldar"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/hereldar/php-date-times/issues",
@@ -10,7 +11,8 @@
     "authors": [
         {
             "name": "Samuel Maudo",
-            "email": "samuelmaudo@gmail.com"
+            "email": "samuelmaudo@gmail.com",
+            "homepage": "https://github.com/samuelmaudo"
         }
     ],
     "require": {
@@ -36,5 +38,20 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "scripts": {
+        "phpcs": "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix -v --diff --dry-run",
+        "phpstan": "tools/phpstan/vendor/bin/phpstan analyse --configuration phpstan.neon",
+        "phpunit": "vendor/bin/phpunit --verbose",
+        "psalm": "tools/psalm/vendor/bin/psalm",
+        "code-quality": [
+            "@phpcs",
+            "@phpstan",
+            "@psalm"
+        ],
+        "test": [
+            "@phpunit",
+            "@code-quality"
+        ]
+    }
 }
