@@ -1,23 +1,27 @@
 # IDE
-.idea
-.project
-.settings
-.vscode
-nbproject
+/.idea
+/.fleet
+/.vscode
+/nbproject
 
 # Dependencies
 node_modules
 vendor
+composer.lock
+composer.phar
 
 # Tests
 coverage
+phpunit.xml
 
 # Others
 *.cache
 *.env
 *.log
 *.zip
+.DS_Store
 .vagrant
+Thumbs.db
 
 # Keep folders that are needed
 !.gitkeep

@@ -9,5 +9,8 @@
     <testsuite name="all">
       <directory>tests</directory>
     </testsuite>
+    <testsuite name="period">
+      <directory>tests/Period</directory>
+    </testsuite>
   </testsuites>
 </phpunit>
