@@ -1,0 +1,56 @@
+name: unit-tests
+
+on: [pull_request, push]
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.1'
+          - php: '8.1'
+            dependencies: lowest
+
+          - php: '8.2'
+          - php: '8.2'
+            dependencies: lowest
+
+          - php: '8.2'
+            coverage: true
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json${{ matrix.coverage &&', dom, libxml, mbstring, xml, xmlwriter' }}
+          coverage: ${{ matrix.coverage && 'xdebug' || 'none' }}
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{ matrix.dependencies == 'lowest' && 'lowest' || 'highest' }}
+
+      - name: Run PHPUnit
+        run: |
+          if [[ "${{ matrix.coverage }}" = 'true' ]]
+          then
+            php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/phpunit --coverage-clover=coverage/clover.xml --coverage-text --coverage-cache=coverage/cache;
+          else
+            php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/phpunit --verbose;
+          fi;
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+
+      - if: ${{ matrix.coverage }}
+        name: Send coverage results to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage/clover.xml
+          fail_ci_if_error: true
+          verbose: true
