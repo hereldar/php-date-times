@@ -53,4 +53,3 @@ jobs:
         with:
           files: coverage/clover.xml
           fail_ci_if_error: true
-          verbose: true
