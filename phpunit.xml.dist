@@ -13,4 +13,12 @@
       <directory>tests/Period</directory>
     </testsuite>
   </testsuites>
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+  </coverage>
+  <php>
+    <ini name="max_execution_time" value="0"/>
+  </php>
 </phpunit>
