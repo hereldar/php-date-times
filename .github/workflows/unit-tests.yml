@@ -17,6 +17,8 @@ jobs:
         dependencies:
           - 'lowest'
           - 'highest'
+        coverage:
+          - false
         include:
           - php: '8.2'
             dependencies: 'highest'
