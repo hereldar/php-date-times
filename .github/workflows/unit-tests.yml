@@ -34,6 +34,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: json${{ matrix.coverage &&', dom, libxml, mbstring, xml, xmlwriter' }}
           coverage: ${{ matrix.coverage && 'xdebug' || 'none' }}
+          tools: ${{ matrix.coverage && 'php-coveralls/php-coveralls' || '' }}
 
       - name: Install dependencies
         uses: ramsey/composer-install@v2
@@ -56,4 +57,13 @@ jobs:
         with:
           files: coverage/clover.xml
           fail_ci_if_error: true
+        if: ${{ matrix.coverage }}
+
+      - name: Send coverage results to Coveralls
+        run: |
+          php-coveralls --coverage_clover=coverage/clover.xml --json_path=coverage/coveralls-upload.json --verbose
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_SERVICE_NAME: github
+          PHP_VERSION: ${{ matrix.php }}
         if: ${{ matrix.coverage }}
