@@ -1,8 +1,8 @@
 {
     "name": "hereldar/date-times",
     "type": "library",
-    "description": "...",
-    "keywords": ["date", "time", "datetime", "hereldar"],
+    "description": "Provides immutable classes for dates, times, time-zones and periods.",
+    "keywords": ["date", "time", "datetime", "period", "duration", "iso8601", "iso-8601"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/hereldar/php-date-times/issues",
