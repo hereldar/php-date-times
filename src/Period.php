@@ -494,9 +494,7 @@ class Period implements IPeriod
             if (func_num_args() !== 1) {
                 throw new \Exception();
             }
-            $period = ($years instanceof StandardDateInterval)
-                ? static::fromStandardDateInterval($years)
-                : $years;
+            $period = $years;
         }
 
         return new static(
@@ -646,9 +644,7 @@ class Period implements IPeriod
             if (func_num_args() !== 1) {
                 throw new \Exception();
             }
-            $period = ($years instanceof StandardDateInterval)
-                ? static::fromStandardDateInterval($years)
-                : $years;
+            $period = $years;
         }
 
         return new static(

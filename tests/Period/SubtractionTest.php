@@ -7,7 +7,7 @@ namespace Hereldar\DateTimes\Tests\Period;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class PeriodSubtractionTest extends TestCase
+final class SubtractionTest extends TestCase
 {
     public function testMinusUnits(): void
     {

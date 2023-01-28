@@ -7,7 +7,7 @@ namespace Hereldar\DateTimes\Tests\Period;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class PeriodFormattingTest extends TestCase
+final class FormattingTest extends TestCase
 {
     private Period $period;
     private Period $emptyPeriod;

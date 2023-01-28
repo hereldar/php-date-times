@@ -9,7 +9,7 @@ use Generator;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class PeriodNormalizationTest extends TestCase
+final class NormalizationTest extends TestCase
 {
     /**
      * @dataProvider dataForOverflowedValues

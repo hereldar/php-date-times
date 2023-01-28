@@ -9,7 +9,7 @@ use Generator;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class PeriodStandardDateIntervalTest extends TestCase
+final class StandardDateIntervalTest extends TestCase
 {
     /**
      * @dataProvider dataForStandardDateInterval

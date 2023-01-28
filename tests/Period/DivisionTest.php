@@ -8,7 +8,7 @@ use DivisionByZeroError;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class PeriodDivisionTest extends TestCase
+final class DivisionTest extends TestCase
 {
     public function testDividedByMoreThanOne(): void
     {
@@ -24,7 +24,7 @@ final class PeriodDivisionTest extends TestCase
 
     public function testDividedByZero(): void
     {
-        self::expectException(DivisionByZeroError::class);
+        $this->expectException(DivisionByZeroError::class);
         Period::of(4, 3, 2, 5, 5, 10, 11)->dividedBy(0);
     }
 

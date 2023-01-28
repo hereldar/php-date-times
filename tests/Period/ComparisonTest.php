@@ -8,27 +8,51 @@ use DateInterval as StandardDateInterval;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class PeriodComparisonTest extends TestCase
+final class ComparisonTest extends TestCase
 {
     public function testCompareToNegative(): void
     {
-        $first = Period::of(minutes: 1);
-        $second = Period::of(minutes: 2);
-        self::assertSame(-1, $first->compareTo($second));
+        self::assertSame(-1, Period::of(years: 1)->compareTo(Period::of(years: 2)));
+        self::assertSame(-1, Period::of(months: 2)->compareTo(Period::of(months: 3)));
+        self::assertSame(-1, Period::of(weeks: 3)->compareTo(Period::of(weeks: 4)));
+        self::assertSame(-1, Period::of(weeks: 3)->compareTo(Period::of(days: 28)));
+        self::assertSame(-1, Period::of(days: 4)->compareTo(Period::of(days: 5)));
+        self::assertSame(-1, Period::of(hours: 5)->compareTo(Period::of(hours: 6)));
+        self::assertSame(-1, Period::of(minutes: 6)->compareTo(Period::of(minutes: 7)));
+        self::assertSame(-1, Period::of(seconds: 7)->compareTo(Period::of(seconds: 8)));
+        self::assertSame(-1, Period::of(milliseconds: 8)->compareTo(Period::of(milliseconds: 9)));
+        self::assertSame(-1, Period::of(milliseconds: 8)->compareTo(Period::of(microseconds: 8_001)));
+        self::assertSame(-1, Period::of(microseconds: 9)->compareTo(Period::of(microseconds: 10)));
     }
 
     public function testCompareToPositive(): void
     {
-        $first = Period::of(days: 1);
-        $second = Period::of(hours: 1);
-        self::assertSame(1, $first->compareTo($second));
+        self::assertSame(1, Period::of(years: 1)->compareTo(Period::of(years: 0)));
+        self::assertSame(1, Period::of(months: 2)->compareTo(Period::of(months: 1)));
+        self::assertSame(1, Period::of(weeks: 3)->compareTo(Period::of(weeks: 2)));
+        self::assertSame(1, Period::of(weeks: 3)->compareTo(Period::of(days: 14)));
+        self::assertSame(1, Period::of(days: 4)->compareTo(Period::of(days: 3)));
+        self::assertSame(1, Period::of(hours: 5)->compareTo(Period::of(hours: 4)));
+        self::assertSame(1, Period::of(minutes: 6)->compareTo(Period::of(minutes: 5)));
+        self::assertSame(1, Period::of(seconds: 7)->compareTo(Period::of(seconds: 6)));
+        self::assertSame(1, Period::of(milliseconds: 8)->compareTo(Period::of(milliseconds: 7)));
+        self::assertSame(1, Period::of(milliseconds: 8)->compareTo(Period::of(microseconds: 7_999)));
+        self::assertSame(1, Period::of(microseconds: 9)->compareTo(Period::of(microseconds: 8)));
     }
 
     public function testCompareToZero(): void
     {
-        $first = Period::of(years: 1);
-        $second = Period::of(years: 1);
-        self::assertSame(0, $first->compareTo($second));
+        self::assertSame(0, Period::of(years: 1)->compareTo(Period::of(years: 1)));
+        self::assertSame(0, Period::of(months: 2)->compareTo(Period::of(months: 2)));
+        self::assertSame(0, Period::of(weeks: 3)->compareTo(Period::of(weeks: 3)));
+        self::assertSame(0, Period::of(weeks: 3)->compareTo(Period::of(days: 21)));
+        self::assertSame(0, Period::of(days: 4)->compareTo(Period::of(days: 4)));
+        self::assertSame(0, Period::of(hours: 5)->compareTo(Period::of(hours: 5)));
+        self::assertSame(0, Period::of(minutes: 6)->compareTo(Period::of(minutes: 6)));
+        self::assertSame(0, Period::of(seconds: 7)->compareTo(Period::of(seconds: 7)));
+        self::assertSame(0, Period::of(milliseconds: 8)->compareTo(Period::of(milliseconds: 8)));
+        self::assertSame(0, Period::of(milliseconds: 8)->compareTo(Period::of(microseconds: 8_000)));
+        self::assertSame(0, Period::of(microseconds: 9)->compareTo(Period::of(microseconds: 9)));
     }
 
     public function testIdenticalToTrue(): void

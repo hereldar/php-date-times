@@ -9,7 +9,7 @@ use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class PeriodIso8601Test extends TestCase
+final class Iso8601Test extends TestCase
 {
     /**
      * @dataProvider dataForIso8601
@@ -17,15 +17,18 @@ final class PeriodIso8601Test extends TestCase
     public function testIso8601(
         Period $period,
         string $expected,
+        bool $reversible = true,
     ): void {
         self::assertEquals($period, Period::fromIso8601($expected));
         self::assertEquals($period, Period::parse($expected, IPeriod::ISO8601));
         self::assertEquals($period, Period::parse($expected));
 
-        self::assertEquals($expected, $period->toIso8601());
-        self::assertEquals($expected, $period->format(IPeriod::ISO8601));
-        self::assertEquals($expected, $period->format());
-        self::assertEquals($expected, (string) $period);
+        if ($reversible) {
+            self::assertEquals($expected, $period->toIso8601());
+            self::assertEquals($expected, $period->format(IPeriod::ISO8601));
+            self::assertEquals($expected, $period->format());
+            self::assertEquals($expected, (string) $period);
+        }
 
         $period = $period->negated();
         $expected = Period::fromIso8601($expected)->negated()->toIso8601();
@@ -34,10 +37,12 @@ final class PeriodIso8601Test extends TestCase
         self::assertEquals($period, Period::parse($expected, IPeriod::ISO8601));
         self::assertEquals($period, Period::parse($expected));
 
-        self::assertEquals($expected, $period->toIso8601());
-        self::assertEquals($expected, $period->format(IPeriod::ISO8601));
-        self::assertEquals($expected, $period->format());
-        self::assertEquals($expected, (string) $period);
+        if ($reversible) {
+            self::assertEquals($expected, $period->toIso8601());
+            self::assertEquals($expected, $period->format(IPeriod::ISO8601));
+            self::assertEquals($expected, $period->format());
+            self::assertEquals($expected, (string) $period);
+        }
     }
 
     public function dataForIso8601(): Generator
@@ -97,6 +102,15 @@ final class PeriodIso8601Test extends TestCase
         yield [
             Period::of(1, 2, 0, 3, 4, 5, 6, 0, 7),
             'P1Y2M3DT4H5M6.000007S',
+        ];
+        yield [
+            Period::of(-1, -2, 0, -3, -4, -5, -6, 0, -7),
+            'P-1Y-2M-3DT-4H-5M-6.000007S',
+            false,
+        ];
+        yield [
+            Period::of(-1, -2, 0, -3, -4, -5, -6, 0, -7),
+            '-P1Y2M3DT4H5M6.000007S',
         ];
     }
 }

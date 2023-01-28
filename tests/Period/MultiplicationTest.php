@@ -7,7 +7,7 @@ namespace Hereldar\DateTimes\Tests\Period;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class PeriodMultiplicationTest extends TestCase
+final class MultiplicationTest extends TestCase
 {
     public function testMultipliedByMoreThanOne(): void
     {
