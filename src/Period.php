@@ -6,6 +6,7 @@ namespace Hereldar\DateTimes;
 
 use DateInterval as StandardDateInterval;
 use Hereldar\DateTimes\Exceptions\Overflow;
+use Hereldar\DateTimes\Exceptions\ParseErrorException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
@@ -69,7 +70,7 @@ class Period implements IPeriod
 
     public function __toString(): string
     {
-        return $this->format();
+        return $this->format()->orFail();
     }
 
     public static function of(
@@ -99,15 +100,62 @@ class Period implements IPeriod
         return new static(0);
     }
 
+    /**
+     * @return IResult<string, ParseErrorException>
+     */
     public static function parse(
         string $string,
         string $format = IPeriod::ISO8601,
-    ): static {
+    ): IResult {
         if ($format === IPeriod::ISO8601) {
-            return static::fromIso8601($string);
+            return Ok::withValue(static::fromIso8601($string));
         }
 
-        return new static();
+        $pattern = preg_replace_callback(
+            pattern: self::FORMAT_PATTERN,
+            callback: static fn (array $matches) => match ($matches[1]) {
+                '%' => '%',
+                'Y' => '(?P<years>[+-]?[0-9]{4,})',
+                'y' => '(?P<years>[+-]?[0-9]+)',
+                'M' => '(?P<months>[+-]?[0-9]{2,})',
+                'm' => '(?P<months>[+-]?[0-9]+)',
+                'W' => '(?P<weeks>[+-]?[0-9]{2,})',
+                'w' => '(?P<weeks>[+-]?[0-9]+)',
+                'D', 'E' => '(?P<days>[+-]?[0-9]{2,})',
+                'd', 'e' => '(?P<days>[+-]?[0-9]+)',
+                'H' => '(?P<hours>[+-]?[0-9]{2,})',
+                'h' => '(?P<hours>[+-]?[0-9]+)',
+                'I' => '(?P<minutes>[+-]?[0-9]{2,})',
+                'i' => '(?P<minutes>[+-]?[0-9]+)',
+                'S' => '(?P<seconds>[+-]?[0-9]{2,})',
+                's' => '(?P<seconds>[+-]?[0-9]+)',
+                'F' => '[.,](?P<microseconds>[+-]?[0-9]{6})',
+                'f' => '[.,](?P<decimalSeconds>[+-]?[0-9]{1,6})',
+                'U' => '(?P<microseconds>[+-]?[0-9]{6,})',
+                'u' => '(?P<microseconds>[+-]?[0-9]+)',
+                'V' => '(?P<milliseconds>[+-]?[0-9]{3,})',
+                'v' => '(?P<milliseconds>[+-]?[0-9]+)',
+                default => $matches[0],
+            },
+            subject: preg_quote($format, '/')
+        );
+
+        if (!preg_match("/^{$pattern}$/", $string, $matches)) {
+            return Error::withException(new ParseErrorException());
+        }
+
+        $arguments = [];
+        foreach ($matches as $key => $value) {
+            if ($value && !is_int($key)) {
+                if ($key === 'decimalSeconds') {
+                    $key = 'microseconds';
+                    $value = str_pad($value, 6, '0');
+                }
+                $arguments[$key] = (int) $value;
+            }
+        }
+
+        return Ok::withValue(static::of(...$arguments));
     }
 
     public static function fromIso8601(string $value): static
@@ -115,7 +163,7 @@ class Period implements IPeriod
         $matches = [];
 
         if (!preg_match(self::ISO8601_PATTERN, $value, $matches)) {
-            throw new \UnexpectedValueException();
+            throw new ParseErrorException();
         }
 
         $sign = match ($matches['sign'] ?? '') {
@@ -157,41 +205,43 @@ class Period implements IPeriod
         );
     }
 
-    public function format(string $format = IPeriod::ISO8601): string
+    public function format(string $format = IPeriod::ISO8601): IResult
     {
         if ($format === IPeriod::ISO8601) {
-            return $this->toIso8601();
+            return Ok::withValue($this->toIso8601());
         }
 
-        return preg_replace_callback(
-            pattern: self::FORMAT_PATTERN,
-            callback: fn (array $matches) => match ($matches[1]) {
-                '%' => '%',
-                'Y' => sprintf('%04d', $this->years),
-                'y' => $this->years,
-                'M' => sprintf('%02d', $this->months),
-                'm' => $this->months,
-                'W' => sprintf('%02d', intdiv($this->days, 7)),
-                'w' => intdiv($this->days, 7),
-                'D' => sprintf('%02d', $this->days),
-                'd' => $this->days,
-                'E' => sprintf('%02d', $this->days % 7),
-                'e' => $this->days % 7,
-                'H' => sprintf('%02d', $this->hours),
-                'h' => $this->hours,
-                'I' => sprintf('%02d', $this->minutes),
-                'i' => $this->minutes,
-                'S' => sprintf('%02d', $this->seconds),
-                's' => $this->seconds,
-                'F' => ($this->microseconds) ? sprintf('.%06d', $this->microseconds) : '',
-                'f' => ($this->microseconds) ? rtrim(sprintf('.%06d', $this->microseconds), '0') : '',
-                'U' => sprintf('%06d', $this->microseconds),
-                'u' => $this->microseconds,
-                'V' => sprintf('%03d', intdiv($this->microseconds, 1_000)),
-                'v' => intdiv($this->microseconds, 1_000),
-                default => $matches[0],
-            },
-            subject: $format
+        return Ok::withValue(
+            preg_replace_callback(
+                pattern: self::FORMAT_PATTERN,
+                callback: fn (array $matches) => match ($matches[1]) {
+                    '%' => '%',
+                    'Y' => sprintf('%04d', $this->years),
+                    'y' => $this->years,
+                    'M' => sprintf('%02d', $this->months),
+                    'm' => $this->months,
+                    'W' => sprintf('%02d', intdiv($this->days, 7)),
+                    'w' => intdiv($this->days, 7),
+                    'D' => sprintf('%02d', $this->days),
+                    'd' => $this->days,
+                    'E' => sprintf('%02d', $this->days % 7),
+                    'e' => $this->days % 7,
+                    'H' => sprintf('%02d', $this->hours),
+                    'h' => $this->hours,
+                    'I' => sprintf('%02d', $this->minutes),
+                    'i' => $this->minutes,
+                    'S' => sprintf('%02d', $this->seconds),
+                    's' => $this->seconds,
+                    'F' => ($this->microseconds) ? sprintf('.%06d', $this->microseconds) : '',
+                    'f' => ($this->microseconds) ? rtrim(sprintf('.%06d', $this->microseconds), '0') : '',
+                    'U' => sprintf('%06d', $this->microseconds),
+                    'u' => $this->microseconds,
+                    'V' => sprintf('%03d', intdiv($this->microseconds, 1_000)),
+                    'v' => intdiv($this->microseconds, 1_000),
+                    default => $matches[0],
+                },
+                subject: $format
+            )
         );
     }
 
@@ -574,12 +624,11 @@ class Period implements IPeriod
         foreach ($values as $key => &$value) {
             $factor = $factors[$key];
 
-            if ($previousFactor) {
-                if ($overflow = intdiv($previousValue, $previousFactor)) {
-                    $previousValue -= $overflow * $previousFactor;
-                    $value += $overflow;
-                    $changed = true;
-                }
+            if ($previousFactor
+                && $overflow = intdiv($previousValue, $previousFactor)) {
+                $previousValue -= $overflow * $previousFactor;
+                $value += $overflow;
+                $changed = true;
             }
 
             $previousValue = &$value;
@@ -609,13 +658,13 @@ class Period implements IPeriod
             if ($previousFactor) {
                 if ($sign === 1) {
                     if ($value < 0) {
-                        $previousValue -= 1;
+                        --$previousValue;
                         $value += $previousFactor;
                         $changed = true;
                     }
                 } elseif ($sign === -1) {
                     if ($value > 0) {
-                        $previousValue += 1;
+                        ++$previousValue;
                         $value -= $previousFactor;
                         $changed = true;
                     }

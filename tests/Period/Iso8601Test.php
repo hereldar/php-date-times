@@ -20,13 +20,13 @@ final class Iso8601Test extends TestCase
         bool $reversible = true,
     ): void {
         self::assertEquals($period, Period::fromIso8601($expected));
-        self::assertEquals($period, Period::parse($expected, IPeriod::ISO8601));
-        self::assertEquals($period, Period::parse($expected));
+        self::assertEquals($period, Period::parse($expected, IPeriod::ISO8601)->orFail());
+        self::assertEquals($period, Period::parse($expected)->orFail());
 
         if ($reversible) {
             self::assertEquals($expected, $period->toIso8601());
-            self::assertEquals($expected, $period->format(IPeriod::ISO8601));
-            self::assertEquals($expected, $period->format());
+            self::assertEquals($expected, $period->format(IPeriod::ISO8601)->orFail());
+            self::assertEquals($expected, $period->format()->orFail());
             self::assertEquals($expected, (string) $period);
         }
 
@@ -34,13 +34,13 @@ final class Iso8601Test extends TestCase
         $expected = Period::fromIso8601($expected)->negated()->toIso8601();
 
         self::assertEquals($period, Period::fromIso8601($expected));
-        self::assertEquals($period, Period::parse($expected, IPeriod::ISO8601));
-        self::assertEquals($period, Period::parse($expected));
+        self::assertEquals($period, Period::parse($expected, IPeriod::ISO8601)->orFail());
+        self::assertEquals($period, Period::parse($expected)->orFail());
 
         if ($reversible) {
             self::assertEquals($expected, $period->toIso8601());
-            self::assertEquals($expected, $period->format(IPeriod::ISO8601));
-            self::assertEquals($expected, $period->format());
+            self::assertEquals($expected, $period->format(IPeriod::ISO8601)->orFail());
+            self::assertEquals($expected, $period->format()->orFail());
             self::assertEquals($expected, (string) $period);
         }
     }
