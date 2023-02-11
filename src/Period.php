@@ -11,6 +11,7 @@ use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
+use InvalidArgumentException;
 
 class Period implements IPeriod
 {
@@ -541,10 +542,10 @@ class Period implements IPeriod
         if (is_int($years)) {
             $period = static::of(...func_get_args());
         } else {
-            if (func_num_args() !== 1) {
-                throw new \Exception();
-            }
             $period = $years;
+            if (func_num_args() !== 1) {
+                throw new InvalidArgumentException('No time units are allowed when a period is passed');
+            }
         }
 
         return new static(
@@ -585,10 +586,10 @@ class Period implements IPeriod
         if (is_int($years)) {
             $period = static::of(...func_get_args());
         } else {
-            if (func_num_args() !== 1) {
-                throw new \Exception();
-            }
             $period = $years;
+            if (func_num_args() !== 1) {
+                throw new InvalidArgumentException('No time units are allowed when a period is passed');
+            }
         }
 
         return new static(

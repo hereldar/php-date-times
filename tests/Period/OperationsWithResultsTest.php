@@ -8,6 +8,7 @@ use ArithmeticError;
 use DivisionByZeroError;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
+use InvalidArgumentException;
 
 final class OperationsWithResultsTest extends TestCase
 {
@@ -29,6 +30,11 @@ final class OperationsWithResultsTest extends TestCase
             ArithmeticError::class,
             fn () => Period::of(PHP_INT_MAX)->add(Period::of(1))->orFail()
         );
+
+        self::assertException(
+            InvalidArgumentException::class,
+            fn () => Period::zero()->add(Period::of(1), 2)
+        );
     }
 
     public function testSubtraction(): void
@@ -48,6 +54,11 @@ final class OperationsWithResultsTest extends TestCase
         self::assertException(
             ArithmeticError::class,
             fn () => Period::of(PHP_INT_MIN)->subtract(Period::of(1))->orFail()
+        );
+
+        self::assertException(
+            InvalidArgumentException::class,
+            fn () => Period::zero()->subtract(Period::of(1), 2)
         );
     }
 

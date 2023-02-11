@@ -17,6 +17,7 @@ use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
+use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
 
@@ -230,7 +231,7 @@ class LocalTime implements ILocalTime
     ): static {
         if ($period !== null) {
             if (func_num_args() !== 1) {
-                throw new \Exception();
+                throw new InvalidArgumentException('No time units are allowed when a period is passed');
             }
         } else {
             $period = Period::of(
@@ -257,7 +258,7 @@ class LocalTime implements ILocalTime
     ): static {
         if ($period !== null) {
             if (func_num_args() !== 1) {
-                throw new \Exception();
+                throw new InvalidArgumentException('No time units are allowed when a period is passed');
             }
         } else {
             $period = Period::of(

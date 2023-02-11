@@ -7,6 +7,7 @@ namespace Hereldar\DateTimes\Tests\Period;
 use ArithmeticError;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
+use InvalidArgumentException;
 
 final class AdditionTest extends TestCase
 {
@@ -158,5 +159,11 @@ final class AdditionTest extends TestCase
     {
         $this->expectException(ArithmeticError::class);
         Period::of(PHP_INT_MAX)->plus(Period::of(1));
+    }
+
+    public function testInvalidArgumentException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Period::zero()->plus(Period::of(1), 2);
     }
 }
