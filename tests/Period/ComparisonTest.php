@@ -8,6 +8,13 @@ use DateInterval as StandardDateInterval;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
+/**
+ * @internal
+ */
+final class PeriodSubclass extends Period
+{
+}
+
 final class ComparisonTest extends TestCase
 {
     public function testCompareToNegative(): void
@@ -69,6 +76,11 @@ final class ComparisonTest extends TestCase
         self::assertFalse($oneDay->is(Period::of(hours: 23, minutes: 60)));
         self::assertFalse($oneDay->is(Period::of(hours: 24, microseconds: 1)));
         self::assertFalse($oneDay->is(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
+        self::assertFalse($oneDay->is(PeriodSubclass::of(days: 1)));
+        self::assertFalse($oneDay->is(PeriodSubclass::of(hours: 24)));
+        self::assertFalse($oneDay->is(PeriodSubclass::of(hours: 23, minutes: 60)));
+        self::assertFalse($oneDay->is(PeriodSubclass::of(hours: 24, microseconds: 1)));
+        self::assertFalse($oneDay->is(PeriodSubclass::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
     }
 
     public function testNotIdenticalToTrue(): void
@@ -78,6 +90,11 @@ final class ComparisonTest extends TestCase
         self::assertTrue($oneDay->isNot(Period::of(hours: 23, minutes: 60)));
         self::assertTrue($oneDay->isNot(Period::of(hours: 24, microseconds: 1)));
         self::assertTrue($oneDay->isNot(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
+        self::assertTrue($oneDay->isNot(PeriodSubclass::of(days: 1)));
+        self::assertTrue($oneDay->isNot(PeriodSubclass::of(hours: 24)));
+        self::assertTrue($oneDay->isNot(PeriodSubclass::of(hours: 23, minutes: 60)));
+        self::assertTrue($oneDay->isNot(PeriodSubclass::of(hours: 24, microseconds: 1)));
+        self::assertTrue($oneDay->isNot(PeriodSubclass::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
     }
 
     public function testNotIdenticalToFalse(): void
@@ -92,22 +109,33 @@ final class ComparisonTest extends TestCase
         $oneDay = Period::of(days: 1);
         self::assertTrue($oneDay->isEqual($oneDay));
         self::assertTrue($oneDay->isEqual(Period::of(days: 1)));
-        self::assertTrue($oneDay->isEqual(Period::of(hours: 24)));
-        self::assertTrue($oneDay->isEqual(Period::of(hours: 23, minutes: 60)));
+        self::assertTrue($oneDay->isEqual(PeriodSubclass::of(days: 1)));
     }
 
     public function testEqualToFalse(): void
     {
         $oneDay = Period::of(days: 1);
+        self::assertFalse($oneDay->isEqual(Period::of(hours: 24)));
+        self::assertFalse($oneDay->isEqual(Period::of(hours: 23, minutes: 60)));
         self::assertFalse($oneDay->isEqual(Period::of(hours: 24, microseconds: 1)));
         self::assertFalse($oneDay->isEqual(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
+        self::assertFalse($oneDay->isEqual(PeriodSubclass::of(hours: 24)));
+        self::assertFalse($oneDay->isEqual(PeriodSubclass::of(hours: 23, minutes: 60)));
+        self::assertFalse($oneDay->isEqual(PeriodSubclass::of(hours: 24, microseconds: 1)));
+        self::assertFalse($oneDay->isEqual(PeriodSubclass::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
     }
 
     public function testNotEqualToTrue(): void
     {
         $oneDay = Period::of(days: 1);
+        self::assertTrue($oneDay->isNotEqual(Period::of(hours: 24)));
+        self::assertTrue($oneDay->isNotEqual(Period::of(hours: 23, minutes: 60)));
         self::assertTrue($oneDay->isNotEqual(Period::of(hours: 24, microseconds: 1)));
         self::assertTrue($oneDay->isNotEqual(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
+        self::assertTrue($oneDay->isNotEqual(PeriodSubclass::of(hours: 24)));
+        self::assertTrue($oneDay->isNotEqual(PeriodSubclass::of(hours: 23, minutes: 60)));
+        self::assertTrue($oneDay->isNotEqual(PeriodSubclass::of(hours: 24, microseconds: 1)));
+        self::assertTrue($oneDay->isNotEqual(PeriodSubclass::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
     }
 
     public function testNotEqualToFalse(): void
@@ -115,8 +143,49 @@ final class ComparisonTest extends TestCase
         $oneDay = Period::of(days: 1);
         self::assertFalse($oneDay->isNotEqual($oneDay));
         self::assertFalse($oneDay->isNotEqual(Period::of(days: 1)));
-        self::assertFalse($oneDay->isNotEqual(Period::of(hours: 24)));
-        self::assertFalse($oneDay->isNotEqual(Period::of(hours: 23, minutes: 60)));
+        self::assertFalse($oneDay->isNotEqual(PeriodSubclass::of(days: 1)));
+    }
+
+    public function testSimilarToTrue(): void
+    {
+        $oneDay = Period::of(days: 1);
+        self::assertTrue($oneDay->isSimilar($oneDay));
+        self::assertTrue($oneDay->isSimilar(Period::of(days: 1)));
+        self::assertTrue($oneDay->isSimilar(Period::of(hours: 24)));
+        self::assertTrue($oneDay->isSimilar(Period::of(hours: 23, minutes: 60)));
+        self::assertTrue($oneDay->isSimilar(PeriodSubclass::of(days: 1)));
+        self::assertTrue($oneDay->isSimilar(PeriodSubclass::of(hours: 24)));
+        self::assertTrue($oneDay->isSimilar(PeriodSubclass::of(hours: 23, minutes: 60)));
+    }
+
+    public function testSimilarToFalse(): void
+    {
+        $oneDay = Period::of(days: 1);
+        self::assertFalse($oneDay->isSimilar(Period::of(hours: 24, microseconds: 1)));
+        self::assertFalse($oneDay->isSimilar(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
+        self::assertFalse($oneDay->isSimilar(PeriodSubclass::of(hours: 24, microseconds: 1)));
+        self::assertFalse($oneDay->isSimilar(PeriodSubclass::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
+    }
+
+    public function testNotSimilarToTrue(): void
+    {
+        $oneDay = Period::of(days: 1);
+        self::assertTrue($oneDay->isNotSimilar(Period::of(hours: 24, microseconds: 1)));
+        self::assertTrue($oneDay->isNotSimilar(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
+        self::assertTrue($oneDay->isNotSimilar(PeriodSubclass::of(hours: 24, microseconds: 1)));
+        self::assertTrue($oneDay->isNotSimilar(PeriodSubclass::of(hours: 23, minutes: 59, seconds: 59, microseconds: 999999)));
+    }
+
+    public function testNotSimilarToFalse(): void
+    {
+        $oneDay = Period::of(days: 1);
+        self::assertFalse($oneDay->isNotSimilar($oneDay));
+        self::assertFalse($oneDay->isNotSimilar(Period::of(days: 1)));
+        self::assertFalse($oneDay->isNotSimilar(Period::of(hours: 24)));
+        self::assertFalse($oneDay->isNotSimilar(Period::of(hours: 23, minutes: 60)));
+        self::assertFalse($oneDay->isNotSimilar(PeriodSubclass::of(days: 1)));
+        self::assertFalse($oneDay->isNotSimilar(PeriodSubclass::of(hours: 24)));
+        self::assertFalse($oneDay->isNotSimilar(PeriodSubclass::of(hours: 23, minutes: 60)));
     }
 
     public function testGreaterThanToTrue(): void

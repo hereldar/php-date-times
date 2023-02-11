@@ -12,8 +12,9 @@ use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
+use Stringable;
 
-class Period implements IPeriod
+class Period implements IPeriod, Stringable
 {
     private const ISO8601_PATTERN = <<<'REGEX'
         /
@@ -394,6 +395,18 @@ class Period implements IPeriod
 
     public function is(IPeriod $that): bool
     {
+        return $this::class === $that::class
+            && $this->isEqual($that);
+    }
+
+    public function isNot(IPeriod $that): bool
+    {
+        return $this::class !== $that::class
+            || $this->isNotEqual($that);
+    }
+
+    public function isEqual(IPeriod $that): bool
+    {
         return $this->microseconds === $that->microseconds()
             && $this->seconds === $that->seconds()
             && $this->minutes === $that->minutes()
@@ -403,7 +416,7 @@ class Period implements IPeriod
             && $this->years === $that->years();
     }
 
-    public function isNot(IPeriod $that): bool
+    public function isNotEqual(IPeriod $that): bool
     {
         return $this->microseconds !== $that->microseconds()
             || $this->seconds !== $that->seconds()
@@ -414,14 +427,14 @@ class Period implements IPeriod
             || $this->years !== $that->years();
     }
 
-    public function isEqual(IPeriod $that): bool
+    public function isSimilar(IPeriod $that): bool
     {
-        return (0 === $this->compareTo($that));
+        return 0 === $this->compareTo($that);
     }
 
-    public function isNotEqual(IPeriod $that): bool
+    public function isNotSimilar(IPeriod $that): bool
     {
-        return (0 !== $this->compareTo($that));
+        return 0 !== $this->compareTo($that);
     }
 
     public function isGreater(IPeriod $that): bool
@@ -444,17 +457,6 @@ class Period implements IPeriod
         return (0 >= $this->compareTo($that));
     }
 
-    public function hasNegativeValues(): bool
-    {
-        return $this->microseconds < 0
-            || $this->seconds < 0
-            || $this->minutes < 0
-            || $this->hours < 0
-            || $this->days < 0
-            || $this->months < 0
-            || $this->years < 0;
-    }
-
     public function hasPositiveValues(): bool
     {
         return $this->microseconds > 0
@@ -466,16 +468,27 @@ class Period implements IPeriod
             || $this->years > 0;
     }
 
-    public function isNegative(): bool
+    public function hasNegativeValues(): bool
     {
-        return $this->hasNegativeValues()
-            && !$this->hasPositiveValues();
+        return $this->microseconds < 0
+            || $this->seconds < 0
+            || $this->minutes < 0
+            || $this->hours < 0
+            || $this->days < 0
+            || $this->months < 0
+            || $this->years < 0;
     }
 
     public function isPositive(): bool
     {
         return $this->hasPositiveValues()
             && !$this->hasNegativeValues();
+    }
+
+    public function isNegative(): bool
+    {
+        return $this->hasNegativeValues()
+            && !$this->hasPositiveValues();
     }
 
     public function isZero(): bool
@@ -489,43 +502,35 @@ class Period implements IPeriod
             && !$this->years;
     }
 
-    public function abs(): static
-    {
+    public function plus(
+        int|IPeriod $years = 0,
+        int $months = 0,
+        int $weeks = 0,
+        int $days = 0,
+        int $hours = 0,
+        int $minutes = 0,
+        int $seconds = 0,
+        int $milliseconds = 0,
+        int $microseconds = 0,
+    ): static {
+        if (is_int($years)) {
+            $period = static::of(...func_get_args());
+        } else {
+            $period = $years;
+            if (func_num_args() !== 1) {
+                throw new InvalidArgumentException('No time units are allowed when a period is passed');
+            }
+        }
+
         return new static(
-            abs($this->years),
-            abs($this->months),
-            abs($this->days),
-            abs($this->hours),
-            abs($this->minutes),
-            abs($this->seconds),
-            abs($this->microseconds),
+            intadd($this->years, $period->years()),
+            intadd($this->months, $period->months()),
+            intadd($this->days, $period->days()),
+            intadd($this->hours, $period->hours()),
+            intadd($this->minutes, $period->minutes()),
+            intadd($this->seconds, $period->seconds()),
+            intadd($this->microseconds, $period->microseconds()),
         );
-    }
-
-    public function dividedBy(int $divisor): static
-    {
-        $years = $this->years;
-        $y = intdiv($years, $divisor);
-
-        $months = $this->months + ($years % $divisor * 12);
-        $m = intdiv($months, $divisor);
-
-        $days = $this->days + ($months % $divisor * 30);
-        $d = intdiv($days, $divisor);
-
-        $hours = $this->hours + ($days % $divisor * 24);
-        $h = intdiv($hours, $divisor);
-
-        $minutes = $this->minutes + ($hours % $divisor * 60);
-        $i = intdiv($minutes, $divisor);
-
-        $seconds = $this->seconds + ($minutes % $divisor * 60);
-        $s = intdiv($seconds, $divisor);
-
-        $microseconds = $this->microseconds + ($seconds % $divisor * 1_000_000);
-        $f = intdiv($microseconds, $divisor);
-
-        return new static($y, $m, $d, $h, $i, $s, $f);
     }
 
     public function minus(
@@ -572,34 +577,42 @@ class Period implements IPeriod
         );
     }
 
-    public function plus(
-        int|IPeriod $years = 0,
-        int $months = 0,
-        int $weeks = 0,
-        int $days = 0,
-        int $hours = 0,
-        int $minutes = 0,
-        int $seconds = 0,
-        int $milliseconds = 0,
-        int $microseconds = 0,
-    ): static {
-        if (is_int($years)) {
-            $period = static::of(...func_get_args());
-        } else {
-            $period = $years;
-            if (func_num_args() !== 1) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
-        }
+    public function dividedBy(int $divisor): static
+    {
+        $years = $this->years;
+        $y = intdiv($years, $divisor);
 
+        $months = $this->months + ($years % $divisor * 12);
+        $m = intdiv($months, $divisor);
+
+        $days = $this->days + ($months % $divisor * 30);
+        $d = intdiv($days, $divisor);
+
+        $hours = $this->hours + ($days % $divisor * 24);
+        $h = intdiv($hours, $divisor);
+
+        $minutes = $this->minutes + ($hours % $divisor * 60);
+        $i = intdiv($minutes, $divisor);
+
+        $seconds = $this->seconds + ($minutes % $divisor * 60);
+        $s = intdiv($seconds, $divisor);
+
+        $microseconds = $this->microseconds + ($seconds % $divisor * 1_000_000);
+        $f = intdiv($microseconds, $divisor);
+
+        return new static($y, $m, $d, $h, $i, $s, $f);
+    }
+
+    public function abs(): static
+    {
         return new static(
-            intadd($this->years, $period->years()),
-            intadd($this->months, $period->months()),
-            intadd($this->days, $period->days()),
-            intadd($this->hours, $period->hours()),
-            intadd($this->minutes, $period->minutes()),
-            intadd($this->seconds, $period->seconds()),
-            intadd($this->microseconds, $period->microseconds()),
+            abs($this->years),
+            abs($this->months),
+            abs($this->days),
+            abs($this->hours),
+            abs($this->minutes),
+            abs($this->seconds),
+            abs($this->microseconds),
         );
     }
 
@@ -748,10 +761,19 @@ class Period implements IPeriod
         return Ok::withValue($period);
     }
 
-    public function divideBy(int $divisor): IResult
-    {
+    public function subtract(
+        int|IPeriod $years = 0,
+        int $months = 0,
+        int $weeks = 0,
+        int $days = 0,
+        int $hours = 0,
+        int $minutes = 0,
+        int $seconds = 0,
+        int $milliseconds = 0,
+        int $microseconds = 0,
+    ): IResult {
         try {
-            $period = $this->dividedBy($divisor);
+            $period = $this->minus(...func_get_args());
         } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
@@ -770,19 +792,10 @@ class Period implements IPeriod
         return Ok::withValue($period);
     }
 
-    public function subtract(
-        int|IPeriod $years = 0,
-        int $months = 0,
-        int $weeks = 0,
-        int $days = 0,
-        int $hours = 0,
-        int $minutes = 0,
-        int $seconds = 0,
-        int $milliseconds = 0,
-        int $microseconds = 0,
-    ): IResult {
+    public function divideBy(int $divisor): IResult
+    {
         try {
-            $period = $this->minus(...func_get_args());
+            $period = $this->dividedBy($divisor);
         } catch (ArithmeticError $e) {
             return Error::withException($e);
         }

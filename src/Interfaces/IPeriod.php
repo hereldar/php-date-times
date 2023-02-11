@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Interfaces;
 
+use ArithmeticError;
 use DateInterval as StandardDateInterval;
-use Hereldar\DateTimes\Exceptions\Overflow;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\Results\Interfaces\IResult;
-use Stringable;
 
-interface IPeriod extends Stringable
+interface IPeriod
 {
     final public const ISO8601 = 'P%yY%mM%dDT%hH%iM%s%fS';
 
@@ -39,9 +38,17 @@ interface IPeriod extends Stringable
 
     public function compareTo(self $that): int;
 
+    public function is(self $that): bool;
+
+    public function isNot(self $that): bool;
+
     public function isEqual(self $that): bool;
 
     public function isNotEqual(self $that): bool;
+
+    public function isSimilar(self $that): bool;
+
+    public function isNotSimilar(self $that): bool;
 
     public function isGreater(self $that): bool;
 
@@ -51,7 +58,13 @@ interface IPeriod extends Stringable
 
     public function isLessOrEqual(self $that): bool;
 
+    public function hasNegativeValues(): bool;
+
+    public function hasPositiveValues(): bool;
+
     public function isNegative(): bool;
+
+    public function isPositive(): bool;
 
     public function isZero(): bool;
 
@@ -87,6 +100,8 @@ interface IPeriod extends Stringable
 
     public function negated(): static;
 
+    public function normalized(): static;
+
     public function with(
         ?int $years = null,
         ?int $months = null,
@@ -98,7 +113,7 @@ interface IPeriod extends Stringable
     ): static;
 
     /**
-     * @return IResult<static, Overflow>
+     * @return IResult<static, ArithmeticError>
      */
     public function add(
         int|IPeriod $years = 0,
@@ -113,7 +128,7 @@ interface IPeriod extends Stringable
     ): IResult;
 
     /**
-     * @return IResult<static, Overflow>
+     * @return IResult<static, ArithmeticError>
      */
     public function subtract(
         int|IPeriod $years = 0,
@@ -128,12 +143,12 @@ interface IPeriod extends Stringable
     ): IResult;
 
     /**
-     * @return IResult<static, Overflow>
+     * @return IResult<static, ArithmeticError>
      */
     public function multiplyBy(int $multiplicand): IResult;
 
     /**
-     * @return IResult<static, Overflow>
+     * @return IResult<static, ArithmeticError>
      */
     public function divideBy(int $divisor): IResult;
 }
