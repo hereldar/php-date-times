@@ -6,7 +6,7 @@ namespace Hereldar\DateTimes\Interfaces;
 
 use DateInterval as StandardDateInterval;
 use Hereldar\DateTimes\Exceptions\Overflow;
-use Hereldar\DateTimes\Exceptions\ParseErrorException;
+use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\Results\Interfaces\IResult;
 use Stringable;
 
@@ -15,7 +15,7 @@ interface IPeriod extends Stringable
     final public const ISO8601 = 'P%yY%mM%dDT%hH%iM%s%fS';
 
     /**
-     * @return IResult<string, ParseErrorException>
+     * @return IResult<string, ParseException>
      */
     public function format(string $format = self::ISO8601): IResult;
 

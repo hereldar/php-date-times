@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Tests\Period;
 
 use Generator;
+use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
@@ -112,5 +113,11 @@ final class Iso8601Test extends TestCase
             Period::of(-1, -2, 0, -3, -4, -5, -6, 0, -7),
             '-P1Y2M3DT4H5M6.000007S',
         ];
+    }
+
+    public function testParseException(): void
+    {
+        $this->expectException(ParseException::class);
+        Period::fromIso8601('');
     }
 }

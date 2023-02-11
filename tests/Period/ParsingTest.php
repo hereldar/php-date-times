@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\Period;
 
-use Hereldar\DateTimes\Exceptions\ParseErrorException;
+use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
@@ -12,22 +12,19 @@ final class ParsingTest extends TestCase
 {
     public function testEmptyString(): void
     {
-        $this->expectException(ParseErrorException::class);
-
+        $this->expectException(ParseException::class);
         Period::parse('', '%H:%i:%s')->orFail();
     }
 
     public function testTrailingData(): void
     {
-        $this->expectException(ParseErrorException::class);
-
+        $this->expectException(ParseException::class);
         Period::parse('01:30:25', '%H:%i')->orFail();
     }
 
     public function testInvalidSubstitute(): void
     {
-        $this->expectException(ParseErrorException::class);
-
+        $this->expectException(ParseException::class);
         Period::parse('4', '%N')->orFail();
     }
 

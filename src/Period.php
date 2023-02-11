@@ -6,7 +6,7 @@ namespace Hereldar\DateTimes;
 
 use ArithmeticError;
 use DateInterval as StandardDateInterval;
-use Hereldar\DateTimes\Exceptions\ParseErrorException;
+use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
@@ -102,7 +102,7 @@ class Period implements IPeriod
     }
 
     /**
-     * @return IResult<string, ParseErrorException>
+     * @return IResult<string, ParseException>
      */
     public static function parse(
         string $string,
@@ -142,7 +142,7 @@ class Period implements IPeriod
         );
 
         if (!preg_match("/^{$pattern}$/", $string, $matches)) {
-            return Error::withException(new ParseErrorException());
+            return Error::withException(new ParseException($string, $format));
         }
 
         $arguments = [];
@@ -159,12 +159,12 @@ class Period implements IPeriod
         return Ok::withValue(static::of(...$arguments));
     }
 
-    public static function fromIso8601(string $value): static
+    public static function fromIso8601(string $string): static
     {
         $matches = [];
 
-        if (!preg_match(self::ISO8601_PATTERN, $value, $matches)) {
-            throw new ParseErrorException();
+        if (!preg_match(self::ISO8601_PATTERN, $string, $matches)) {
+            throw new ParseException($string, IPeriod::ISO8601);
         }
 
         $sign = match ($matches['sign'] ?? '') {
