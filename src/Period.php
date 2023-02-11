@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes;
 
+use ArithmeticError;
 use DateInterval as StandardDateInterval;
-use Hereldar\DateTimes\Exceptions\Overflow;
 use Hereldar\DateTimes\Exceptions\ParseErrorException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\Results\Error;
@@ -497,7 +497,7 @@ class Period implements IPeriod
             abs($this->hours),
             abs($this->minutes),
             abs($this->seconds),
-            abs($this->microseconds)
+            abs($this->microseconds),
         );
     }
 
@@ -548,26 +548,57 @@ class Period implements IPeriod
         }
 
         return new static(
-            $this->years - $period->years(),
-            $this->months - $period->months(),
-            $this->days - $period->days(),
-            $this->hours - $period->hours(),
-            $this->minutes - $period->minutes(),
-            $this->seconds - $period->seconds(),
-            $this->microseconds - $period->microseconds(),
+            intsub($this->years, $period->years()),
+            intsub($this->months, $period->months()),
+            intsub($this->days, $period->days()),
+            intsub($this->hours, $period->hours()),
+            intsub($this->minutes, $period->minutes()),
+            intsub($this->seconds, $period->seconds()),
+            intsub($this->microseconds, $period->microseconds()),
         );
     }
 
     public function multipliedBy(int $multiplicand): static
     {
-        return static::of(
-            years: $this->years * $multiplicand,
-            months: $this->months * $multiplicand,
-            days: $this->days * $multiplicand,
-            hours: $this->hours * $multiplicand,
-            minutes: $this->minutes * $multiplicand,
-            seconds: $this->seconds * $multiplicand,
-            microseconds: $this->microseconds * $multiplicand
+        return new static(
+            intmul($this->years, $multiplicand),
+            intmul($this->months, $multiplicand),
+            intmul($this->days, $multiplicand),
+            intmul($this->hours, $multiplicand),
+            intmul($this->minutes, $multiplicand),
+            intmul($this->seconds, $multiplicand),
+            intmul($this->microseconds, $multiplicand),
+        );
+    }
+
+    public function plus(
+        int|IPeriod $years = 0,
+        int $months = 0,
+        int $weeks = 0,
+        int $days = 0,
+        int $hours = 0,
+        int $minutes = 0,
+        int $seconds = 0,
+        int $milliseconds = 0,
+        int $microseconds = 0,
+    ): static {
+        if (is_int($years)) {
+            $period = static::of(...func_get_args());
+        } else {
+            if (func_num_args() !== 1) {
+                throw new \Exception();
+            }
+            $period = $years;
+        }
+
+        return new static(
+            intadd($this->years, $period->years()),
+            intadd($this->months, $period->months()),
+            intadd($this->days, $period->days()),
+            intadd($this->hours, $period->hours()),
+            intadd($this->minutes, $period->minutes()),
+            intadd($this->seconds, $period->seconds()),
+            intadd($this->microseconds, $period->microseconds()),
         );
     }
 
@@ -580,7 +611,7 @@ class Period implements IPeriod
             -$this->hours,
             -$this->minutes,
             -$this->seconds,
-            -$this->microseconds
+            -$this->microseconds,
         );
     }
 
@@ -676,37 +707,6 @@ class Period implements IPeriod
         }
     }
 
-    public function plus(
-        int|IPeriod $years = 0,
-        int $months = 0,
-        int $weeks = 0,
-        int $days = 0,
-        int $hours = 0,
-        int $minutes = 0,
-        int $seconds = 0,
-        int $milliseconds = 0,
-        int $microseconds = 0,
-    ): static {
-        if (is_int($years)) {
-            $period = static::of(...func_get_args());
-        } else {
-            if (func_num_args() !== 1) {
-                throw new \Exception();
-            }
-            $period = $years;
-        }
-
-        return new static(
-            $this->years + $period->years(),
-            $this->months + $period->months(),
-            $this->days + $period->days(),
-            $this->hours + $period->hours(),
-            $this->minutes + $period->minutes(),
-            $this->seconds + $period->seconds(),
-            $this->microseconds + $period->microseconds(),
-        );
-    }
-
     public function with(
         ?int $years = null,
         ?int $months = null,
@@ -740,7 +740,7 @@ class Period implements IPeriod
     ): IResult {
         try {
             $period = $this->plus(...func_get_args());
-        } catch (Overflow $e) {
+        } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
@@ -751,7 +751,7 @@ class Period implements IPeriod
     {
         try {
             $period = $this->dividedBy($divisor);
-        } catch (Overflow $e) {
+        } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
@@ -762,7 +762,7 @@ class Period implements IPeriod
     {
         try {
             $period = $this->multipliedBy($multiplicand);
-        } catch (Overflow $e) {
+        } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
@@ -782,7 +782,7 @@ class Period implements IPeriod
     ): IResult {
         try {
             $period = $this->minus(...func_get_args());
-        } catch (Overflow $e) {
+        } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 

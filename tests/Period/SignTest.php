@@ -20,6 +20,7 @@ final class SignTest extends TestCase
         self::assertFalse($period->isZero());
 
         self::assertPeriod($period->abs(), 1, 2, 3, 4, 5, 6, 7);
+        self::assertPeriod($period->negated(), -1, -2, -3, -4, -5, -6, -7);
     }
 
     public function testMixedSigns(): void
@@ -33,6 +34,7 @@ final class SignTest extends TestCase
         self::assertFalse($period->isZero());
 
         self::assertPeriod($period->abs(), 1, 2, 3, 4, 5, 6, 7);
+        self::assertPeriod($period->negated(), -1, 2, -3, 4, -5, 6, -7);
     }
 
     public function testNegativeValues(): void
@@ -46,6 +48,7 @@ final class SignTest extends TestCase
         self::assertFalse($period->isZero());
 
         self::assertPeriod($period->abs(), 1, 2, 3, 4, 5, 6, 7);
+        self::assertPeriod($period->negated(), 1, 2, 3, 4, 5, 6, 7);
     }
 
     public function testZeroValues(): void
@@ -59,6 +62,7 @@ final class SignTest extends TestCase
         self::assertTrue($period->isZero());
 
         self::assertPeriod($period->abs(), 0, 0, 0, 0, 0, 0, 0);
+        self::assertPeriod($period->negated(), 0, 0, 0, 0, 0, 0, 0);
     }
 
     public function testZero(): void
@@ -72,5 +76,6 @@ final class SignTest extends TestCase
         self::assertTrue($period->isZero());
 
         self::assertPeriod($period->abs(), 0, 0, 0, 0, 0, 0, 0);
+        self::assertPeriod($period->negated(), 0, 0, 0, 0, 0, 0, 0);
     }
 }
