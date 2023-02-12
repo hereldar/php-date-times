@@ -112,7 +112,7 @@ class LocalDateTime implements ILocalDateTime
             : ILocalDateTime::RFC3339);
     }
 
-    public static function fromStandardDateTime(StandardDateTimeInterface $value): static
+    public static function fromStandard(StandardDateTimeInterface $value): static
     {
         if ($value instanceof MutableStandardDateTime) {
             $value = StandardDateTime::createFromMutable($value);
@@ -145,7 +145,7 @@ class LocalDateTime implements ILocalDateTime
             : ILocalDateTime::RFC3339);
     }
 
-    public function toStandardDateTime(): StandardDateTime
+    public function toStandard(): StandardDateTime
     {
         return $this->value;
     }
@@ -241,7 +241,7 @@ class LocalDateTime implements ILocalDateTime
     public function compareTo(ILocalDateTime $that): int
     {
         $a = $this->value;
-        $b = $that->toStandardDateTime();
+        $b = $that->toStandard();
 
         return match (true) {
             ($a == $b) => 0,
@@ -252,32 +252,32 @@ class LocalDateTime implements ILocalDateTime
 
     public function isEqual(ILocalDateTime $that): bool
     {
-        return ($this->value == $that->toStandardDateTime());
+        return ($this->value == $that->toStandard());
     }
 
     public function isNotEqual(ILocalDateTime $that): bool
     {
-        return ($this->value != $that->toStandardDateTime());
+        return ($this->value != $that->toStandard());
     }
 
     public function isGreater(ILocalDateTime $that): bool
     {
-        return ($this->value > $that->toStandardDateTime());
+        return ($this->value > $that->toStandard());
     }
 
     public function isGreaterOrEqual(ILocalDateTime $that): bool
     {
-        return ($this->value >= $that->toStandardDateTime());
+        return ($this->value >= $that->toStandard());
     }
 
     public function isLess(ILocalDateTime $that): bool
     {
-        return ($this->value < $that->toStandardDateTime());
+        return ($this->value < $that->toStandard());
     }
 
     public function isLessOrEqual(ILocalDateTime $that): bool
     {
-        return ($this->value <= $that->toStandardDateTime());
+        return ($this->value <= $that->toStandard());
     }
 
     public function plus(
@@ -307,7 +307,7 @@ class LocalDateTime implements ILocalDateTime
                 seconds: $seconds,
                 milliseconds: $milliseconds,
                 microseconds: $microseconds
-            )->toStandardDateInterval();
+            )->toStandard();
         }
 
         $value = $this->value->add($period);
@@ -342,7 +342,7 @@ class LocalDateTime implements ILocalDateTime
                 seconds: $seconds,
                 milliseconds: $milliseconds,
                 microseconds: $microseconds
-            )->toStandardDateInterval();
+            )->toStandard();
         }
 
         $value = $this->value->sub($period);

@@ -59,14 +59,14 @@ class Period implements IPeriod, Stringable
 
     private const FORMAT_PATTERN = '/%([%a-zA-Z])/';
 
-    public function __construct(
-        private readonly int $years,
-        private readonly int $months = 0,
-        private readonly int $days = 0,
-        private readonly int $hours = 0,
-        private readonly int $minutes = 0,
-        private readonly int $seconds = 0,
-        private readonly int $microseconds = 0,
+    private function __construct(
+        protected readonly int $years,
+        protected readonly int $months = 0,
+        protected readonly int $days = 0,
+        protected readonly int $hours = 0,
+        protected readonly int $minutes = 0,
+        protected readonly int $seconds = 0,
+        protected readonly int $microseconds = 0,
     ) {
     }
 
@@ -103,7 +103,7 @@ class Period implements IPeriod, Stringable
     }
 
     /**
-     * @return IResult<string, ParseException>
+     * @return IResult<static, ParseException>
      */
     public static function parse(
         string $string,
@@ -191,7 +191,7 @@ class Period implements IPeriod, Stringable
         );
     }
 
-    public static function fromStandardDateInterval(
+    public static function fromStandard(
         StandardDateInterval $interval,
     ): static {
         $sign = ($interval->invert) ? -1 : 1;
@@ -305,7 +305,7 @@ class Period implements IPeriod, Stringable
         return $string;
     }
 
-    public function toStandardDateInterval(): StandardDateInterval
+    public function toStandard(): StandardDateInterval
     {
         $interval = new StandardDateInterval('PT0S');
 
@@ -396,13 +396,25 @@ class Period implements IPeriod, Stringable
     public function is(IPeriod $that): bool
     {
         return $this::class === $that::class
-            && $this->isEqual($that);
+            && $this->microseconds === $that->microseconds
+            && $this->seconds === $that->seconds
+            && $this->minutes === $that->minutes
+            && $this->hours === $that->hours
+            && $this->days === $that->days
+            && $this->months === $that->months
+            && $this->years === $that->years;
     }
 
     public function isNot(IPeriod $that): bool
     {
         return $this::class !== $that::class
-            || $this->isNotEqual($that);
+            || $this->microseconds !== $that->microseconds
+            || $this->seconds !== $that->seconds
+            || $this->minutes !== $that->minutes
+            || $this->hours !== $that->hours
+            || $this->days !== $that->days
+            || $this->months !== $that->months
+            || $this->years !== $that->years;
     }
 
     public function isEqual(IPeriod $that): bool

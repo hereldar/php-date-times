@@ -111,7 +111,7 @@ class DateTime implements IDateTime
             : IDateTime::RFC3339);
     }
 
-    public static function fromStandardDateTime(StandardDateTimeInterface $value): static
+    public static function fromStandard(StandardDateTimeInterface $value): static
     {
         if ($value instanceof MutableStandardDateTime) {
             $value = StandardDateTime::createFromMutable($value);
@@ -144,7 +144,7 @@ class DateTime implements IDateTime
             : IDateTime::RFC3339);
     }
 
-    public function toStandardDateTime(): StandardDateTime
+    public function toStandard(): StandardDateTime
     {
         return $this->value;
     }
@@ -241,7 +241,7 @@ class DateTime implements IDateTime
     public function compareTo(IDateTime $that): int
     {
         $a = $this->value;
-        $b = $that->toStandardDateTime();
+        $b = $that->toStandard();
 
         return match (true) {
             ($a == $b) => 0,
@@ -252,32 +252,32 @@ class DateTime implements IDateTime
 
     public function isEqual(IDateTime $that): bool
     {
-        return ($this->value == $that->toStandardDateTime());
+        return ($this->value == $that->toStandard());
     }
 
     public function isNotEqual(IDateTime $that): bool
     {
-        return ($this->value != $that->toStandardDateTime());
+        return ($this->value != $that->toStandard());
     }
 
     public function isGreater(IDateTime $that): bool
     {
-        return ($this->value > $that->toStandardDateTime());
+        return ($this->value > $that->toStandard());
     }
 
     public function isGreaterOrEqual(IDateTime $that): bool
     {
-        return ($this->value >= $that->toStandardDateTime());
+        return ($this->value >= $that->toStandard());
     }
 
     public function isLess(IDateTime $that): bool
     {
-        return ($this->value < $that->toStandardDateTime());
+        return ($this->value < $that->toStandard());
     }
 
     public function isLessOrEqual(IDateTime $that): bool
     {
-        return ($this->value <= $that->toStandardDateTime());
+        return ($this->value <= $that->toStandard());
     }
 
     public function plus(
@@ -307,7 +307,7 @@ class DateTime implements IDateTime
                 seconds: $seconds,
                 milliseconds: $milliseconds,
                 microseconds: $microseconds
-            )->toStandardDateInterval();
+            )->toStandard();
         }
 
         $value = $this->value->add($period);
@@ -342,7 +342,7 @@ class DateTime implements IDateTime
                 seconds: $seconds,
                 milliseconds: $milliseconds,
                 microseconds: $microseconds
-            )->toStandardDateInterval();
+            )->toStandard();
         }
 
         $value = $this->value->sub($period);

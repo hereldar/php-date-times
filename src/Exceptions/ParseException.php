@@ -10,8 +10,8 @@ use Throwable;
 final class ParseException extends InvalidArgumentException
 {
     public function __construct(
-        string $string,
-        string $format,
+        private readonly string $string,
+        private readonly string $format,
         ?Throwable $previous = null
     ) {
         $message = sprintf(
@@ -21,5 +21,15 @@ final class ParseException extends InvalidArgumentException
         );
 
         parent::__construct($message, 0, $previous);
+    }
+
+    public function string(): string
+    {
+        return $this->string;
+    }
+
+    public function format(): string
+    {
+        return $this->format;
     }
 }

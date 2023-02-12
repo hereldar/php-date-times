@@ -18,16 +18,12 @@ final class StandardDateIntervalTest extends TestCase
         Period $period,
         StandardDateInterval $expected,
     ): void {
-        self::assertEquals($expected, $period->toStandardDateInterval());
+        self::assertEquals($expected, $period->toStandard());
 
         $period = $period->negated();
+        $expected = Period::fromStandard($expected)->negated()->toStandard();
 
-        $expected = Period
-            ::fromStandardDateInterval($expected)
-            ->negated()
-            ->toStandardDateInterval();
-
-        self::assertEquals($expected, $period->toStandardDateInterval());
+        self::assertEquals($expected, $period->toStandard());
     }
 
     public function dataForStandardDateInterval(): Generator

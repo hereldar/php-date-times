@@ -8,19 +8,20 @@ use ArithmeticError;
 use DateInterval as StandardDateInterval;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\Results\Interfaces\IResult;
+use InvalidArgumentException;
 
 interface IPeriod
 {
     final public const ISO8601 = 'P%yY%mM%dDT%hH%iM%s%fS';
 
     /**
-     * @return IResult<string, ParseException>
+     * @return IResult<string, InvalidArgumentException>
      */
     public function format(string $format = self::ISO8601): IResult;
 
     public function toIso8601(): string;
 
-    public function toStandardDateInterval(): StandardDateInterval;
+    public function toStandard(): StandardDateInterval;
 
     public function years(): int;
 

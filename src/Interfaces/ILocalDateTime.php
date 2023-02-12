@@ -33,7 +33,7 @@ interface ILocalDateTime extends Stringable
 
     public function toRfc3339(bool $milliseconds = false): string;
 
-    public function toStandardDateTime(): StandardDateTime;
+    public function toStandard(): StandardDateTime;
 
     public function atTimeZone(ITimeZone $timeZone): IDateTime;
 
