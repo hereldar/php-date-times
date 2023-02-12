@@ -129,11 +129,9 @@ class LocalDate implements ILocalDate, Stringable
         return $this->format(ILocalDate::RFC2822)->orFail();
     }
 
-    public function toRfc3339(bool $milliseconds = false): string
+    public function toRfc3339(): string
     {
-        return $this->format(($milliseconds)
-            ? ILocalDate::RFC3339_EXTENDED
-            : ILocalDate::RFC3339)->orFail();
+        return $this->format(ILocalDate::RFC3339)->orFail();
     }
 
     public function toStandard(): StandardDateTime
