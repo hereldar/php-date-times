@@ -28,7 +28,7 @@ final class NormalizationTest extends TestCase
         self::assertTrue($period->isNegative());
     }
 
-    public function dataForOverflowedValues(): Generator
+    public static function dataForOverflowedValues(): Generator
     {
         yield [
             Period::of(seconds: 3600),
@@ -79,7 +79,7 @@ final class NormalizationTest extends TestCase
         self::assertEquals($expected, $period->normalized());
     }
 
-    public function dataForMixedSigns(): Generator
+    public static function dataForMixedSigns(): Generator
     {
         yield [
             Period::of(hours: 1, minutes: -30),

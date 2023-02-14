@@ -26,7 +26,7 @@ final class StandardDateIntervalTest extends TestCase
         self::assertEquals($expected, $period->toStandard());
     }
 
-    public function dataForStandardDateInterval(): Generator
+    public static function dataForStandardDateInterval(): Generator
     {
         yield [
             Period::of(0),

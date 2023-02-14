@@ -46,7 +46,7 @@ final class Iso8601Test extends TestCase
         }
     }
 
-    public function dataForIso8601(): Generator
+    public static function dataForIso8601(): Generator
     {
         yield [
             Period::of(0),

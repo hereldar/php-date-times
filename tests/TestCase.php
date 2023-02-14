@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests;
 
+use Hereldar\DateTimes\Interfaces\ILocalDate;
+use Hereldar\DateTimes\Interfaces\ILocalDateTime;
+use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
 use PHPUnit\Framework\Constraint\ExceptionCode;
@@ -92,6 +95,105 @@ abstract class TestCase extends PHPUnitTestCase
                 $regularExpression
             )
         );
+    }
+
+    public static function assertLocalDate(
+        ILocalDate $date,
+        int $year,
+        ?int $month = null,
+        ?int $day = null,
+    ): void {
+        $actual = ['year' => $date->year()];
+
+        $expected = ['year' => $year];
+
+        if ($month !== null) {
+            $actual['month'] = $date->month();
+            $expected['month'] = $month;
+        }
+
+        if ($day !== null) {
+            $actual['day'] = $date->day();
+            $expected['day'] = $day;
+        }
+
+        static::assertSame($expected, $actual);
+    }
+
+    public static function assertLocalDateTime(
+        ILocalDateTime $dateTime,
+        int $year,
+        ?int $month = null,
+        ?int $day = null,
+        ?int $hour = null,
+        ?int $minute = null,
+        ?int $second = null,
+        ?int $microsecond = null,
+    ): void {
+        $actual = ['year' => $dateTime->year()];
+
+        $expected = ['year' => $year];
+
+        if ($month !== null) {
+            $actual['month'] = $dateTime->month();
+            $expected['month'] = $month;
+        }
+
+        if ($day !== null) {
+            $actual['day'] = $dateTime->day();
+            $expected['day'] = $day;
+        }
+
+        if ($hour !== null) {
+            $actual['hour'] = $dateTime->hour();
+            $expected['hour'] = $hour;
+        }
+
+        if ($minute !== null) {
+            $actual['minute'] = $dateTime->minute();
+            $expected['minute'] = $minute;
+        }
+
+        if ($second !== null) {
+            $actual['second'] = $dateTime->second();
+            $expected['second'] = $second;
+        }
+
+        if ($microsecond !== null) {
+            $actual['microsecond'] = $dateTime->microsecond();
+            $expected['microsecond'] = $microsecond;
+        }
+
+        static::assertSame($expected, $actual);
+    }
+
+    public static function assertLocalTime(
+        ILocalTime $time,
+        int $hour,
+        ?int $minute = null,
+        ?int $second = null,
+        ?int $microsecond = null,
+    ): void {
+        $actual = ['hour' => $time->hour()];
+
+        $expected = ['hour' => $hour];
+
+        if ($minute !== null) {
+            $actual['minute'] = $time->minute();
+            $expected['minute'] = $minute;
+        }
+
+        if ($second !== null) {
+            $actual['second'] = $time->second();
+            $expected['second'] = $second;
+        }
+
+        if ($microsecond !== null) {
+            $actual['microsecond'] = $time->microsecond();
+            $expected['microsecond'] = $microsecond;
+        }
+
+        static::assertSame($expected, $actual);
     }
 
     public static function assertPeriod(

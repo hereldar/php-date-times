@@ -61,8 +61,8 @@ class LocalDate implements ILocalDate, Stringable
 
     public static function of(
         int $year,
-        int $month,
-        int $day,
+        int $month = 1,
+        int $day = 1,
     ): static {
         $string = "{$year}-{$month}-{$day}";
 
@@ -148,7 +148,7 @@ class LocalDate implements ILocalDate, Stringable
             $time->microsecond(),
         );
 
-        return new LocalDateTime($dt);
+        return LocalDateTime::fromStandard($dt);
     }
 
     public function year(): int
