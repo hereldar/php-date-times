@@ -7,6 +7,7 @@ namespace Hereldar\DateTimes\Tests\LocalDateTimeTime;
 use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
+use InvalidArgumentException;
 
 final class SubtractionTest extends TestCase
 {
@@ -106,5 +107,11 @@ final class SubtractionTest extends TestCase
         $date = LocalDateTime::of(1986, 9, 30);
         self::assertSame(2, $date->minus(days: -2)->day());
         self::assertSame(2, $date->minus(Period::of(days: -2))->day());
+    }
+
+    public function testInvalidArgumentException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        LocalDateTime::of(1986, 9, 25, 0, 0, 0)->minus(Period::of(1), 2);
     }
 }

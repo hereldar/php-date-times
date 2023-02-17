@@ -7,6 +7,7 @@ namespace Hereldar\DateTimes\Tests\LocalTime;
 use Hereldar\DateTimes\LocalTime;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
+use InvalidArgumentException;
 
 final class AdditionTest extends TestCase
 {
@@ -131,5 +132,11 @@ final class AdditionTest extends TestCase
         $time = LocalTime::of(0, 0, 0, 100_000);
         self::assertSame(99999, $time->plus(microseconds: -1)->microsecond());
         self::assertSame(99999, $time->plus(Period::of(microseconds: -1))->microsecond());
+    }
+
+    public function testInvalidArgumentException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        LocalTime::of(0, 0, 0)->plus(Period::of(hours: 1), minutes: 2);
     }
 }

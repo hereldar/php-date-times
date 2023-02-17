@@ -7,26 +7,10 @@ namespace Hereldar\DateTimes\Tests\LocalDate;
 use Hereldar\DateTimes\LocalDate;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
+use InvalidArgumentException;
 
 final class AdditionTest extends TestCase
 {
-    public function testPlusMethod(): void
-    {
-        $date = LocalDate::of(1986)->plus(years: 2);
-        self::assertInstanceOf(LocalDate::class, $date);
-        self::assertSame(1988, $date->year());
-        $originalDate = LocalDate::fromIso8601('2020-06-04');
-        $period = Period::of(days: 4);
-        $date = $originalDate->plus($period);
-        self::assertInstanceOf(LocalDate::class, $date);
-        self::assertSame('2020-06-08', $date->toIso8601());
-        self::assertNotSame($date, $originalDate);
-        $period = Period::of(days: 23);
-        $date = LocalDate::fromIso8601('2020-06-23')->plus($period);
-        self::assertInstanceOf(LocalDate::class, $date);
-        self::assertSame('2020-07-16', $date->toIso8601());
-    }
-
     public function testAddYearsPositive(): void
     {
         $date = LocalDate::of(1986);
@@ -123,5 +107,11 @@ final class AdditionTest extends TestCase
         $date = LocalDate::of(1986, 9, 30);
         self::assertSame(28, $date->plus(days: -2)->day());
         self::assertSame(28, $date->plus(Period::of(days: -2))->day());
+    }
+
+    public function testInvalidArgumentException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        LocalDate::of(1986, 9, 25)->plus(Period::of(1), 2);
     }
 }
