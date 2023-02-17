@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes;
 
+use ArithmeticError;
 use DateTime as MutableStandardDateTime;
 use DateTimeImmutable as StandardDateTime;
 use DateTimeInterface as StandardDateTimeInterface;
 use DateTimeZone as StandardTimeZone;
+use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\DateTimes\Interfaces\IDateTime;
 use Hereldar\DateTimes\Interfaces\ILocalDate;
@@ -19,14 +21,15 @@ use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
+use Stringable;
 use Throwable;
 use UnexpectedValueException;
 
-class LocalDateTime implements ILocalDateTime
+class LocalDateTime implements ILocalDateTime, Stringable
 {
-    private readonly StandardDateTime $value;
+    protected readonly StandardDateTime $value;
 
-    public function __construct(StandardDateTime $value)
+    private function __construct(StandardDateTime $value)
     {
         $this->value = $value->setTimezone(
             new StandardTimeZone('UTC')
@@ -35,7 +38,7 @@ class LocalDateTime implements ILocalDateTime
 
     public function __toString(): string
     {
-        return $this->format();
+        return $this->format()->orFail();
     }
 
     public static function now(
@@ -59,8 +62,8 @@ class LocalDateTime implements ILocalDateTime
 
     public static function of(
         int $year,
-        int $month,
-        int $day,
+        int $month = 1,
+        int $day = 1,
         int $hour = 0,
         int $minute = 0,
         int $second = 0,
@@ -77,39 +80,42 @@ class LocalDateTime implements ILocalDateTime
             $microsecond,
         );
 
-        return static::parse($string, '!Y-n-j G:i:s.u');
+        return static::parse($string, '!Y-n-j G:i:s.u')->orFail();
     }
 
+    /**
+     * @return IResult<static, ParseException>
+     */
     public static function parse(
         string $string,
         string $format = ILocalDateTime::ISO8601,
-    ): static {
+    ): IResult {
         $tz = new StandardTimeZone('UTC');
 
         $dt = StandardDateTime::createFromFormat($format, $string, $tz);
 
         if (false === $dt) {
-            throw new UnexpectedValueException($string);
+            return Error::withException(new ParseException($string, $format));
         }
 
-        return new static($dt);
+        return Ok::withValue(new static($dt));
     }
 
     public static function fromIso8601(string $value): static
     {
-        return static::parse($value, ILocalDateTime::ISO8601);
+        return static::parse($value, ILocalDateTime::ISO8601)->orFail();
     }
 
     public static function fromRfc2822(string $value): static
     {
-        return static::parse($value, ILocalDateTime::RFC2822);
+        return static::parse($value, ILocalDateTime::RFC2822)->orFail();
     }
 
     public static function fromRfc3339(string $value, bool $milliseconds = false): static
     {
         return static::parse($value, ($milliseconds)
             ? ILocalDateTime::RFC3339_EXTENDED
-            : ILocalDateTime::RFC3339);
+            : ILocalDateTime::RFC3339)->orFail();
     }
 
     public static function fromStandard(StandardDateTimeInterface $value): static
@@ -123,24 +129,24 @@ class LocalDateTime implements ILocalDateTime
         return new static($value);
     }
 
-    public function format(string $format = ILocalDateTime::ISO8601): string
+    public function format(string $format = ILocalDateTime::ISO8601): IResult
     {
-        return $this->value->format($format);
+        return Ok::withValue($this->value->format($format));
     }
 
     public function toIso8601(): string
     {
-        return $this->format(ILocalDateTime::ISO8601);
+        return $this->value->format(ILocalDateTime::ISO8601);
     }
 
     public function toRfc2822(): string
     {
-        return $this->format(ILocalDateTime::RFC2822);
+        return $this->value->format(ILocalDateTime::RFC2822);
     }
 
     public function toRfc3339(bool $milliseconds = false): string
     {
-        return $this->format(($milliseconds)
+        return $this->value->format(($milliseconds)
             ? ILocalDateTime::RFC3339_EXTENDED
             : ILocalDateTime::RFC3339);
     }
@@ -170,7 +176,10 @@ class LocalDateTime implements ILocalDateTime
 
     public function date(): ILocalDate
     {
-        return LocalDate::parse($this->format('Y-n-j'), 'Y-n-j');
+        return LocalDate::parse(
+            $this->value->format('Y-n-j'),
+            '!Y-n-j'
+        )->orFail();
     }
 
     public function year(): int
@@ -210,7 +219,10 @@ class LocalDateTime implements ILocalDateTime
 
     public function time(): ILocalTime
     {
-        return LocalTime::parse($this->format('G:i:s.u'), 'G:i:s.u');
+        return LocalTime::parse(
+            $this->value->format('G:i:s.u'),
+            '!G:i:s.u',
+        )->orFail();
     }
 
     public function hour(): int
@@ -240,14 +252,19 @@ class LocalDateTime implements ILocalDateTime
 
     public function compareTo(ILocalDateTime $that): int
     {
-        $a = $this->value;
-        $b = $that->toStandard();
+        return ($this->value <=> $that->toStandard());
+    }
 
-        return match (true) {
-            ($a == $b) => 0,
-            ($a > $b) => 1,
-            default => -1,
-        };
+    public function is(ILocalDateTime $that): bool
+    {
+        return $this::class === $that::class
+            && $this->value == $that->value;
+    }
+
+    public function isNot(ILocalDateTime $that): bool
+    {
+        return $this::class !== $that::class
+            || $this->value != $that->value;
     }
 
     public function isEqual(ILocalDateTime $that): bool
@@ -281,8 +298,7 @@ class LocalDateTime implements ILocalDateTime
     }
 
     public function plus(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -292,32 +308,22 @@ class LocalDateTime implements ILocalDateTime
         int $milliseconds = 0,
         int $microseconds = 0,
     ): static {
-        if ($period !== null) {
+        if (is_int($years)) {
+            $period = Period::of(...func_get_args());
+        } else {
+            $period = $years;
             if (func_num_args() !== 1) {
                 throw new InvalidArgumentException('No time units are allowed when a period is passed');
             }
-        } else {
-            $period = Period::of(
-                years: $years,
-                months: $months,
-                weeks: $weeks,
-                days: $days,
-                hours: $hours,
-                minutes: $minutes,
-                seconds: $seconds,
-                milliseconds: $milliseconds,
-                microseconds: $microseconds
-            )->toStandard();
         }
 
-        $value = $this->value->add($period);
+        $value = $this->value->add($period->toStandard());
 
         return new static($value);
     }
 
     public function minus(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -327,25 +333,16 @@ class LocalDateTime implements ILocalDateTime
         int $milliseconds = 0,
         int $microseconds = 0,
     ): static {
-        if ($period !== null) {
+        if (is_int($years)) {
+            $period = Period::of(...func_get_args());
+        } else {
+            $period = $years;
             if (func_num_args() !== 1) {
                 throw new InvalidArgumentException('No time units are allowed when a period is passed');
             }
-        } else {
-            $period = Period::of(
-                years: $years,
-                months: $months,
-                weeks: $weeks,
-                days: $days,
-                hours: $hours,
-                minutes: $minutes,
-                seconds: $seconds,
-                milliseconds: $milliseconds,
-                microseconds: $microseconds
-            )->toStandard();
         }
 
-        $value = $this->value->sub($period);
+        $value = $this->value->sub($period->toStandard());
 
         return new static($value);
     }
@@ -387,8 +384,7 @@ class LocalDateTime implements ILocalDateTime
     }
 
     public function add(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -400,7 +396,7 @@ class LocalDateTime implements ILocalDateTime
     ): IResult {
         try {
             $dateTime = $this->plus(...func_get_args());
-        } catch (Throwable $e) {
+        } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
@@ -408,8 +404,7 @@ class LocalDateTime implements ILocalDateTime
     }
 
     public function subtract(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -421,7 +416,7 @@ class LocalDateTime implements ILocalDateTime
     ): IResult {
         try {
             $dateTime = $this->minus(...func_get_args());
-        } catch (Throwable $e) {
+        } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 

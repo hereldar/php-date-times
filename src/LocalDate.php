@@ -121,17 +121,17 @@ class LocalDate implements ILocalDate, Stringable
 
     public function toIso8601(): string
     {
-        return $this->format(ILocalDate::ISO8601)->orFail();
+        return $this->value->format(ILocalDate::ISO8601);
     }
 
     public function toRfc2822(): string
     {
-        return $this->format(ILocalDate::RFC2822)->orFail();
+        return $this->value->format(ILocalDate::RFC2822);
     }
 
     public function toRfc3339(): string
     {
-        return $this->format(ILocalDate::RFC3339)->orFail();
+        return $this->value->format(ILocalDate::RFC3339);
     }
 
     public function toStandard(): StandardDateTime

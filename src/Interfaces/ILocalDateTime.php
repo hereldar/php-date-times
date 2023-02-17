@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Interfaces;
 
+use ArithmeticError;
 use DateTimeImmutable as StandardDateTime;
-use Hereldar\DateTimes\Exceptions\Overflow;
 use Hereldar\Results\Interfaces\IResult;
-use Stringable;
+use InvalidArgumentException;
 
-interface ILocalDateTime extends Stringable
+interface ILocalDateTime
 {
     final public const ATOM = 'Y-m-d\TH:i:s';
     final public const COOKIE = 'l, d-M-Y H:i:s';
@@ -25,7 +25,10 @@ interface ILocalDateTime extends Stringable
     final public const RSS = 'D, d M Y H:i:s';
     final public const W3C = 'Y-m-d\TH:i:s';
 
-    public function format(string $format = self::ISO8601): string;
+    /**
+     * @return IResult<string, InvalidArgumentException>
+     */
+    public function format(string $format = self::ISO8601): IResult;
 
     public function toIso8601(): string;
 
@@ -78,6 +81,10 @@ interface ILocalDateTime extends Stringable
 
     public function compareTo(self $that): int;
 
+    public function is(self $that): bool;
+
+    public function isNot(self $that): bool;
+
     public function isEqual(self $that): bool;
 
     public function isNotEqual(self $that): bool;
@@ -91,8 +98,7 @@ interface ILocalDateTime extends Stringable
     public function isLessOrEqual(self $that): bool;
 
     public function plus(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -104,8 +110,7 @@ interface ILocalDateTime extends Stringable
     ): static;
 
     public function minus(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -127,11 +132,10 @@ interface ILocalDateTime extends Stringable
     ): static;
 
     /**
-     * @return IResult<static, Overflow>
+     * @return IResult<static, ArithmeticError>
      */
     public function add(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -143,11 +147,10 @@ interface ILocalDateTime extends Stringable
     ): IResult;
 
     /**
-     * @return IResult<static, Overflow>
+     * @return IResult<static, ArithmeticError>
      */
     public function subtract(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,

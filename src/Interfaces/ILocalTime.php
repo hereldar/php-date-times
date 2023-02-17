@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Interfaces;
 
+use ArithmeticError;
 use DateTimeImmutable as StandardDateTime;
-use Hereldar\DateTimes\Exceptions\Overflow;
 use Hereldar\Results\Interfaces\IResult;
-use Stringable;
+use InvalidArgumentException;
 
-interface ILocalTime extends Stringable
+interface ILocalTime
 {
     final public const ATOM = 'H:i:s';
     final public const COOKIE = 'H:i:s';
@@ -25,7 +25,10 @@ interface ILocalTime extends Stringable
     final public const RSS = 'H:i:s';
     final public const W3C = 'H:i:s';
 
-    public function format(string $format = self::ISO8601): string;
+    /**
+     * @return IResult<string, InvalidArgumentException>
+     */
+    public function format(string $format = self::ISO8601): IResult;
 
     public function toIso8601(): string;
 
@@ -49,6 +52,10 @@ interface ILocalTime extends Stringable
 
     public function compareTo(self $that): int;
 
+    public function is(self $that): bool;
+
+    public function isNot(self $that): bool;
+
     public function isEqual(self $that): bool;
 
     public function isNotEqual(self $that): bool;
@@ -62,8 +69,7 @@ interface ILocalTime extends Stringable
     public function isLessOrEqual(self $that): bool;
 
     public function plus(
-        ?IPeriod $period = null,
-        int $hours = 0,
+        int|IPeriod $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
         int $milliseconds = 0,
@@ -71,8 +77,7 @@ interface ILocalTime extends Stringable
     ): static;
 
     public function minus(
-        ?IPeriod $period = null,
-        int $hours = 0,
+        int|IPeriod $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
         int $milliseconds = 0,
@@ -87,11 +92,10 @@ interface ILocalTime extends Stringable
     ): static;
 
     /**
-     * @return IResult<static, Overflow>
+     * @return IResult<static, ArithmeticError>
      */
     public function add(
-        ?IPeriod $period = null,
-        int $hours = 0,
+        int|IPeriod $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
         int $milliseconds = 0,
@@ -99,11 +103,10 @@ interface ILocalTime extends Stringable
     ): IResult;
 
     /**
-     * @return IResult<static, Overflow>
+     * @return IResult<static, ArithmeticError>
      */
     public function subtract(
-        ?IPeriod $period = null,
-        int $hours = 0,
+        int|IPeriod $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
         int $milliseconds = 0,
