@@ -17,6 +17,7 @@ use Hereldar\DateTimes\Interfaces\ILocalDateTime;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
+use Hereldar\DateTimes\Services\Adder;
 use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
@@ -307,17 +308,13 @@ class LocalDateTime implements ILocalDateTime, Stringable
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
+        bool $overflow = false,
     ): static {
-        if (is_int($years)) {
-            $period = Period::of(...func_get_args());
-        } else {
-            $period = $years;
-            if (func_num_args() !== 1) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
-        }
+        $period = $this->createPeriod(func_get_args());
 
-        $value = $this->value->add($period->toStandard());
+        $value = (!$overflow && ($period->months() || $period->years()))
+            ? Adder::addPeriodWithoutOverflow($this->value, $period)
+            : $this->value->add($period->toStandard());
 
         return new static($value);
     }
@@ -332,17 +329,13 @@ class LocalDateTime implements ILocalDateTime, Stringable
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
+        bool $overflow = false,
     ): static {
-        if (is_int($years)) {
-            $period = Period::of(...func_get_args());
-        } else {
-            $period = $years;
-            if (func_num_args() !== 1) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
-        }
+        $period = $this->createPeriod(func_get_args());
 
-        $value = $this->value->sub($period->toStandard());
+        $value = (!$overflow && ($period->months() || $period->years()))
+            ? Adder::addPeriodWithoutOverflow($this->value, $period->negated())
+            : $this->value->sub($period->toStandard());
 
         return new static($value);
     }
@@ -393,6 +386,7 @@ class LocalDateTime implements ILocalDateTime, Stringable
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
+        bool $overflow = false,
     ): IResult {
         try {
             $dateTime = $this->plus(...func_get_args());
@@ -413,6 +407,7 @@ class LocalDateTime implements ILocalDateTime, Stringable
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
+        bool $overflow = false,
     ): IResult {
         try {
             $dateTime = $this->minus(...func_get_args());
@@ -421,5 +416,36 @@ class LocalDateTime implements ILocalDateTime, Stringable
         }
 
         return Ok::withValue($dateTime);
+    }
+
+    private function createPeriod(array $args): IPeriod
+    {
+        if (isset($args['years'])) {
+            if ($args['years'] instanceof IPeriod) {
+                $period = $args['years'];
+                unset($args['years']);
+            }
+        } elseif (isset($args[0])) {
+            if ($args[0] instanceof IPeriod) {
+                $period = $args[0];
+                unset($args[0]);
+            }
+        }
+
+        if (isset($args['overflow'])) {
+            unset($args['overflow']);
+        } elseif (isset($args[9])) {
+            unset($args[9]);
+        }
+
+        if (isset($period)) {
+            if (array_filter($args)) {
+                throw new InvalidArgumentException('No time units are allowed when a period is passed');
+            }
+        } else {
+            $period = Period::of(...$args);
+        }
+
+        return $period;
     }
 }

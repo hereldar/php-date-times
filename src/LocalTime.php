@@ -239,14 +239,7 @@ class LocalTime implements ILocalTime, Stringable
         int $milliseconds = 0,
         int $microseconds = 0,
     ): static {
-        if (is_int($hours)) {
-            $period = Period::of(0, 0, 0, 0, ...func_get_args());
-        } else {
-            $period = $hours;
-            if (func_num_args() !== 1) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
-        }
+        $period = $this->createPeriod(func_get_args());
 
         $value = $this->value->add($period->toStandard());
 
@@ -260,14 +253,7 @@ class LocalTime implements ILocalTime, Stringable
         int $milliseconds = 0,
         int $microseconds = 0,
     ): static {
-        if (is_int($hours)) {
-            $period = Period::of(0, 0, 0, 0, ...func_get_args());
-        } else {
-            $period = $hours;
-            if (func_num_args() !== 1) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
-        }
+        $period = $this->createPeriod(func_get_args());
 
         $value = $this->value->sub($period->toStandard());
 
@@ -318,5 +304,30 @@ class LocalTime implements ILocalTime, Stringable
         }
 
         return Ok::withValue($dateTime);
+    }
+
+    private function createPeriod(array $args): IPeriod
+    {
+        if (isset($args['hours'])) {
+            if ($args['hours'] instanceof IPeriod) {
+                $period = $args['hours'];
+                unset($args['hours']);
+            }
+        } elseif (isset($args[0])) {
+            if ($args[0] instanceof IPeriod) {
+                $period = $args[0];
+                unset($args[0]);
+            }
+        }
+
+        if (isset($period)) {
+            if (array_filter($args)) {
+                throw new InvalidArgumentException('No time units are allowed when a period is passed');
+            }
+        } else {
+            $period = Period::of(0, 0, 0, 0, ...$args);
+        }
+
+        return $period;
     }
 }

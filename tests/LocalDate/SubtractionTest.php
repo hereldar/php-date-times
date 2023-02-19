@@ -35,8 +35,10 @@ final class SubtractionTest extends TestCase
     public function testSubtractYearsOverflow(): void
     {
         $date = LocalDate::of(2016, 2, 29);
-        self::assertLocalDate($date->minus(years: 2), 2014, 3, 1);
-        self::assertLocalDate($date->minus(Period::of(years: 2)), 2014, 3, 1);
+        self::assertLocalDate($date->minus(years: 2), 2014, 2, 28);
+        self::assertLocalDate($date->minus(Period::of(years: 2)), 2014, 2, 28);
+        self::assertLocalDate($date->minus(years: 2, overflow: true), 2014, 3, 1);
+        self::assertLocalDate($date->minus(Period::of(years: 2), overflow: true), 2014, 3, 1);
     }
 
     public function testSubtractMonthsPositive(): void
@@ -63,8 +65,10 @@ final class SubtractionTest extends TestCase
     public function testSubtractMonthsOverflow(): void
     {
         $date = LocalDate::fromIso8601('2021-03-31');
-        self::assertLocalDate($date->minus(months: 1), 2021, 03, 03);
-        self::assertLocalDate($date->minus(Period::of(months: 1)), 2021, 03, 03);
+        self::assertLocalDate($date->minus(months: 1), 2021, 02, 28);
+        self::assertLocalDate($date->minus(Period::of(months: 1)), 2021, 02, 28);
+        self::assertLocalDate($date->minus(months: 1, overflow: true), 2021, 03, 03);
+        self::assertLocalDate($date->minus(Period::of(months: 1), overflow: true), 2021, 03, 03);
     }
 
     public function testSubtractWeeksPositive(): void
