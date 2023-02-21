@@ -34,11 +34,17 @@ final class SubtractionTest extends TestCase
 
     public function testSubtractYearsOverflow(): void
     {
-        $date = LocalDateTime::of(2016, 2, 29);
+        $date = LocalDateTime::fromIso8601('2016-02-29T00:00:00');
         self::assertLocalDateTime($date->minus(years: 2), 2014, 2, 28);
         self::assertLocalDateTime($date->minus(Period::of(years: 2)), 2014, 2, 28);
         self::assertLocalDateTime($date->minus(years: 2, overflow: true), 2014, 3, 1);
         self::assertLocalDateTime($date->minus(Period::of(years: 2), overflow: true), 2014, 3, 1);
+
+        $date = LocalDateTime::fromIso8601('2008-02-29T00:00:00');
+        self::assertLocalDateTime($date->minus(years: 1, weeks: 1), 2007, 2, 21);
+        self::assertLocalDateTime($date->minus(Period::of(years: 1, weeks: 1)), 2007, 2, 21);
+        self::assertLocalDateTime($date->minus(years: 1, weeks: 1, overflow: true), 2007, 2, 22);
+        self::assertLocalDateTime($date->minus(Period::of(years: 1, weeks: 1), overflow: true), 2007, 2, 22);
     }
 
     public function testSubtractMonthsPositive(): void
@@ -65,10 +71,16 @@ final class SubtractionTest extends TestCase
     public function testSubtractMonthsOverflow(): void
     {
         $date = LocalDateTime::fromIso8601('2021-03-31T00:00:00');
-        self::assertLocalDateTime($date->minus(months: 1), 2021, 02, 28);
-        self::assertLocalDateTime($date->minus(Period::of(months: 1)), 2021, 02, 28);
-        self::assertLocalDateTime($date->minus(months: 1, overflow: true), 2021, 03, 03);
-        self::assertLocalDateTime($date->minus(Period::of(months: 1), overflow: true), 2021, 03, 03);
+        self::assertLocalDateTime($date->minus(months: 1), 2021, 2, 28);
+        self::assertLocalDateTime($date->minus(Period::of(months: 1)), 2021, 2, 28);
+        self::assertLocalDateTime($date->minus(months: 1, overflow: true), 2021, 3, 3);
+        self::assertLocalDateTime($date->minus(Period::of(months: 1), overflow: true), 2021, 3, 3);
+
+        $date = LocalDateTime::fromIso8601('2007-03-31T00:00:00');
+        self::assertLocalDateTime($date->minus(months: 1, weeks: 1), 2007, 2, 21);
+        self::assertLocalDateTime($date->minus(Period::of(months: 1, weeks: 1)), 2007, 2, 21);
+        self::assertLocalDateTime($date->minus(months: 1, weeks: 1, overflow: true), 2007, 2, 24);
+        self::assertLocalDateTime($date->minus(Period::of(months: 1, weeks: 1), overflow: true), 2007, 2, 24);
     }
 
     public function testSubtractWeeksPositive(): void

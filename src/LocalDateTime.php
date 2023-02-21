@@ -420,30 +420,21 @@ class LocalDateTime implements ILocalDateTime, Stringable
 
     private function createPeriod(array $args): IPeriod
     {
-        if (isset($args['years'])) {
-            if ($args['years'] instanceof IPeriod) {
-                $period = $args['years'];
-                unset($args['years']);
-            }
-        } elseif (isset($args[0])) {
-            if ($args[0] instanceof IPeriod) {
-                $period = $args[0];
-                unset($args[0]);
-            }
+        // Years or Period
+        if (isset($args[0]) && $args[0] instanceof IPeriod) {
+            $period = $args[0];
+            unset($args[0]);
         }
 
-        if (isset($args['overflow'])) {
-            unset($args['overflow']);
-        } elseif (isset($args[9])) {
+        // Overflow
+        if (isset($args[9])) {
             unset($args[9]);
         }
 
-        if (isset($period)) {
-            if (array_filter($args)) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
-        } else {
+        if (!isset($period)) {
             $period = Period::of(...$args);
+        } elseif (array_filter($args)) {
+            throw new InvalidArgumentException('No time units are allowed when a period is passed');
         }
 
         return $period;

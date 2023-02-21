@@ -34,11 +34,17 @@ final class AdditionTest extends TestCase
 
     public function testAddYearsOverflow(): void
     {
-        $date = LocalDate::of(2016, 2, 29);
+        $date = LocalDate::fromIso8601('2016-02-29');
         self::assertLocalDate($date->plus(years: 2), 2018, 2, 28);
         self::assertLocalDate($date->plus(Period::of(years: 2)), 2018, 2, 28);
         self::assertLocalDate($date->plus(years: 2, overflow: true), 2018, 3, 1);
         self::assertLocalDate($date->plus(Period::of(years: 2), overflow: true), 2018, 3, 1);
+
+        $date = LocalDate::fromIso8601('2008-02-29');
+        self::assertLocalDate($date->plus(years: 1, days: 1), 2009, 3, 1);
+        self::assertLocalDate($date->plus(Period::of(years: 1, days: 1)), 2009, 3, 1);
+        self::assertLocalDate($date->plus(years: 1, days: 1, overflow: true), 2009, 3, 2);
+        self::assertLocalDate($date->plus(Period::of(years: 1, days: 1), overflow: true), 2009, 3, 2);
     }
 
     public function testAddMonthsPositive(): void
@@ -65,10 +71,16 @@ final class AdditionTest extends TestCase
     public function testAddMonthsOverflow(): void
     {
         $date = LocalDate::fromIso8601('2021-01-31');
-        self::assertLocalDate($date->plus(months: 1), 2021, 02, 28);
-        self::assertLocalDate($date->plus(Period::of(months: 1)), 2021, 02, 28);
-        self::assertLocalDate($date->plus(months: 1, overflow: true), 2021, 03, 03);
-        self::assertLocalDate($date->plus(Period::of(months: 1), overflow: true), 2021, 03, 03);
+        self::assertLocalDate($date->plus(months: 1), 2021, 2, 28);
+        self::assertLocalDate($date->plus(Period::of(months: 1)), 2021, 2, 28);
+        self::assertLocalDate($date->plus(months: 1, overflow: true), 2021, 3, 3);
+        self::assertLocalDate($date->plus(Period::of(months: 1), overflow: true), 2021, 3, 3);
+
+        $date = LocalDate::fromIso8601('2007-03-31');
+        self::assertLocalDate($date->plus(months: 3, days: 1), 2007, 7, 1);
+        self::assertLocalDate($date->plus(Period::of(months: 3, days: 1)), 2007, 7, 1);
+        self::assertLocalDate($date->plus(months: 3, days: 1, overflow: true), 2007, 7, 2);
+        self::assertLocalDate($date->plus(Period::of(months: 3, days: 1), overflow: true), 2007, 7, 2);
     }
 
     public function testAddWeeksPositive(): void

@@ -34,18 +34,18 @@ final class Adder
     ): StandardDateTime {
         $periodWithoutYearsAndMonths = $period->with(0, 0);
 
-        if (!$periodWithoutYearsAndMonths->isZero()) {
-            $stdDateTime = $stdDateTime->add(
-                $periodWithoutYearsAndMonths->toStandard()
-            );
-        }
-
         if ($period->months()) {
             $stdDateTime = self::addMonths($stdDateTime, $period->months());
         }
 
         if ($period->years()) {
             $stdDateTime = self::addYears($stdDateTime, $period->years());
+        }
+
+        if (!$periodWithoutYearsAndMonths->isZero()) {
+            $stdDateTime = $stdDateTime->add(
+                $periodWithoutYearsAndMonths->toStandard()
+            );
         }
 
         return $stdDateTime;

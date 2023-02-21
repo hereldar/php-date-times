@@ -308,24 +308,16 @@ class LocalTime implements ILocalTime, Stringable
 
     private function createPeriod(array $args): IPeriod
     {
-        if (isset($args['hours'])) {
-            if ($args['hours'] instanceof IPeriod) {
-                $period = $args['hours'];
-                unset($args['hours']);
-            }
-        } elseif (isset($args[0])) {
-            if ($args[0] instanceof IPeriod) {
-                $period = $args[0];
-                unset($args[0]);
-            }
+        // Hours or Period
+        if (isset($args[0]) && $args[0] instanceof IPeriod) {
+            $period = $args[0];
+            unset($args[0]);
         }
 
-        if (isset($period)) {
-            if (array_filter($args)) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
-        } else {
+        if (!isset($period)) {
             $period = Period::of(0, 0, 0, 0, ...$args);
+        } elseif ($args) {
+            throw new InvalidArgumentException('No time units are allowed when a period is passed');
         }
 
         return $period;
