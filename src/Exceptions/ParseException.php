@@ -12,6 +12,7 @@ final class ParseException extends InvalidArgumentException
     public function __construct(
         private readonly string $string,
         private readonly string $format,
+        private readonly ?string $error = null,
         ?Throwable $previous = null
     ) {
         $message = sprintf(
@@ -19,6 +20,10 @@ final class ParseException extends InvalidArgumentException
             var_export($string, true),
             var_export($format, true),
         );
+
+        if ($error) {
+            $message .= " ({$error})";
+        }
 
         parent::__construct($message, 0, $previous);
     }
@@ -31,5 +36,10 @@ final class ParseException extends InvalidArgumentException
     public function format(): string
     {
         return $this->format;
+    }
+
+    public function error(): ?string
+    {
+        return $this->error;
     }
 }

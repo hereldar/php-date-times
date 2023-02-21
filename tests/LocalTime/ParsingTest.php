@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Hereldar\DateTimes\Tests\LocalDate;
+namespace Hereldar\DateTimes\Tests\LocalTime;
 
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\ILocalDate;
-use Hereldar\DateTimes\LocalDate;
+use Hereldar\DateTimes\Interfaces\ILocalTime;
+use Hereldar\DateTimes\LocalTime;
 use Hereldar\DateTimes\Tests\TestCase;
 
 final class ParsingTest extends TestCase
@@ -14,134 +14,134 @@ final class ParsingTest extends TestCase
     public function testParse(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('25th of December, 1986', 'jS \o\f F, Y')->orFail()
+            LocalTime::of(13),
+            LocalTime::parse('1pm', 'gA')->orFail()
         );
     }
 
     public function testFromIso8601(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::fromIso8601('1986-12-25')
+            LocalTime::of(12, 30, 25),
+            LocalTime::fromIso8601('12:30:25')
         );
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('1986-12-25', ILocalDate::ISO8601)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::ISO8601)->orFail()
         );
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('1986-12-25')->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25')->orFail()
         );
     }
 
     public function testFromRfc2822(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::fromRfc2822('Thu, 25 Dec 1986')
+            LocalTime::of(12, 30, 25),
+            LocalTime::fromRfc2822('12:30:25')
         );
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('Thu, 25 Dec 1986', ILocalDate::RFC2822)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::RFC2822)->orFail()
         );
     }
 
     public function testFromRfc3339(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::fromRfc3339('1986-12-25')
+            LocalTime::of(12, 30, 25),
+            LocalTime::fromRfc3339('12:30:25')
         );
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('1986-12-25', ILocalDate::RFC3339)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::RFC3339)->orFail()
         );
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('1986-12-25', ILocalDate::RFC3339_EXTENDED)->orFail()
+            LocalTime::of(12, 30, 25, 123_000),
+            LocalTime::parse('12:30:25.123', ILocalTime::RFC3339_EXTENDED)->orFail()
         );
     }
 
     public function testFromAtom(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('1986-12-25', ILocalDate::ATOM)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::ATOM)->orFail()
         );
     }
 
     public function testFromCookie(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('Thursday, 25-Dec-1986', ILocalDate::COOKIE)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::COOKIE)->orFail()
         );
     }
 
     public function testFromRfc822(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('Thu, 25 Dec 86', ILocalDate::RFC822)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::RFC822)->orFail()
         );
     }
 
     public function testFromRfc850(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('Thursday, 25-Dec-86', ILocalDate::RFC850)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::RFC850)->orFail()
         );
     }
 
     public function testFromRfc1036(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('Thu, 25 Dec 86', ILocalDate::RFC1036)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::RFC1036)->orFail()
         );
     }
 
     public function testFromRfc1123(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('Thu, 25 Dec 1986', ILocalDate::RFC1123)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::RFC1123)->orFail()
         );
     }
 
     public function testFromRfc7231(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('Thu, 25 Dec 1986', ILocalDate::RFC7231)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::RFC7231)->orFail()
         );
     }
 
     public function testFromRss(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('Thu, 25 Dec 1986', ILocalDate::RSS)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::RSS)->orFail()
         );
     }
 
     public function testFromW3c(): void
     {
         self::assertEquals(
-            LocalDate::of(1986, 12, 25),
-            LocalDate::parse('1986-12-25', ILocalDate::W3C)->orFail()
+            LocalTime::of(12, 30, 25),
+            LocalTime::parse('12:30:25', ILocalTime::W3C)->orFail()
         );
     }
 
     public function testEmptyString(): void
     {
         try {
-            LocalDate::parse('', 'Y-m-d')->orFail();
+            LocalTime::parse('', 'H:i:s')->orFail();
         } catch (ParseException $e) {
             self::assertSame('', $e->string());
-            self::assertSame('Y-m-d', $e->format());
+            self::assertSame('H:i:s', $e->format());
             self::assertSame('Not enough data available to satisfy format', $e->error());
         }
     }
@@ -149,10 +149,10 @@ final class ParsingTest extends TestCase
     public function testTrailingData(): void
     {
         try {
-            LocalDate::parse('1970-01-01', 'Y-m')->orFail();
+            LocalTime::parse('15:00:00+02:00', 'H:i:s')->orFail();
         } catch (ParseException $e) {
-            self::assertSame('1970-01-01', $e->string());
-            self::assertSame('Y-m', $e->format());
+            self::assertSame('15:00:00+02:00', $e->string());
+            self::assertSame('H:i:s', $e->format());
             self::assertSame('Trailing data', $e->error());
         }
     }
@@ -160,7 +160,7 @@ final class ParsingTest extends TestCase
     public function testInvalidFormat(): void
     {
         try {
-            LocalDate::parse('4', 'b')->orFail();
+            LocalTime::parse('4', 'b')->orFail();
         } catch (ParseException $e) {
             self::assertSame('4', $e->string());
             self::assertSame('b', $e->format());
@@ -171,7 +171,7 @@ final class ParsingTest extends TestCase
     public function testInvalidSubstitute(): void
     {
         try {
-            LocalDate::parse('4', 'T')->orFail();
+            LocalTime::parse('4', 'T')->orFail();
         } catch (ParseException $e) {
             self::assertSame('4', $e->string());
             self::assertSame('T', $e->format());

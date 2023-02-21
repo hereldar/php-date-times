@@ -96,7 +96,12 @@ class LocalDateTime implements ILocalDateTime, Stringable
         $dt = StandardDateTime::createFromFormat($format, $string, $tz);
 
         if (false === $dt) {
-            return Error::withException(new ParseException($string, $format));
+            $info = StandardDateTime::getLastErrors();
+            $firstError = ($info)
+                ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
+                : null;
+
+            return Error::withException(new ParseException($string, $format, $firstError));
         }
 
         return Ok::withValue(new static($dt));
