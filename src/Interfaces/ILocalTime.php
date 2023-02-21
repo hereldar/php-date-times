@@ -17,7 +17,7 @@ interface ILocalTime
     final public const RFC822 = 'H:i:s';
     final public const RFC850 = 'H:i:s';
     final public const RFC1036 = 'H:i:s';
-    final public const RFC1123 = ' H:i:s';
+    final public const RFC1123 = 'H:i:s';
     final public const RFC2822 = 'H:i:s';
     final public const RFC3339 = 'H:i:s';
     final public const RFC3339_EXTENDED = 'H:i:s.v';

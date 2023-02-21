@@ -15,7 +15,7 @@ final class ParsingTest extends TestCase
     {
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 13),
-            LocalDateTime::parse('25th of December, 1986, 1pm', 'jS \o\f F, Y, gA')->orFail()
+            LocalDateTime::parse('25th of December, 1986, 1pm', 'jS \o\f F, Y, ga')->orFail()
         );
     }
 
@@ -52,6 +52,10 @@ final class ParsingTest extends TestCase
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25),
             LocalDateTime::fromRfc3339('1986-12-25T12:30:25')
+        );
+        self::assertEquals(
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_000),
+            LocalDateTime::fromRfc3339('1986-12-25T12:30:25.123', milliseconds: true)
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25),

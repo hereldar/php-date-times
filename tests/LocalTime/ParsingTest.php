@@ -15,7 +15,7 @@ final class ParsingTest extends TestCase
     {
         self::assertEquals(
             LocalTime::of(13),
-            LocalTime::parse('1pm', 'gA')->orFail()
+            LocalTime::parse('1pm', 'ga')->orFail()
         );
     }
 
@@ -52,6 +52,10 @@ final class ParsingTest extends TestCase
         self::assertEquals(
             LocalTime::of(12, 30, 25),
             LocalTime::fromRfc3339('12:30:25')
+        );
+        self::assertEquals(
+            LocalTime::of(12, 30, 25, 123_000),
+            LocalTime::fromRfc3339('12:30:25.123', milliseconds: true)
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25),
