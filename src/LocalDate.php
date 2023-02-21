@@ -28,13 +28,9 @@ use UnexpectedValueException;
 
 class LocalDate implements ILocalDate, Stringable
 {
-    protected readonly StandardDateTime $value;
-
-    private function __construct(StandardDateTime $value)
-    {
-        $this->value = $value
-            ->setTime(0, 0, 0, 0)
-            ->setTimezone(new StandardTimeZone('UTC'));
+    private function __construct(
+        private readonly StandardDateTime $value,
+    ) {
     }
 
     public function __toString(): string
@@ -68,7 +64,7 @@ class LocalDate implements ILocalDate, Stringable
     ): static {
         $string = "{$year}-{$month}-{$day}";
 
-        return static::parse($string, '!Y-n-j')->orFail();
+        return static::parse($string, 'Y-n-j')->orFail();
     }
 
     /**
@@ -78,6 +74,10 @@ class LocalDate implements ILocalDate, Stringable
         string $string,
         string $format = ILocalDate::ISO8601,
     ): IResult {
+        if (!str_starts_with($format, '!')) {
+            $format = "!{$format}";
+        }
+
         $tz = new StandardTimeZone('UTC');
 
         $dt = StandardDateTime::createFromFormat($format, $string, $tz);
@@ -112,13 +112,9 @@ class LocalDate implements ILocalDate, Stringable
     public static function fromStandard(
         StandardDateTimeInterface $value
     ): static {
-        if ($value instanceof MutableStandardDateTime) {
-            $value = StandardDateTime::createFromMutable($value);
-        } elseif (!$value instanceof StandardDateTime) {
-            $value = StandardDateTime::createFromInterface($value);
-        }
+        $string = $value->format('Y-n-j');
 
-        return new static($value);
+        return static::parse($string, 'Y-n-j')->orFail();
     }
 
     public function format(string $format = ILocalDate::ISO8601): IResult

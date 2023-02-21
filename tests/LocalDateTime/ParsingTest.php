@@ -145,7 +145,7 @@ final class ParsingTest extends TestCase
             LocalDateTime::parse('', 'Y-m-d H:i:s')->orFail();
         } catch (ParseException $e) {
             self::assertSame('', $e->string());
-            self::assertSame('Y-m-d H:i:s', $e->format());
+            self::assertSame('!Y-m-d H:i:s', $e->format());
             self::assertSame('Not enough data available to satisfy format', $e->error());
         }
     }
@@ -156,7 +156,7 @@ final class ParsingTest extends TestCase
             LocalDateTime::parse('1970-01-01 15:00:00+02:00', 'Y-m-d H:i:s')->orFail();
         } catch (ParseException $e) {
             self::assertSame('1970-01-01 15:00:00+02:00', $e->string());
-            self::assertSame('Y-m-d H:i:s', $e->format());
+            self::assertSame('!Y-m-d H:i:s', $e->format());
             self::assertSame('Trailing data', $e->error());
         }
     }
@@ -167,7 +167,7 @@ final class ParsingTest extends TestCase
             LocalDateTime::parse('4', 'b')->orFail();
         } catch (ParseException $e) {
             self::assertSame('4', $e->string());
-            self::assertSame('b', $e->format());
+            self::assertSame('!b', $e->format());
             self::assertSame('The format separator does not match', $e->error());
         }
     }
@@ -178,7 +178,7 @@ final class ParsingTest extends TestCase
             LocalDateTime::parse('4', 'T')->orFail();
         } catch (ParseException $e) {
             self::assertSame('4', $e->string());
-            self::assertSame('T', $e->format());
+            self::assertSame('!T', $e->format());
             self::assertSame('The timezone could not be found in the database', $e->error());
         }
     }

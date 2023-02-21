@@ -28,13 +28,9 @@ use UnexpectedValueException;
 
 class LocalDateTime implements ILocalDateTime, Stringable
 {
-    protected readonly StandardDateTime $value;
-
-    private function __construct(StandardDateTime $value)
-    {
-        $this->value = $value->setTimezone(
-            new StandardTimeZone('UTC')
-        );
+    private function __construct(
+        private readonly StandardDateTime $value,
+    ) {
     }
 
     public function __toString(): string
@@ -81,7 +77,7 @@ class LocalDateTime implements ILocalDateTime, Stringable
             $microsecond,
         );
 
-        return static::parse($string, '!Y-n-j G:i:s.u')->orFail();
+        return static::parse($string, 'Y-n-j G:i:s.u')->orFail();
     }
 
     /**
@@ -91,6 +87,10 @@ class LocalDateTime implements ILocalDateTime, Stringable
         string $string,
         string $format = ILocalDateTime::ISO8601,
     ): IResult {
+        if (!str_starts_with($format, '!')) {
+            $format = "!{$format}";
+        }
+
         $tz = new StandardTimeZone('UTC');
 
         $dt = StandardDateTime::createFromFormat($format, $string, $tz);
@@ -126,13 +126,9 @@ class LocalDateTime implements ILocalDateTime, Stringable
 
     public static function fromStandard(StandardDateTimeInterface $value): static
     {
-        if ($value instanceof MutableStandardDateTime) {
-            $value = StandardDateTime::createFromMutable($value);
-        } elseif (!$value instanceof StandardDateTime) {
-            $value = StandardDateTime::createFromInterface($value);
-        }
+        $string = $value->format('Y-n-j G:i:s.u');
 
-        return new static($value);
+        return static::parse($string, 'Y-n-j G:i:s.u')->orFail();
     }
 
     public function format(string $format = ILocalDateTime::ISO8601): IResult
@@ -182,10 +178,7 @@ class LocalDateTime implements ILocalDateTime, Stringable
 
     public function date(): ILocalDate
     {
-        return LocalDate::parse(
-            $this->value->format('Y-n-j'),
-            '!Y-n-j'
-        )->orFail();
+        return LocalDate::fromStandard($this->value);
     }
 
     public function year(): int
@@ -225,10 +218,7 @@ class LocalDateTime implements ILocalDateTime, Stringable
 
     public function time(): ILocalTime
     {
-        return LocalTime::parse(
-            $this->value->format('G:i:s.u'),
-            '!G:i:s.u',
-        )->orFail();
+        return LocalTime::fromStandard($this->value);
     }
 
     public function hour(): int

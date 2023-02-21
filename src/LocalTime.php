@@ -26,13 +26,9 @@ use UnexpectedValueException;
 
 class LocalTime implements ILocalTime, Stringable
 {
-    protected readonly StandardDateTime $value;
-
-    private function __construct(StandardDateTime $value)
-    {
-        $this->value = $value
-            ->setDate(1970, 1, 1)
-            ->setTimezone(new StandardTimeZone('UTC'));
+    private function __construct(
+        private readonly StandardDateTime $value,
+    ) {
     }
 
     public function __toString(): string
@@ -73,7 +69,7 @@ class LocalTime implements ILocalTime, Stringable
             $microsecond,
         );
 
-        return static::parse($string, '!G:i:s.u')->orFail();
+        return static::parse($string, 'G:i:s.u')->orFail();
     }
 
     /**
@@ -83,6 +79,10 @@ class LocalTime implements ILocalTime, Stringable
         string $string,
         string $format = ILocalTime::ISO8601,
     ): IResult {
+        if (!str_starts_with($format, '!')) {
+            $format = "!{$format}";
+        }
+
         $tz = new StandardTimeZone('UTC');
 
         $dt = StandardDateTime::createFromFormat($format, $string, $tz);
@@ -116,15 +116,12 @@ class LocalTime implements ILocalTime, Stringable
             : ILocalTime::RFC3339)->orFail();
     }
 
-    public static function fromStandard(StandardDateTimeInterface $value): static
-    {
-        if ($value instanceof MutableStandardDateTime) {
-            $value = StandardDateTime::createFromMutable($value);
-        } elseif (!$value instanceof StandardDateTime) {
-            $value = StandardDateTime::createFromInterface($value);
-        }
+    public static function fromStandard(
+        StandardDateTimeInterface $value
+    ): static {
+        $string = $value->format('G:i:s.u');
 
-        return new static($value);
+        return static::parse($string, 'G:i:s.u')->orFail();
     }
 
     public function format(string $format = ILocalTime::ISO8601): IResult
