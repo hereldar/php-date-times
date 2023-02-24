@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <psalm
-    errorLevel="3"
+    errorLevel="1"
     phpVersion="8.1"
+    findUnusedVariablesAndParams="true"
     resolveFromConfigFile="true"
     strictBinaryOperands="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

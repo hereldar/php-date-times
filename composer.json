@@ -2,7 +2,7 @@
     "name": "hereldar/date-times",
     "type": "library",
     "description": "Provides immutable classes for dates, times, time-zones and periods.",
-    "keywords": ["date", "time", "datetime", "period", "duration", "iso8601", "iso-8601"],
+    "keywords": ["datetime", "date", "time", "period", "duration", "iso8601", "iso-8601"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/hereldar/php-date-times/issues",
@@ -20,7 +20,7 @@
         "hereldar/results": "^v0.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^10.0"
     },
     "autoload": {
         "psr-4": {
@@ -45,8 +45,8 @@
     "scripts": {
         "phpcs": "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix -v --diff --dry-run",
         "phpstan": "tools/phpstan/vendor/bin/phpstan analyse --configuration phpstan.neon",
-        "phpunit": "vendor/bin/phpunit --verbose",
-        "psalm": "tools/psalm/vendor/bin/psalm",
+        "phpunit": "vendor/bin/phpunit",
+        "psalm": "tools/psalm/vendor/bin/psalm --no-cache",
         "code-quality": [
             "@phpcs",
             "@phpstan",
