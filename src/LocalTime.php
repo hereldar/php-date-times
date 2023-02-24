@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes;
 
 use ArithmeticError;
-use DateTime as MutableStandardDateTime;
 use DateTimeImmutable as StandardDateTime;
 use DateTimeInterface as StandardDateTimeInterface;
 use DateTimeZone as StandardTimeZone;
@@ -42,7 +41,7 @@ class LocalTime implements ILocalTime, Stringable
         try {
             $tz = (is_string($timeZone))
                 ? new StandardTimeZone($timeZone)
-                : $timeZone->toStandardTimeZone();
+                : $timeZone->toStandard();
 
             $dt = new StandardDateTime('now', $tz);
         } catch (Throwable $e) {

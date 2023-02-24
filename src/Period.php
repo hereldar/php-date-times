@@ -60,13 +60,13 @@ class Period implements IPeriod, Stringable
     private const FORMAT_PATTERN = '/%([%a-zA-Z])/';
 
     private function __construct(
-        protected readonly int $years,
-        protected readonly int $months = 0,
-        protected readonly int $days = 0,
-        protected readonly int $hours = 0,
-        protected readonly int $minutes = 0,
-        protected readonly int $seconds = 0,
-        protected readonly int $microseconds = 0,
+        private readonly int $years,
+        private readonly int $months = 0,
+        private readonly int $days = 0,
+        private readonly int $hours = 0,
+        private readonly int $minutes = 0,
+        private readonly int $seconds = 0,
+        private readonly int $microseconds = 0,
     ) {
     }
 

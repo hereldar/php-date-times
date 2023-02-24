@@ -39,7 +39,7 @@ class DateTime implements IDateTime
         try {
             $tz = (is_string($timeZone))
                 ? new StandardTimeZone($timeZone)
-                : $timeZone->toStandardTimeZone();
+                : $timeZone->toStandard();
 
             $dt = new StandardDateTime('now', $tz);
         } catch (Throwable $e) {
@@ -83,7 +83,7 @@ class DateTime implements IDateTime
     ): static {
         $tz = (is_string($timeZone))
             ? new StandardTimeZone($timeZone)
-            : $timeZone->toStandardTimeZone();
+            : $timeZone->toStandard();
 
         $dt = StandardDateTime::createFromFormat($format, $string, $tz);
 
@@ -387,7 +387,7 @@ class DateTime implements IDateTime
         if ($timeZone !== null) {
             $dt = $dt->setTimezone((is_string($timeZone))
                 ? new StandardTimeZone($timeZone)
-                : $timeZone->toStandardTimeZone());
+                : $timeZone->toStandard());
         }
 
         return new static($dt);
