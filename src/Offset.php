@@ -11,8 +11,9 @@ use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
 use OutOfRangeException;
+use Stringable;
 
-class Offset implements IOffset
+class Offset implements IOffset, Stringable
 {
     private const HOURS_LIMIT = 18;
     private const MINUTES_LIMIT = 59;

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Interfaces;
 
 use DateTimeZone as StandardTimeZone;
-use Stringable;
 
-interface ITimeZone extends Stringable
+interface ITimeZone
 {
     public function toStandard(): StandardTimeZone;
 
     public function name(): string;
+
+    public function type(): int;
 
     public function offset(ILocalDate|ILocalDateTime $date): IOffset;
 

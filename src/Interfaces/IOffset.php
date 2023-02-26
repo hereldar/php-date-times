@@ -6,9 +6,8 @@ namespace Hereldar\DateTimes\Interfaces;
 
 use Hereldar\Results\Interfaces\IResult;
 use InvalidArgumentException;
-use Stringable;
 
-interface IOffset extends Stringable
+interface IOffset
 {
     final public const ISO8601 = '%R%H:%I'; // +02:00
 
