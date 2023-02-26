@@ -159,18 +159,16 @@ class LocalDateTime implements ILocalDateTime, Stringable
 
     public function atTimeZone(ITimeZone $timeZone): IDateTime
     {
-        $dt = $this->value->setTimezone(
-            $timeZone->toStandard()
-        );
+        $tz = $timeZone->toStandard();
+        $dt = $this->value->setTimezone($tz);
 
         return new DateTime($dt);
     }
 
     public function atOffset(IOffset $offset): IDateTime
     {
-        $dt = $this->value->setTimezone(
-            $offset->toStandard()
-        );
+        $tz = TimeZone::of($offset->toIso8601(true))->toStandard();
+        $dt = $this->value->setTimezone($tz);
 
         return new DateTime($dt);
     }

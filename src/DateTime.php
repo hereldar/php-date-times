@@ -4,24 +4,28 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes;
 
+use ArithmeticError;
 use DateTime as MutableStandardDateTime;
 use DateTimeImmutable as StandardDateTime;
 use DateTimeInterface as StandardDateTimeInterface;
 use DateTimeZone as StandardTimeZone;
+use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\DateTimes\Interfaces\IDateTime;
 use Hereldar\DateTimes\Interfaces\ILocalDate;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
+use Hereldar\DateTimes\Services\Adder;
 use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
+use Stringable;
 use Throwable;
 use UnexpectedValueException;
 
-class DateTime implements IDateTime
+class DateTime implements IDateTime, Stringable
 {
     public function __construct(
         private readonly StandardDateTime $value
@@ -30,7 +34,7 @@ class DateTime implements IDateTime
 
     public function __toString(): string
     {
-        return $this->format();
+        return $this->format()->orFail();
     }
 
     public static function now(
@@ -54,8 +58,8 @@ class DateTime implements IDateTime
 
     public static function of(
         int $year,
-        int $month,
-        int $day,
+        int $month = 1,
+        int $day = 1,
         int $hour = 0,
         int $minute = 0,
         int $second = 0,
@@ -73,14 +77,14 @@ class DateTime implements IDateTime
             $microsecond,
         );
 
-        return static::parse($string, 'Y-n-j G:i:s.u', $timeZone);
+        return static::parse($string, 'Y-n-j G:i:s.u', $timeZone)->orFail();
     }
 
     public static function parse(
         string $string,
         string $format = IDateTime::ISO8601,
         ITimeZone|IOffset|string $timeZone = 'UTC',
-    ): static {
+    ): IResult {
         $tz = (is_string($timeZone))
             ? new StandardTimeZone($timeZone)
             : $timeZone->toStandard();
@@ -88,27 +92,32 @@ class DateTime implements IDateTime
         $dt = StandardDateTime::createFromFormat($format, $string, $tz);
 
         if (false === $dt) {
-            throw new UnexpectedValueException($string);
+            $info = StandardDateTime::getLastErrors();
+            $firstError = ($info)
+                ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
+                : null;
+
+            return Error::withException(new ParseException($string, $format, $firstError));
         }
 
-        return new static($dt);
+        return Ok::withValue(new static($dt));
     }
 
     public static function fromIso8601(string $value): static
     {
-        return static::parse($value, IDateTime::ISO8601);
+        return static::parse($value, IDateTime::ISO8601)->orFail();
     }
 
     public static function fromRfc2822(string $value): static
     {
-        return static::parse($value, IDateTime::RFC2822);
+        return static::parse($value, IDateTime::RFC2822)->orFail();
     }
 
     public static function fromRfc3339(string $value, bool $milliseconds = false): static
     {
         return static::parse($value, ($milliseconds)
             ? IDateTime::RFC3339_EXTENDED
-            : IDateTime::RFC3339);
+            : IDateTime::RFC3339)->orFail();
     }
 
     public static function fromStandard(StandardDateTimeInterface $value): static
@@ -122,24 +131,24 @@ class DateTime implements IDateTime
         return new static($value);
     }
 
-    public function format(string $format = IDateTime::ISO8601): string
+    public function format(string $format = IDateTime::ISO8601): IResult
     {
-        return $this->value->format($format);
+        return Ok::withValue($this->value->format($format));
     }
 
     public function toIso8601(): string
     {
-        return $this->format(IDateTime::ISO8601);
+        return $this->value->format(IDateTime::ISO8601);
     }
 
     public function toRfc2822(): string
     {
-        return $this->format(IDateTime::RFC2822);
+        return $this->value->format(IDateTime::RFC2822);
     }
 
     public function toRfc3339(bool $milliseconds = false): string
     {
-        return $this->format(($milliseconds)
+        return $this->value->format(($milliseconds)
             ? IDateTime::RFC3339_EXTENDED
             : IDateTime::RFC3339);
     }
@@ -156,7 +165,7 @@ class DateTime implements IDateTime
 
     public function date(): ILocalDate
     {
-        return LocalDate::parse($this->format('Y-n-j'), 'Y-n-j');
+        return LocalDate::fromStandard($this->value);
     }
 
     public function year(): int
@@ -196,7 +205,7 @@ class DateTime implements IDateTime
 
     public function time(): ILocalTime
     {
-        return LocalTime::parse($this->format('G:i:s.u'), 'G:i:s.u');
+        return LocalTime::fromStandard($this->value);
     }
 
     public function hour(): int
@@ -233,21 +242,26 @@ class DateTime implements IDateTime
 
     public function timezone(): ITimeZone
     {
-        return TimeZone::fromStandardTimeZone(
+        return TimeZone::fromStandard(
             $this->value->getTimezone()
         );
     }
 
     public function compareTo(IDateTime $that): int
     {
-        $a = $this->value;
-        $b = $that->toStandard();
+        return ($this->value <=> $that->toStandard());
+    }
 
-        return match (true) {
-            ($a == $b) => 0,
-            ($a > $b) => 1,
-            default => -1,
-        };
+    public function is(IDateTime $that): bool
+    {
+        return $this::class === $that::class
+            && $this->value == $that->value;
+    }
+
+    public function isNot(IDateTime $that): bool
+    {
+        return $this::class !== $that::class
+            || $this->value != $that->value;
     }
 
     public function isEqual(IDateTime $that): bool
@@ -281,8 +295,7 @@ class DateTime implements IDateTime
     }
 
     public function plus(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -291,33 +304,19 @@ class DateTime implements IDateTime
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
+        bool $overflow = false,
     ): static {
-        if ($period !== null) {
-            if (func_num_args() !== 1) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
-        } else {
-            $period = Period::of(
-                years: $years,
-                months: $months,
-                weeks: $weeks,
-                days: $days,
-                hours: $hours,
-                minutes: $minutes,
-                seconds: $seconds,
-                milliseconds: $milliseconds,
-                microseconds: $microseconds
-            )->toStandard();
-        }
+        $period = $this->createPeriod(func_get_args());
 
-        $value = $this->value->add($period);
+        $value = (!$overflow && ($period->months() || $period->years()))
+            ? Adder::addPeriodWithoutOverflow($this->value, $period)
+            : $this->value->add($period->toStandard());
 
         return new static($value);
     }
 
     public function minus(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -326,26 +325,13 @@ class DateTime implements IDateTime
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
+        bool $overflow = false,
     ): static {
-        if ($period !== null) {
-            if (func_num_args() !== 1) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
-        } else {
-            $period = Period::of(
-                years: $years,
-                months: $months,
-                weeks: $weeks,
-                days: $days,
-                hours: $hours,
-                minutes: $minutes,
-                seconds: $seconds,
-                milliseconds: $milliseconds,
-                microseconds: $microseconds
-            )->toStandard();
-        }
+        $period = $this->createPeriod(func_get_args());
 
-        $value = $this->value->sub($period);
+        $value = (!$overflow && ($period->months() || $period->years()))
+            ? Adder::addPeriodWithoutOverflow($this->value, $period->negated())
+            : $this->value->sub($period->toStandard());
 
         return new static($value);
     }
@@ -392,10 +378,8 @@ class DateTime implements IDateTime
 
         return new static($dt);
     }
-
     public function add(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -404,10 +388,11 @@ class DateTime implements IDateTime
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
+        bool $overflow = false,
     ): IResult {
         try {
             $dateTime = $this->plus(...func_get_args());
-        } catch (Throwable $e) {
+        } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
@@ -415,8 +400,7 @@ class DateTime implements IDateTime
     }
 
     public function subtract(
-        ?IPeriod $period = null,
-        int $years = 0,
+        int|IPeriod $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -425,13 +409,36 @@ class DateTime implements IDateTime
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
+        bool $overflow = false,
     ): IResult {
         try {
             $dateTime = $this->minus(...func_get_args());
-        } catch (Throwable $e) {
+        } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
         return Ok::withValue($dateTime);
+    }
+
+    private function createPeriod(array $args): IPeriod
+    {
+        // Years or Period
+        if (isset($args[0]) && $args[0] instanceof IPeriod) {
+            $period = $args[0];
+            unset($args[0]);
+        }
+
+        // Overflow
+        if (isset($args[9])) {
+            unset($args[9]);
+        }
+
+        if (!isset($period)) {
+            $period = Period::of(...$args);
+        } elseif (array_filter($args)) {
+            throw new InvalidArgumentException('No time units are allowed when a period is passed');
+        }
+
+        return $period;
     }
 }
