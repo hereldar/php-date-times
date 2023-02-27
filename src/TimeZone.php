@@ -24,6 +24,16 @@ class TimeZone implements ITimeZone, Stringable
         return $this->name();
     }
 
+    public static function utc(): static
+    {
+        return static::of('UTC');
+    }
+
+    public static function system(): static
+    {
+        return static::of(date_default_timezone_get());
+    }
+
     public static function of(
         string $name,
     ): static {
