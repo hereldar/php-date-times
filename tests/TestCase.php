@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests;
 
+use Hereldar\DateTimes\Interfaces\IDateTime;
 use Hereldar\DateTimes\Interfaces\ILocalDate;
 use Hereldar\DateTimes\Interfaces\ILocalDateTime;
 use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
 use PHPUnit\Framework\Constraint\ExceptionCode;
-use PHPUnit\Framework\Constraint\ExceptionMessage;
-use PHPUnit\Framework\Constraint\ExceptionMessageRegularExpression;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use Throwable;
 
@@ -62,39 +61,57 @@ abstract class TestCase extends PHPUnitTestCase
         );
     }
 
-    public static function assertExceptionMessage(
-        string $expectedMessage,
-        callable $callback
-    ) {
-        try {
-            $callback();
-        } catch (Throwable $exception) {
-            return;
+    public static function assertDateTime(
+        IDateTime $dateTime,
+        int $year,
+        ?int $month = null,
+        ?int $day = null,
+        ?int $hour = null,
+        ?int $minute = null,
+        ?int $second = null,
+        ?int $microsecond = null,
+        ?string $timeZone = null,
+    ): void {
+        $actual = ['year' => $dateTime->year()];
+
+        $expected = ['year' => $year];
+
+        if ($month !== null) {
+            $actual['month'] = $dateTime->month();
+            $expected['month'] = $month;
         }
 
-        static::assertThat(
-            $exception ?? null,
-            new ExceptionMessage(
-                $expectedMessage
-            )
-        );
-    }
-
-    public static function assertExceptionMessageMatches(
-        string $regularExpression,
-        callable $callback
-    ) {
-        try {
-            $callback();
-        } catch (Throwable $exception) {
+        if ($day !== null) {
+            $actual['day'] = $dateTime->day();
+            $expected['day'] = $day;
         }
 
-        static::assertThat(
-            $exception ?? null,
-            new ExceptionMessageRegularExpression(
-                $regularExpression
-            )
-        );
+        if ($hour !== null) {
+            $actual['hour'] = $dateTime->hour();
+            $expected['hour'] = $hour;
+        }
+
+        if ($minute !== null) {
+            $actual['minute'] = $dateTime->minute();
+            $expected['minute'] = $minute;
+        }
+
+        if ($second !== null) {
+            $actual['second'] = $dateTime->second();
+            $expected['second'] = $second;
+        }
+
+        if ($microsecond !== null) {
+            $actual['microsecond'] = $dateTime->microsecond();
+            $expected['microsecond'] = $microsecond;
+        }
+
+        if ($timeZone !== null) {
+            $actual['timeZone'] = $dateTime->timezone()->name();
+            $expected['timeZone'] = $timeZone;
+        }
+
+        static::assertSame($expected, $actual);
     }
 
     public static function assertLocalDate(

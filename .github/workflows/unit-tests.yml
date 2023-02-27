@@ -47,7 +47,7 @@ jobs:
           then
             php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/phpunit --coverage-clover=coverage/clover.xml --coverage-text --coverage-cache=coverage/cache;
           else
-            php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/phpunit --verbose;
+            php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/phpunit;
           fi;
         env:
           PHP_VERSION: ${{ matrix.php }}
