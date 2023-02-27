@@ -13,7 +13,7 @@ interface IDateTime
 {
     final public const ATOM = 'Y-m-d\TH:i:sP';
     final public const COOKIE = 'l, d-M-Y H:i:s T';
-    final public const ISO8601 = 'Y-m-d\TH:i:sP';
+    final public const ISO8601 = 'Y-m-d\TH:i:sp';
     final public const RFC822 = 'D, d M y H:i:s O';
     final public const RFC850 = 'l, d-M-y H:i:s T';
     final public const RFC1036 = 'D, d M y H:i:s O';
