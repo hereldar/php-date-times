@@ -18,6 +18,8 @@ interface IOffset
 
     public function toIso8601(bool $seconds = false): string;
 
+    public function toTimeZone(): ITimeZone;
+
     public function hours(): int;
 
     public function minutes(): int;

@@ -124,7 +124,7 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(
             'Thu, 25 Dec 1986 12:30:25 GMT',
-            DateTime::of(1986, 12, 25, 12, 30, 25)->format(IDateTime::RFC7231)->orFail()
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, TimeZone::utc())->format(IDateTime::RFC7231)->orFail()
         );
     }
 
