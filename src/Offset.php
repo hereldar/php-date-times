@@ -7,6 +7,7 @@ namespace Hereldar\DateTimes;
 use ArithmeticError;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IOffset;
+use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Hereldar\Results\Error;
 use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
@@ -48,7 +49,7 @@ class Offset implements IOffset, Stringable
 
     public static function of(
         int $hours,
-        int $minutes,
+        int $minutes = 0,
         int $seconds = 0,
     ): static {
         if ($hours < -self::HOURS_LIMIT
@@ -66,7 +67,7 @@ class Offset implements IOffset, Stringable
             throw new OutOfRangeException();
         }
 
-        return new static($seconds + ($minutes * 60) + ($hours * 3600));
+        return new static(($hours * 3600) + ($minutes * 60) + $seconds);
     }
 
     public static function fromTotalMinutes(int $minutes): static
@@ -86,7 +87,7 @@ class Offset implements IOffset, Stringable
             throw new OutOfRangeException();
         }
 
-        return new static($seconds * 60);
+        return new static($seconds);
     }
 
     public static function zero(): static
@@ -184,15 +185,17 @@ class Offset implements IOffset, Stringable
         );
     }
 
-    public function toIso8601(bool $seconds = false): string
+    public function toIso8601(?bool $seconds = null): string
     {
         $string = sprintf(
-            '%+02d:%02d',
-            $this->hours(),
+            '%s%02d:%02d',
+            ($this->value < 0) ? '-' : '+',
+            abs($this->hours()),
             abs($this->minutes())
         );
 
-        if ($seconds) {
+        if ($seconds === true
+            || ($seconds === null && $this->seconds())) {
             $string .= sprintf(
                 ':%02d',
                 abs($this->seconds())
@@ -202,9 +205,14 @@ class Offset implements IOffset, Stringable
         return $string;
     }
 
+    public function toTimeZone(): ITimeZone
+    {
+        return TimeZone::of($this->toIso8601(false));
+    }
+
     public function hours(): int
     {
-        return intdiv($this->totalMinutes(), 60);
+        return intdiv($this->value, 3600);
     }
 
     public function minutes(): int
@@ -214,7 +222,7 @@ class Offset implements IOffset, Stringable
 
     public function seconds(): int
     {
-        return $this->value % 3600;
+        return $this->value % 60;
     }
 
     public function totalMinutes(): int

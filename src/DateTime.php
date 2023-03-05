@@ -41,9 +41,11 @@ class DateTime implements IDateTime, Stringable
         ITimeZone|IOffset|string $timeZone = 'UTC',
     ): static {
         try {
-            $tz = (is_string($timeZone))
-                ? new StandardTimeZone($timeZone)
-                : $timeZone->toStandard();
+            $tz = match (true) {
+                $timeZone instanceof ITimeZone => $timeZone->toStandard(),
+                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
+                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
+            };
 
             $dt = new StandardDateTime('now', $tz);
         } catch (Throwable $e) {
@@ -85,9 +87,11 @@ class DateTime implements IDateTime, Stringable
         string $format = IDateTime::ISO8601,
         ITimeZone|IOffset|string $timeZone = 'UTC',
     ): IResult {
-        $tz = (is_string($timeZone))
-            ? new StandardTimeZone($timeZone)
-            : $timeZone->toStandard();
+        $tz = match (true) {
+            $timeZone instanceof ITimeZone => $timeZone->toStandard(),
+            $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
+            is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
+        };
 
         $dt = StandardDateTime::createFromFormat($format, $string, $tz);
 
@@ -371,9 +375,11 @@ class DateTime implements IDateTime, Stringable
         }
 
         if ($timeZone !== null) {
-            $dt = $dt->setTimezone((is_string($timeZone))
-                ? new StandardTimeZone($timeZone)
-                : $timeZone->toStandard());
+            $dt = $dt->setTimezone(match (true) {
+                $timeZone instanceof ITimeZone => $timeZone->toStandard(),
+                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
+                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
+            });
         }
 
         return new static($dt);
