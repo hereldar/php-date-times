@@ -43,32 +43,32 @@ final class FormattingTest extends TestCase
     public function testToRfc2822(): void
     {
         self::assertSame(
-            'Thu, 25 Dec 1986 12:30:25 +0200',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(2))->toRfc2822()
+            'Thu, 25 Dec 1986 12:30:25 -0200',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(-2))->toRfc2822()
         );
         self::assertSame(
-            'Thu, 25 Dec 1986 12:30:25 +0200',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(2))->format(IDateTime::RFC2822)->orFail()
+            'Thu, 25 Dec 1986 12:30:25 -0200',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(-2))->format(IDateTime::RFC2822)->orFail()
         );
     }
 
     public function testToRfc3339(): void
     {
         self::assertSame(
-            '1986-12-25T12:30:25-02:00',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(-2))->toRfc3339()
+            '1986-12-25T12:30:25+03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(3))->toRfc3339()
         );
         self::assertSame(
-            '1986-12-25T12:30:25.123-02:00',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::of(-2))->toRfc3339(milliseconds: true)
+            '1986-12-25T12:30:25.123+03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::of(3))->toRfc3339(milliseconds: true)
         );
         self::assertSame(
-            '1986-12-25T12:30:25-02:00',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(-2))->format(IDateTime::RFC3339)->orFail()
+            '1986-12-25T12:30:25+03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(3))->format(IDateTime::RFC3339)->orFail()
         );
         self::assertSame(
-            '1986-12-25T12:30:25.123-02:00',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::of(-2))->format(IDateTime::RFC3339_EXTENDED)->orFail()
+            '1986-12-25T12:30:25.123+03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::of(3))->format(IDateTime::RFC3339_EXTENDED)->orFail()
         );
     }
 
@@ -91,8 +91,8 @@ final class FormattingTest extends TestCase
     public function testToRfc822(): void
     {
         self::assertSame(
-            'Thu, 25 Dec 86 12:30:25 +0030',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(0, 30))->format(IDateTime::RFC822)->orFail()
+            'Thu, 25 Dec 86 12:30:25 -0030',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(0, -30))->format(IDateTime::RFC822)->orFail()
         );
     }
 
@@ -132,7 +132,7 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(
             'Thu, 25 Dec 1986 12:30:25 -0030',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(0, -30))->format(IDateTime::RSS)->orFail()
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::fromTotalSeconds(-1_800))->format(IDateTime::RSS)->orFail()
         );
     }
 
@@ -140,7 +140,7 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(
             '1986-12-25T12:30:25+02:30',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(2, 30))->format(IDateTime::W3C)->orFail()
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::fromTotalSeconds(9_000))->format(IDateTime::W3C)->orFail()
         );
     }
 }
