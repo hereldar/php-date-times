@@ -1,0 +1,76 @@
+name: Static Analysis
+
+on: [pull_request, push]
+
+jobs:
+  phpstan:
+    name: PHPStan - PHP ${{ matrix.php }} (${{ matrix.dependencies }}) Ubuntu
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '8.2'
+        dependencies:
+          - 'highest'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json
+          coverage: none
+          tools: phpstan/phpstan
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+
+      - name: Run Psalm
+        run: |
+          phpstan --ansi --no-progress;
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+
+  psalm:
+    runs-on: ubuntu-latest
+
+    name: Psalm - PHP ${{ matrix.php }} (${{ matrix.dependencies }}) Ubuntu
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '8.2'
+        dependencies:
+          - 'highest'
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json
+          coverage: none
+          tools: vimeo/psalm
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+
+      - name: Run Psalm
+        run: |
+          psalm --no-progress --output-format=github --shepherd;
+        env:
+          PHP_VERSION: ${{ matrix.php }}

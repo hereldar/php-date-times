@@ -3,10 +3,8 @@ name: Unit Tests
 on: [pull_request, push]
 
 jobs:
-  ubuntu:
-    runs-on: ubuntu-latest
-
-    name: PHP ${{ matrix.php }} (${{ matrix.coverage && 'coverage' || matrix.dependencies }}) Ubuntu
+  phpunit:
+    name: PHPUnit - PHP ${{ matrix.php }} (${{ matrix.dependencies }}) Ubuntu
 
     strategy:
       fail-fast: false
@@ -17,12 +15,8 @@ jobs:
         dependencies:
           - 'lowest'
           - 'highest'
-        coverage:
-          - false
-        include:
-          - php: '8.2'
-            dependencies: 'highest'
-            coverage: true
+
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout the code
@@ -32,9 +26,9 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: json${{ matrix.coverage &&', dom, libxml, mbstring, xml, xmlwriter' }}
-          coverage: ${{ matrix.coverage && 'xdebug' || 'none' }}
-          tools: ${{ matrix.coverage && 'php-coveralls/php-coveralls' || '' }}
+          extensions: json
+          coverage: none
+          tools: none
 
       - name: Install dependencies
         uses: ramsey/composer-install@v2
@@ -43,27 +37,6 @@ jobs:
 
       - name: Run PHPUnit
         run: |
-          if [[ "${{ matrix.coverage }}" = 'true' ]]
-          then
-            php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/phpunit --coverage-clover=coverage/clover.xml --coverage-text --coverage-cache=coverage/cache;
-          else
-            php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/phpunit;
-          fi;
+          php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/phpunit --colors=always;
         env:
           PHP_VERSION: ${{ matrix.php }}
-
-      - name: Send coverage results to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: coverage/clover.xml
-          fail_ci_if_error: true
-        if: ${{ matrix.coverage }}
-
-      - name: Send coverage results to Coveralls
-        run: |
-          php-coveralls --coverage_clover=coverage/clover.xml --json_path=coverage/coveralls-upload.json --verbose
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_SERVICE_NAME: github
-          PHP_VERSION: ${{ matrix.php }}
-        if: ${{ matrix.coverage }}
