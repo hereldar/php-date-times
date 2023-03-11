@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Hereldar\DateTimes\Tests\LocalDateTimeTime;
+namespace Hereldar\DateTimes\Tests\LocalDateTime;
 
 use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Period;

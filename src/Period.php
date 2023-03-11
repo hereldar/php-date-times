@@ -219,27 +219,27 @@ class Period implements IPeriod, Stringable
                 callback: fn (array $matches) => match ($matches[1]) {
                     '%' => '%',
                     'Y' => sprintf('%04d', $this->years),
-                    'y' => $this->years,
+                    'y' => (string) $this->years,
                     'M' => sprintf('%02d', $this->months),
-                    'm' => $this->months,
+                    'm' => (string) $this->months,
                     'W' => sprintf('%02d', intdiv($this->days, 7)),
-                    'w' => intdiv($this->days, 7),
+                    'w' => (string) intdiv($this->days, 7),
                     'D' => sprintf('%02d', $this->days),
-                    'd' => $this->days,
+                    'd' => (string) $this->days,
                     'E' => sprintf('%02d', $this->days % 7),
-                    'e' => $this->days % 7,
+                    'e' => (string) ($this->days % 7),
                     'H' => sprintf('%02d', $this->hours),
-                    'h' => $this->hours,
+                    'h' => (string) $this->hours,
                     'I' => sprintf('%02d', $this->minutes),
-                    'i' => $this->minutes,
+                    'i' => (string) $this->minutes,
                     'S' => sprintf('%02d', $this->seconds),
-                    's' => $this->seconds,
+                    's' => (string) $this->seconds,
                     'F' => ($this->microseconds) ? sprintf('.%06d', $this->microseconds) : '',
                     'f' => ($this->microseconds) ? rtrim(sprintf('.%06d', $this->microseconds), '0') : '',
                     'U' => sprintf('%06d', $this->microseconds),
-                    'u' => $this->microseconds,
+                    'u' => (string) $this->microseconds,
                     'V' => sprintf('%03d', intdiv($this->microseconds, 1_000)),
-                    'v' => intdiv($this->microseconds, 1_000),
+                    'v' => (string) intdiv($this->microseconds, 1_000),
                     default => $matches[0],
                 },
                 subject: $format
@@ -317,7 +317,7 @@ class Period implements IPeriod, Stringable
         $interval->h = $sign * $this->hours;
         $interval->i = $sign * $this->minutes;
         $interval->s = $sign * $this->seconds;
-        $interval->f = (float) ($sign * $this->microseconds) / 1_000_000;
+        $interval->f = (float) (($sign * $this->microseconds) / 1_000_000);
 
         if ($sign === -1) {
             $interval->invert = 1;

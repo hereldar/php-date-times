@@ -27,7 +27,7 @@ use UnexpectedValueException;
 
 class DateTime implements IDateTime, Stringable
 {
-    public function __construct(
+    private function __construct(
         private readonly StandardDateTime $value
     ) {
     }

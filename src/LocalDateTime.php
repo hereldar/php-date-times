@@ -41,9 +41,11 @@ class LocalDateTime implements ILocalDateTime, Stringable
         ITimeZone|IOffset|string $timeZone = 'UTC',
     ): static {
         try {
-            $tz = (is_string($timeZone))
-                ? new StandardTimeZone($timeZone)
-                : $timeZone->toStandard();
+            $tz = match (true) {
+                $timeZone instanceof ITimeZone => $timeZone->toStandard(),
+                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
+                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
+            };
 
             $dt = new StandardDateTime('now', $tz);
         } catch (Throwable $e) {
@@ -159,18 +161,20 @@ class LocalDateTime implements ILocalDateTime, Stringable
 
     public function atTimeZone(ITimeZone $timeZone): IDateTime
     {
-        $tz = $timeZone->toStandard();
-        $dt = $this->value->setTimezone($tz);
-
-        return new DateTime($dt);
+        return DateTime::parse(
+            $this->value->format('Y-n-j G:i:s.u'),
+            'Y-n-j G:i:s.u',
+            $timeZone
+        )->orFail();
     }
 
     public function atOffset(IOffset $offset): IDateTime
     {
-        $tz = TimeZone::of($offset->toIso8601(true))->toStandard();
-        $dt = $this->value->setTimezone($tz);
-
-        return new DateTime($dt);
+        return DateTime::parse(
+            $this->value->format('Y-n-j G:i:s.u'),
+            'Y-n-j G:i:s.u',
+            $offset
+        )->orFail();
     }
 
     public function date(): ILocalDate

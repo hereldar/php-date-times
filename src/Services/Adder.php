@@ -59,7 +59,7 @@ final class Adder
 
         $stdDateInterval = new StandardDateInterval('PT0S');
         $stdDateInterval->m = abs($months);
-        $stdDateInterval->invert = (0 > $months);
+        $stdDateInterval->invert = (0 > $months) ? 1 : 0;
         $stdDateTime = $stdDateTime->add($stdDateInterval);
 
         if (!$mayOverflow || 28 <= $stdDateTime->format('j')) {
@@ -68,7 +68,7 @@ final class Adder
 
         $year = (int) $stdDateTime->format('Y');
 
-        $month = ($stdDateTime->format('m') - 1);
+        $month = ((int) $stdDateTime->format('m')) - 1;
         if ($month === 0) {
             --$year;
             ++$month;
@@ -90,7 +90,7 @@ final class Adder
 
         $stdDateInterval = new StandardDateInterval('PT0S');
         $stdDateInterval->y = abs($years);
-        $stdDateInterval->invert = (0 > $years);
+        $stdDateInterval->invert = (0 > $years) ? 1 : 0;
         $stdDateTime = $stdDateTime->add($stdDateInterval);
 
         if (!$isLeapDay || $stdDateTime->format('n') !== '3') {
