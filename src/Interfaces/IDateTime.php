@@ -6,7 +6,9 @@ namespace Hereldar\DateTimes\Interfaces;
 
 use ArithmeticError;
 use DateTimeImmutable as StandardDateTime;
-use Hereldar\Results\Interfaces\IResult;
+use Hereldar\DateTimes\Exceptions\FormatException;
+use Hereldar\Results\Error;
+use Hereldar\Results\Ok;
 use InvalidArgumentException;
 
 interface IDateTime
@@ -26,9 +28,9 @@ interface IDateTime
     final public const W3C = 'Y-m-d\TH:i:sP';
 
     /**
-     * @return IResult<string, InvalidArgumentException>
+     * @return Ok<string>|Error<FormatException>
      */
-    public function format(string $format = self::ISO8601): IResult;
+    public function format(string $format = self::ISO8601): Ok|Error;
 
     public function toIso8601(): string;
 
@@ -135,7 +137,7 @@ interface IDateTime
     ): static;
 
     /**
-     * @return IResult<static, ArithmeticError>
+     * @return Ok<static>|Error<ArithmeticError>
      */
     public function add(
         int|IPeriod $years = 0,
@@ -147,10 +149,10 @@ interface IDateTime
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
-    ): IResult;
+    ): Ok|Error;
 
     /**
-     * @return IResult<static, ArithmeticError>
+     * @return Ok<static>|Error<ArithmeticError>
      */
     public function subtract(
         int|IPeriod $years = 0,
@@ -162,5 +164,5 @@ interface IDateTime
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
-    ): IResult;
+    ): Ok|Error;
 }

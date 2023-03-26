@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes;
 
 use ArithmeticError;
+use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Hereldar\Results\Error;
-use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
 use OutOfRangeException;
 use Stringable;
 
+/**
+ * @psalm-consistent-constructor
+ */
 class Offset implements IOffset, Stringable
 {
     private const HOURS_LIMIT = 18;
@@ -96,13 +99,14 @@ class Offset implements IOffset, Stringable
     }
 
     /**
-     * @return IResult<static, ParseException>
+     * @return Ok<static>|Error<ParseException>
      */
     public static function parse(
         string $string,
         string $format = IOffset::ISO8601,
-    ): IResult {
+    ): Ok|Error {
         if ($format === IOffset::ISO8601) {
+            /** @var Ok<static> */
             return Ok::withValue(static::fromIso8601($string));
         }
 
@@ -123,7 +127,8 @@ class Offset implements IOffset, Stringable
             subject: preg_quote($format, '/')
         );
 
-        if (!preg_match("/^{$pattern}$/", $string, $matches)) {
+        if (!is_string($pattern)
+            || !preg_match("/^{$pattern}$/", $string, $matches)) {
             return Error::withException(new ParseException($string, $format));
         }
 
@@ -132,6 +137,7 @@ class Offset implements IOffset, Stringable
             default => 1,
         };
 
+        /** @var Ok<static> */
         return Ok::withValue(static::of(
             hours: $sign * (int) ($matches['hours'] ?? 0),
             minutes: $sign * (int) ($matches['minutes'] ?? 0),
@@ -159,30 +165,34 @@ class Offset implements IOffset, Stringable
         );
     }
 
-    public function format(string $format = IOffset::ISO8601): IResult
+    public function format(string $format = IOffset::ISO8601): Ok|Error
     {
         if ($format === IOffset::ISO8601) {
             return Ok::withValue($this->toIso8601());
         }
 
-        return Ok::withValue(
-            preg_replace_callback(
-                pattern: self::FORMAT_PATTERN,
-                callback: fn (array $matches) => match ($matches[1]) {
-                    '%' => '%',
-                    'R' => ($this->isNegative()) ? '-' : '+',
-                    'r' => ($this->isNegative()) ? '-' : '',
-                    'H' => sprintf('%02d', abs($this->hours())),
-                    'h' => (string) abs($this->hours()),
-                    'I' => sprintf('%02d', abs($this->minutes())),
-                    'i' => (string) abs($this->minutes()),
-                    'S' => sprintf('%02d', abs($this->seconds())),
-                    's' => (string) abs($this->seconds()),
-                    default => $matches[0],
-                },
-                subject: $format
-            )
+        $string = preg_replace_callback(
+            pattern: self::FORMAT_PATTERN,
+            callback: fn (array $matches) => match ($matches[1]) {
+                '%' => '%',
+                'R' => ($this->isNegative()) ? '-' : '+',
+                'r' => ($this->isNegative()) ? '-' : '',
+                'H' => sprintf('%02d', abs($this->hours())),
+                'h' => (string) abs($this->hours()),
+                'I' => sprintf('%02d', abs($this->minutes())),
+                'i' => (string) abs($this->minutes()),
+                'S' => sprintf('%02d', abs($this->seconds())),
+                's' => (string) abs($this->seconds()),
+                default => $matches[0],
+            },
+            subject: $format
         );
+
+        if (!is_string($string)) {
+            return Error::withException(new FormatException($format));
+        }
+
+        return Ok::withValue($string);
     }
 
     public function toIso8601(?bool $seconds = null): string
@@ -242,14 +252,16 @@ class Offset implements IOffset, Stringable
 
     public function is(IOffset $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->value === $that->value;
+            && $this->value === $that->value; // @phpstan-ignore-line
     }
 
     public function isNot(IOffset $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->value !== $that->value;
+            || $this->value !== $that->value; // @phpstan-ignore-line
     }
 
     public function isEqual(IOffset $that): bool
@@ -343,13 +355,14 @@ class Offset implements IOffset, Stringable
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
-    ): IResult {
+    ): Ok|Error {
         try {
-            $period = $this->plus(...func_get_args());
+            $period = $this->plus($hours, $minutes, $seconds);
         } catch (ArithmeticError|OutOfRangeException $e) {
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($period);
     }
 
@@ -357,13 +370,14 @@ class Offset implements IOffset, Stringable
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
-    ): IResult {
+    ): Ok|Error {
         try {
-            $period = $this->minus(...func_get_args());
+            $period = $this->minus($hours, $minutes, $seconds);
         } catch (ArithmeticError|OutOfRangeException $e) {
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($period);
     }
 }

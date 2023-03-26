@@ -22,7 +22,7 @@ abstract class TestCase extends PHPUnitTestCase
     public static function assertException(
         string $expectedException,
         callable $callback
-    ) {
+    ): void {
         try {
             $callback();
         } catch (Throwable $exception) {
@@ -47,7 +47,7 @@ abstract class TestCase extends PHPUnitTestCase
     public static function assertExceptionCode(
         int|string $expectedCode,
         callable $callback
-    ) {
+    ): void {
         try {
             $callback();
         } catch (Throwable $exception) {

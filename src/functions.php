@@ -9,6 +9,7 @@ use ArithmeticError;
 if (!function_exists('intadd')) {
     function intadd(int $num1, int $num2): int
     {
+        /** @var int|float $result */
         $result = $num1 + $num2;
 
         if (is_float($result)) {
@@ -22,6 +23,7 @@ if (!function_exists('intadd')) {
 if (!function_exists('intsub')) {
     function intsub(int $num1, int $num2): int
     {
+        /** @var int|float $result */
         $result = $num1 - $num2;
 
         if (is_float($result)) {
@@ -35,6 +37,7 @@ if (!function_exists('intsub')) {
 if (!function_exists('intmul')) {
     function intmul(int $num1, int $num2): int
     {
+        /** @var int|float $result */
         $result = $num1 * $num2;
 
         if (is_float($result)) {

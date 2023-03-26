@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Interfaces;
 
-use Hereldar\Results\Interfaces\IResult;
+use Hereldar\DateTimes\Exceptions\FormatException;
+use Hereldar\Results\Error;
+use Hereldar\Results\Ok;
 use InvalidArgumentException;
 
 interface IOffset
@@ -12,9 +14,9 @@ interface IOffset
     final public const ISO8601 = '%R%H:%I'; // +02:00
 
     /**
-     * @return IResult<string, InvalidArgumentException>
+     * @return Ok<string>|Error<FormatException>
      */
-    public function format(string $format = self::ISO8601): IResult;
+    public function format(string $format = self::ISO8601): Ok|Error;
 
     public function toIso8601(bool $seconds = false): string;
 
@@ -80,11 +82,11 @@ interface IOffset
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
-    ): IResult;
+    ): Ok|Error;
 
     public function subtract(
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
-    ): IResult;
+    ): Ok|Error;
 }

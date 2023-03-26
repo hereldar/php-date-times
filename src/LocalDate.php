@@ -17,13 +17,15 @@ use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Hereldar\DateTimes\Services\Adder;
 use Hereldar\Results\Error;
-use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
 use Stringable;
 use Throwable;
 use UnexpectedValueException;
 
+/**
+ * @psalm-consistent-constructor
+ */
 class LocalDate implements ILocalDate, Stringable
 {
     private function __construct(
@@ -68,12 +70,12 @@ class LocalDate implements ILocalDate, Stringable
     }
 
     /**
-     * @return IResult<static, ParseException>
+     * @return Ok<static>|Error<ParseException>
      */
     public static function parse(
         string $string,
         string $format = ILocalDate::ISO8601,
-    ): IResult {
+    ): Ok|Error {
         if (!str_starts_with($format, '!')) {
             $format = "!{$format}";
         }
@@ -91,6 +93,7 @@ class LocalDate implements ILocalDate, Stringable
             return Error::withException(new ParseException($string, $format, $firstError));
         }
 
+        /** @var Ok<static> */
         return Ok::withValue(new static($dt));
     }
 
@@ -117,7 +120,7 @@ class LocalDate implements ILocalDate, Stringable
         return static::parse($string, 'Y-n-j')->orFail();
     }
 
-    public function format(string $format = ILocalDate::ISO8601): IResult
+    public function format(string $format = ILocalDate::ISO8601): Ok|Error
     {
         return Ok::withValue($this->value->format($format));
     }
@@ -196,14 +199,16 @@ class LocalDate implements ILocalDate, Stringable
 
     public function is(ILocalDate $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->value == $that->value;
+            && $this->value == $that->value; // @phpstan-ignore-line
     }
 
     public function isNot(ILocalDate $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->value != $that->value;
+            || $this->value != $that->value; // @phpstan-ignore-line
     }
 
     public function isEqual(ILocalDate $that): bool
@@ -243,7 +248,15 @@ class LocalDate implements ILocalDate, Stringable
         int $days = 0,
         bool $overflow = false,
     ): static {
-        $period = $this->createPeriod(func_get_args());
+        if (is_int($years)) {
+            $period = Period::of($years, $months, $weeks, $days);
+        } elseif (!$months && !$weeks && !$days) {
+            $period = $years;
+        } else {
+            throw new InvalidArgumentException(
+                'No time units are allowed when a period is passed'
+            );
+        }
 
         $value = (!$overflow && ($period->months() || $period->years()))
             ? Adder::addPeriodWithoutOverflow($this->value, $period)
@@ -259,7 +272,15 @@ class LocalDate implements ILocalDate, Stringable
         int $days = 0,
         bool $overflow = false,
     ): static {
-        $period = $this->createPeriod(func_get_args());
+        if (is_int($years)) {
+            $period = Period::of($years, $months, $weeks, $days);
+        } elseif (!$months && !$weeks && !$days) {
+            $period = $years;
+        } else {
+            throw new InvalidArgumentException(
+                'No time units are allowed when a period is passed'
+            );
+        }
 
         $value = (!$overflow && ($period->months() || $period->years()))
             ? Adder::addPeriodWithoutOverflow($this->value, $period->negated())
@@ -288,13 +309,17 @@ class LocalDate implements ILocalDate, Stringable
         int $weeks = 0,
         int $days = 0,
         bool $overflow = false,
-    ): IResult {
+    ): Ok|Error {
         try {
-            $dateTime = $this->plus(...func_get_args());
+            $dateTime = $this->plus(
+                $years, $months, $weeks, $days,
+                $overflow,
+            );
         } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($dateTime);
     }
 
@@ -304,35 +329,17 @@ class LocalDate implements ILocalDate, Stringable
         int $weeks = 0,
         int $days = 0,
         bool $overflow = false,
-    ): IResult {
+    ): Ok|Error {
         try {
-            $dateTime = $this->minus(...func_get_args());
+            $dateTime = $this->minus(
+                $years, $months, $weeks, $days,
+                $overflow,
+            );
         } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($dateTime);
-    }
-
-    private function createPeriod(array $args): IPeriod
-    {
-        // Years or Period
-        if (isset($args[0]) && $args[0] instanceof IPeriod) {
-            $period = $args[0];
-            unset($args[0]);
-        }
-
-        // Overflow
-        if (isset($args[4])) {
-            unset($args[4]);
-        }
-
-        if (!isset($period)) {
-            $period = Period::of(...$args);
-        } elseif (array_filter($args)) {
-            throw new InvalidArgumentException('No time units are allowed when a period is passed');
-        }
-
-        return $period;
     }
 }

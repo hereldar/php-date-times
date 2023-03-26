@@ -18,13 +18,15 @@ use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Hereldar\DateTimes\Services\Adder;
 use Hereldar\Results\Error;
-use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
 use Stringable;
 use Throwable;
 use UnexpectedValueException;
 
+/**
+ * @psalm-consistent-constructor
+ */
 class LocalDateTime implements ILocalDateTime, Stringable
 {
     private function __construct(
@@ -82,12 +84,12 @@ class LocalDateTime implements ILocalDateTime, Stringable
     }
 
     /**
-     * @return IResult<static, ParseException>
+     * @return Ok<static>|Error<ParseException>
      */
     public static function parse(
         string $string,
         string $format = ILocalDateTime::ISO8601,
-    ): IResult {
+    ): Ok|Error {
         if (!str_starts_with($format, '!')) {
             $format = "!{$format}";
         }
@@ -105,6 +107,7 @@ class LocalDateTime implements ILocalDateTime, Stringable
             return Error::withException(new ParseException($string, $format, $firstError));
         }
 
+        /** @var Ok<static> */
         return Ok::withValue(new static($dt));
     }
 
@@ -132,7 +135,7 @@ class LocalDateTime implements ILocalDateTime, Stringable
         return static::parse($string, 'Y-n-j G:i:s.u')->orFail();
     }
 
-    public function format(string $format = ILocalDateTime::ISO8601): IResult
+    public function format(string $format = ILocalDateTime::ISO8601): Ok|Error
     {
         return Ok::withValue($this->value->format($format));
     }
@@ -254,14 +257,16 @@ class LocalDateTime implements ILocalDateTime, Stringable
 
     public function is(ILocalDateTime $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->value == $that->value;
+            && $this->value == $that->value; // @phpstan-ignore-line
     }
 
     public function isNot(ILocalDateTime $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->value != $that->value;
+            || $this->value != $that->value; // @phpstan-ignore-line
     }
 
     public function isEqual(ILocalDateTime $that): bool
@@ -306,7 +311,21 @@ class LocalDateTime implements ILocalDateTime, Stringable
         int $microseconds = 0,
         bool $overflow = false,
     ): static {
-        $period = $this->createPeriod(func_get_args());
+        if (is_int($years)) {
+            $period = Period::of(
+                $years, $months, $weeks, $days,
+                $hours, $minutes, $seconds,
+                $milliseconds, $microseconds,
+            );
+        } elseif (!$months && !$weeks && !$days
+            && !$hours && !$minutes && !$seconds
+            && !$milliseconds && !$microseconds) {
+            $period = $years;
+        } else {
+            throw new InvalidArgumentException(
+                'No time units are allowed when a period is passed'
+            );
+        }
 
         $value = (!$overflow && ($period->months() || $period->years()))
             ? Adder::addPeriodWithoutOverflow($this->value, $period)
@@ -327,7 +346,21 @@ class LocalDateTime implements ILocalDateTime, Stringable
         int $microseconds = 0,
         bool $overflow = false,
     ): static {
-        $period = $this->createPeriod(func_get_args());
+        if (is_int($years)) {
+            $period = Period::of(
+                $years, $months, $weeks, $days,
+                $hours, $minutes, $seconds,
+                $milliseconds, $microseconds,
+            );
+        } elseif (!$months && !$weeks && !$days
+            && !$hours && !$minutes && !$seconds
+            && !$milliseconds && !$microseconds) {
+            $period = $years;
+        } else {
+            throw new InvalidArgumentException(
+                'No time units are allowed when a period is passed'
+            );
+        }
 
         $value = (!$overflow && ($period->months() || $period->years()))
             ? Adder::addPeriodWithoutOverflow($this->value, $period->negated())
@@ -383,13 +416,19 @@ class LocalDateTime implements ILocalDateTime, Stringable
         int $milliseconds = 0,
         int $microseconds = 0,
         bool $overflow = false,
-    ): IResult {
+    ): Ok|Error {
         try {
-            $dateTime = $this->plus(...func_get_args());
+            $dateTime = $this->plus(
+                $years, $months, $weeks, $days,
+                $hours, $minutes, $seconds,
+                $milliseconds, $microseconds,
+                $overflow,
+            );
         } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($dateTime);
     }
 
@@ -404,35 +443,19 @@ class LocalDateTime implements ILocalDateTime, Stringable
         int $milliseconds = 0,
         int $microseconds = 0,
         bool $overflow = false,
-    ): IResult {
+    ): Ok|Error {
         try {
-            $dateTime = $this->minus(...func_get_args());
+            $dateTime = $this->minus(
+                $years, $months, $weeks, $days,
+                $hours, $minutes, $seconds,
+                $milliseconds, $microseconds,
+                $overflow,
+            );
         } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($dateTime);
-    }
-
-    private function createPeriod(array $args): IPeriod
-    {
-        // Years or Period
-        if (isset($args[0]) && $args[0] instanceof IPeriod) {
-            $period = $args[0];
-            unset($args[0]);
-        }
-
-        // Overflow
-        if (isset($args[9])) {
-            unset($args[9]);
-        }
-
-        if (!isset($period)) {
-            $period = Period::of(...$args);
-        } elseif (array_filter($args)) {
-            throw new InvalidArgumentException('No time units are allowed when a period is passed');
-        }
-
-        return $period;
     }
 }

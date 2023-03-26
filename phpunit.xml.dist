@@ -10,9 +10,27 @@
     <testsuite name="all">
       <directory>tests</directory>
     </testsuite>
+    <testsuite name="date-time">
+      <directory>tests/DateTime</directory>
+    </testsuite>
+    <testsuite name="local-date">
+      <directory>tests/LocalDate</directory>
+    </testsuite>
+    <testsuite name="local-date-time">
+      <directory>tests/LocalDateTime</directory>
+    </testsuite>
+    <testsuite name="local-time">
+      <directory>tests/LocalTime</directory>
+    </testsuite>
+    <!--<testsuite name="offset">
+      <directory>tests/Offset</directory>
+    </testsuite>-->
     <testsuite name="period">
       <directory>tests/Period</directory>
     </testsuite>
+    <!--<testsuite name="time-zone">
+      <directory>tests/TimeZone</directory>
+    </testsuite>-->
   </testsuites>
   <coverage>
     <include>

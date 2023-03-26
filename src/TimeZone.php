@@ -12,6 +12,9 @@ use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Stringable;
 
+/**
+ * @psalm-consistent-constructor
+ */
 class TimeZone implements ITimeZone, Stringable
 {
     private function __construct(
@@ -85,14 +88,16 @@ class TimeZone implements ITimeZone, Stringable
 
     public function is(ITimeZone $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->value == $that->value;
+            && $this->value == $that->value; // @phpstan-ignore-line
     }
 
     public function isNot(ITimeZone $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->value != $that->value;
+            || $this->value != $that->value; // @phpstan-ignore-line
     }
 
     public function isEqual(ITimeZone $that): bool

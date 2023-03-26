@@ -6,14 +6,17 @@ namespace Hereldar\DateTimes;
 
 use ArithmeticError;
 use DateInterval as StandardDateInterval;
+use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\Results\Error;
-use Hereldar\Results\Interfaces\IResult;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
 use Stringable;
 
+/**
+ * @psalm-consistent-constructor
+ */
 class Period implements IPeriod, Stringable
 {
     private const ISO8601_PATTERN = <<<'REGEX'
@@ -103,13 +106,14 @@ class Period implements IPeriod, Stringable
     }
 
     /**
-     * @return IResult<static, ParseException>
+     * @return Ok<static>|Error<ParseException>
      */
     public static function parse(
         string $string,
         string $format = IPeriod::ISO8601,
-    ): IResult {
+    ): Ok|Error {
         if ($format === IPeriod::ISO8601) {
+            /** @var Ok<static> */
             return Ok::withValue(static::fromIso8601($string));
         }
 
@@ -142,7 +146,8 @@ class Period implements IPeriod, Stringable
             subject: preg_quote($format, '/')
         );
 
-        if (!preg_match("/^{$pattern}$/", $string, $matches)) {
+        if (!is_string($pattern)
+            || !preg_match("/^{$pattern}$/", $string, $matches)) {
             return Error::withException(new ParseException($string, $format));
         }
 
@@ -157,6 +162,7 @@ class Period implements IPeriod, Stringable
             }
         }
 
+        /** @var Ok<static> */
         return Ok::withValue(static::of(...$arguments));
     }
 
@@ -203,48 +209,52 @@ class Period implements IPeriod, Stringable
             $sign * $interval->h,
             $sign * $interval->i,
             $sign * $interval->s,
-            $sign * ((int) round($interval->f * 1_000_000)),
+            $sign * ((int) round($interval->f * 1_000_000.0)),
         );
     }
 
-    public function format(string $format = IPeriod::ISO8601): IResult
+    public function format(string $format = IPeriod::ISO8601): Ok|Error
     {
         if ($format === IPeriod::ISO8601) {
             return Ok::withValue($this->toIso8601());
         }
 
-        return Ok::withValue(
-            preg_replace_callback(
-                pattern: self::FORMAT_PATTERN,
-                callback: fn (array $matches) => match ($matches[1]) {
-                    '%' => '%',
-                    'Y' => sprintf('%04d', $this->years),
-                    'y' => (string) $this->years,
-                    'M' => sprintf('%02d', $this->months),
-                    'm' => (string) $this->months,
-                    'W' => sprintf('%02d', intdiv($this->days, 7)),
-                    'w' => (string) intdiv($this->days, 7),
-                    'D' => sprintf('%02d', $this->days),
-                    'd' => (string) $this->days,
-                    'E' => sprintf('%02d', $this->days % 7),
-                    'e' => (string) ($this->days % 7),
-                    'H' => sprintf('%02d', $this->hours),
-                    'h' => (string) $this->hours,
-                    'I' => sprintf('%02d', $this->minutes),
-                    'i' => (string) $this->minutes,
-                    'S' => sprintf('%02d', $this->seconds),
-                    's' => (string) $this->seconds,
-                    'F' => ($this->microseconds) ? sprintf('.%06d', $this->microseconds) : '',
-                    'f' => ($this->microseconds) ? rtrim(sprintf('.%06d', $this->microseconds), '0') : '',
-                    'U' => sprintf('%06d', $this->microseconds),
-                    'u' => (string) $this->microseconds,
-                    'V' => sprintf('%03d', intdiv($this->microseconds, 1_000)),
-                    'v' => (string) intdiv($this->microseconds, 1_000),
-                    default => $matches[0],
-                },
-                subject: $format
-            )
+        $string = preg_replace_callback(
+            pattern: self::FORMAT_PATTERN,
+            callback: fn (array $matches) => match ($matches[1]) {
+                '%' => '%',
+                'Y' => sprintf('%04d', $this->years),
+                'y' => (string) $this->years,
+                'M' => sprintf('%02d', $this->months),
+                'm' => (string) $this->months,
+                'W' => sprintf('%02d', intdiv($this->days, 7)),
+                'w' => (string) intdiv($this->days, 7),
+                'D' => sprintf('%02d', $this->days),
+                'd' => (string) $this->days,
+                'E' => sprintf('%02d', $this->days % 7),
+                'e' => (string) ($this->days % 7),
+                'H' => sprintf('%02d', $this->hours),
+                'h' => (string) $this->hours,
+                'I' => sprintf('%02d', $this->minutes),
+                'i' => (string) $this->minutes,
+                'S' => sprintf('%02d', $this->seconds),
+                's' => (string) $this->seconds,
+                'F' => ($this->microseconds) ? sprintf('.%06d', $this->microseconds) : '',
+                'f' => ($this->microseconds) ? rtrim(sprintf('.%06d', $this->microseconds), '0') : '',
+                'U' => sprintf('%06d', $this->microseconds),
+                'u' => (string) $this->microseconds,
+                'V' => sprintf('%03d', intdiv($this->microseconds, 1_000)),
+                'v' => (string) intdiv($this->microseconds, 1_000),
+                default => $matches[0],
+            },
+            subject: $format
         );
+
+        if (!is_string($string)) {
+            return Error::withException(new FormatException($format));
+        }
+
+        return Ok::withValue($string);
     }
 
     public function toIso8601(): string
@@ -395,26 +405,28 @@ class Period implements IPeriod, Stringable
 
     public function is(IPeriod $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->microseconds === $that->microseconds
-            && $this->seconds === $that->seconds
-            && $this->minutes === $that->minutes
-            && $this->hours === $that->hours
-            && $this->days === $that->days
-            && $this->months === $that->months
-            && $this->years === $that->years;
+            && $this->microseconds === $that->microseconds // @phpstan-ignore-line
+            && $this->seconds === $that->seconds // @phpstan-ignore-line
+            && $this->minutes === $that->minutes // @phpstan-ignore-line
+            && $this->hours === $that->hours // @phpstan-ignore-line
+            && $this->days === $that->days // @phpstan-ignore-line
+            && $this->months === $that->months // @phpstan-ignore-line
+            && $this->years === $that->years; // @phpstan-ignore-line
     }
 
     public function isNot(IPeriod $that): bool
     {
+        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->microseconds !== $that->microseconds
-            || $this->seconds !== $that->seconds
-            || $this->minutes !== $that->minutes
-            || $this->hours !== $that->hours
-            || $this->days !== $that->days
-            || $this->months !== $that->months
-            || $this->years !== $that->years;
+            || $this->microseconds !== $that->microseconds // @phpstan-ignore-line
+            || $this->seconds !== $that->seconds // @phpstan-ignore-line
+            || $this->minutes !== $that->minutes // @phpstan-ignore-line
+            || $this->hours !== $that->hours // @phpstan-ignore-line
+            || $this->days !== $that->days // @phpstan-ignore-line
+            || $this->months !== $that->months // @phpstan-ignore-line
+            || $this->years !== $that->years; // @phpstan-ignore-line
     }
 
     public function isEqual(IPeriod $that): bool
@@ -526,12 +538,19 @@ class Period implements IPeriod, Stringable
         int $microseconds = 0,
     ): static {
         if (is_int($years)) {
-            $period = static::of(...func_get_args());
-        } else {
+            $period = static::of(
+                $years, $months, $weeks, $days,
+                $hours, $minutes, $seconds,
+                $milliseconds, $microseconds,
+            );
+        } elseif (!$months && !$weeks && !$days
+            && !$hours && !$minutes && !$seconds
+            && !$milliseconds && !$microseconds) {
             $period = $years;
-            if (func_num_args() !== 1) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
+        } else {
+            throw new InvalidArgumentException(
+                'No time units are allowed when a period is passed'
+            );
         }
 
         return new static(
@@ -557,12 +576,19 @@ class Period implements IPeriod, Stringable
         int $microseconds = 0,
     ): static {
         if (is_int($years)) {
-            $period = static::of(...func_get_args());
-        } else {
+            $period = static::of(
+                $years, $months, $weeks, $days,
+                $hours, $minutes, $seconds,
+                $milliseconds, $microseconds,
+            );
+        } elseif (!$months && !$weeks && !$days
+            && !$hours && !$minutes && !$seconds
+            && !$milliseconds && !$microseconds) {
             $period = $years;
-            if (func_num_args() !== 1) {
-                throw new InvalidArgumentException('No time units are allowed when a period is passed');
-            }
+        } else {
+            throw new InvalidArgumentException(
+                'No time units are allowed when a period is passed'
+            );
         }
 
         return new static(
@@ -643,6 +669,9 @@ class Period implements IPeriod, Stringable
 
     public function normalized(): static
     {
+        $factors = [12, 30, 24, 60, 60, 1_000_000, 0];
+        $reversedFactors = [1_000_000, 60, 60, 24, 30, 12, 0];
+
         $changed = false;
 
         $y = $this->years;
@@ -653,17 +682,25 @@ class Period implements IPeriod, Stringable
         $s = $this->seconds;
         $f = $this->microseconds;
 
-        $reversedValues = [&$f, &$s, &$i, &$h, &$d, &$m, &$y];
-        $reversedFactors = [1_000_000, 60, 60, 24, 30, 12, 0];
-        $this->normalizeOverflowedValues($reversedValues, $reversedFactors, $changed);
+        [$f, $s, $i, $h, $d, $m, $y] = $this->normalizeOverflowedValues(
+            [$f, $s, $i, $h, $d, $m, $y],
+            $reversedFactors,
+            $changed,
+        );
 
         if ($this->hasNegativeValues()
             && $this->hasPositiveValues()) {
-            $values = [&$y, &$m, &$d, &$h, &$i, &$s, &$f];
-            $factors = [12, 30, 24, 60, 60, 1_000_000, 0];
-            $this->normalizeMixedSigns($values, $factors, $changed);
+            [$y, $m, $d, $h, $i, $s, $f] = $this->normalizeMixedSigns(
+                [$y, $m, $d, $h, $i, $s, $f],
+                $factors,
+                $changed,
+            );
 
-            $this->normalizeOverflowedValues($reversedValues, $reversedFactors, $changed);
+            [$f, $s, $i, $h, $d, $m, $y] = $this->normalizeOverflowedValues(
+                [$f, $s, $i, $h, $d, $m, $y],
+                $reversedFactors,
+                $changed,
+            );
         }
 
         if (!$changed) {
@@ -673,7 +710,14 @@ class Period implements IPeriod, Stringable
         return new static($y, $m, $d, $h, $i, $s, $f);
     }
 
-    private function normalizeOverflowedValues(array $values, array $factors, bool &$changed): void
+    /**
+     * @param int[] $values
+     * @param int[] $factors
+     * @param bool $changed
+     *
+     * @return int[]
+     */
+    private function normalizeOverflowedValues(array $values, array $factors, bool &$changed): array
     {
         $previousValue = 0;
         $previousFactor = 0;
@@ -691,9 +735,18 @@ class Period implements IPeriod, Stringable
             $previousValue = &$value;
             $previousFactor = $factor;
         }
+
+        return $values;
     }
 
-    private function normalizeMixedSigns(array $values, array $factors, bool &$changed): void
+    /**
+     * @param int[] $values
+     * @param int[] $factors
+     * @param bool $changed
+     *
+     * @return int[]
+     */
+    private function normalizeMixedSigns(array $values, array $factors, bool &$changed): array
     {
         $sign = 0;
 
@@ -731,6 +784,8 @@ class Period implements IPeriod, Stringable
             $previousValue = &$value;
             $previousFactor = $factor;
         }
+
+        return $values;
     }
 
     public function with(
@@ -763,13 +818,18 @@ class Period implements IPeriod, Stringable
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
-    ): IResult {
+    ): Ok|Error {
         try {
-            $period = $this->plus(...func_get_args());
+            $period = $this->plus(
+                $years, $months, $weeks, $days,
+                $hours, $minutes, $seconds,
+                $milliseconds, $microseconds,
+            );
         } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($period);
     }
 
@@ -783,17 +843,22 @@ class Period implements IPeriod, Stringable
         int $seconds = 0,
         int $milliseconds = 0,
         int $microseconds = 0,
-    ): IResult {
+    ): Ok|Error {
         try {
-            $period = $this->minus(...func_get_args());
+            $period = $this->minus(
+                $years, $months, $weeks, $days,
+                $hours, $minutes, $seconds,
+                $milliseconds, $microseconds,
+            );
         } catch (ArithmeticError $e) {
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($period);
     }
 
-    public function multiplyBy(int $multiplicand): IResult
+    public function multiplyBy(int $multiplicand): Ok|Error
     {
         try {
             $period = $this->multipliedBy($multiplicand);
@@ -801,10 +866,11 @@ class Period implements IPeriod, Stringable
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($period);
     }
 
-    public function divideBy(int $divisor): IResult
+    public function divideBy(int $divisor): Ok|Error
     {
         try {
             $period = $this->dividedBy($divisor);
@@ -812,6 +878,7 @@ class Period implements IPeriod, Stringable
             return Error::withException($e);
         }
 
+        /** @var Ok<static> */
         return Ok::withValue($period);
     }
 }
