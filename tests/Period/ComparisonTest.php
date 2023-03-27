@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\Period;
 
-use DateInterval as StandardDateInterval;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 

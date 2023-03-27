@@ -8,6 +8,7 @@ use Hereldar\DateTimes\Interfaces\IDateTime;
 use Hereldar\DateTimes\Interfaces\ILocalDate;
 use Hereldar\DateTimes\Interfaces\ILocalDateTime;
 use Hereldar\DateTimes\Interfaces\ILocalTime;
+use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
 use PHPUnit\Framework\Constraint\ExceptionCode;
@@ -209,6 +210,29 @@ abstract class TestCase extends PHPUnitTestCase
         if ($microsecond !== null) {
             $actual['microsecond'] = $time->microsecond();
             $expected['microsecond'] = $microsecond;
+        }
+
+        static::assertSame($expected, $actual);
+    }
+
+    public static function assertOffset(
+        IOffset $times,
+        int $hours,
+        ?int $minutes = null,
+        ?int $seconds = null,
+    ): void {
+        $actual = ['hours' => $times->hours()];
+
+        $expected = ['hours' => $hours];
+
+        if ($minutes !== null) {
+            $actual['minutes'] = $times->minutes();
+            $expected['minutes'] = $minutes;
+        }
+
+        if ($seconds !== null) {
+            $actual['seconds'] = $times->seconds();
+            $expected['seconds'] = $seconds;
         }
 
         static::assertSame($expected, $actual);

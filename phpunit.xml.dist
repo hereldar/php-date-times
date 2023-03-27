@@ -22,9 +22,9 @@
     <testsuite name="local-time">
       <directory>tests/LocalTime</directory>
     </testsuite>
-    <!--<testsuite name="offset">
+    <testsuite name="offset">
       <directory>tests/Offset</directory>
-    </testsuite>-->
+    </testsuite>
     <testsuite name="period">
       <directory>tests/Period</directory>
     </testsuite>
