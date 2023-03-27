@@ -18,6 +18,9 @@ abstract class TestCase extends PHPUnitTestCase
 {
     /**
      * @param class-string<Throwable> $expectedException
+     *
+     * @psalm-suppress InternalClass
+     * @psalm-suppress InternalMethod
      */
     public static function assertException(
         string $expectedException,
@@ -25,36 +28,34 @@ abstract class TestCase extends PHPUnitTestCase
     ): void {
         try {
             $callback();
+            $exception = null;
         } catch (Throwable $exception) {
-            static::assertThat(
-                $exception,
-                new ExceptionConstraint(
-                    $expectedException
-                )
-            );
-
-            return;
         }
-
+        /** @psalm-suppress PossiblyUndefinedVariable */
         static::assertThat(
-            null,
+            $exception,
             new ExceptionConstraint(
                 $expectedException
             )
         );
     }
 
+    /**
+     * @psalm-suppress InternalClass
+     * @psalm-suppress InternalMethod
+     */
     public static function assertExceptionCode(
         int|string $expectedCode,
         callable $callback
     ): void {
         try {
             $callback();
+            $exception = null;
         } catch (Throwable $exception) {
         }
-
+        /** @psalm-suppress PossiblyUndefinedVariable */
         static::assertThat(
-            $exception ?? null,
+            $exception,
             new ExceptionCode(
                 $expectedCode
             )

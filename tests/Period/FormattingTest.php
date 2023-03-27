@@ -7,6 +7,9 @@ namespace Hereldar\DateTimes\Tests\Period;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 final class FormattingTest extends TestCase
 {
     private Period $period;
