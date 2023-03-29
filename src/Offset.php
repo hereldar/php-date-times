@@ -11,6 +11,7 @@ use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
+use InvalidArgumentException;
 use OutOfRangeException;
 use Stringable;
 
@@ -310,21 +311,37 @@ class Offset implements IOffset, Stringable
     }
 
     public function plus(
-        int $hours = 0,
+        int|IOffset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): static {
-        $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+        if (is_int($hours)) {
+            $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+        } elseif (!$minutes && !$seconds) {
+            $totalSeconds = $hours->totalSeconds();
+        } else {
+            throw new InvalidArgumentException(
+                'No time units are allowed when an offset is passed'
+            );
+        }
 
         return static::fromTotalSeconds(intadd($this->value, $totalSeconds));
     }
 
     public function minus(
-        int $hours = 0,
+        int|IOffset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): static {
-        $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+        if (is_int($hours)) {
+            $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+        } elseif (!$minutes && !$seconds) {
+            $totalSeconds = $hours->totalSeconds();
+        } else {
+            throw new InvalidArgumentException(
+                'No time units are allowed when an offset is passed'
+            );
+        }
 
         return static::fromTotalSeconds(intsub($this->value, $totalSeconds));
     }
@@ -352,13 +369,13 @@ class Offset implements IOffset, Stringable
     }
 
     public function add(
-        int $hours = 0,
+        int|IOffset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): Ok|Error {
         try {
             $period = $this->plus($hours, $minutes, $seconds);
-        } catch (ArithmeticError|OutOfRangeException $e) {
+        } catch (OutOfRangeException $e) {
             return Error::withException($e);
         }
 
@@ -367,13 +384,13 @@ class Offset implements IOffset, Stringable
     }
 
     public function subtract(
-        int $hours = 0,
+        int|IOffset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): Ok|Error {
         try {
             $period = $this->minus($hours, $minutes, $seconds);
-        } catch (ArithmeticError|OutOfRangeException $e) {
+        } catch (OutOfRangeException $e) {
             return Error::withException($e);
         }
 

@@ -8,6 +8,7 @@ use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
+use OutOfRangeException;
 
 interface IOffset
 {
@@ -57,13 +58,13 @@ interface IOffset
     public function isZero(): bool;
 
     public function plus(
-        int $hours = 0,
+        int|IOffset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): static;
 
     public function minus(
-        int $hours = 0,
+        int|IOffset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): static;
@@ -78,12 +79,18 @@ interface IOffset
         ?int $seconds = null,
     ): static;
 
+    /**
+     * @return Ok<static>|Error<OutOfRangeException>
+     */
     public function add(
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): Ok|Error;
 
+    /**
+     * @return Ok<static>|Error<OutOfRangeException>
+     */
     public function subtract(
         int $hours = 0,
         int $minutes = 0,
