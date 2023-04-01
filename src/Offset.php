@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes;
 
-use ArithmeticError;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IOffset;
@@ -20,6 +19,17 @@ use Stringable;
  */
 class Offset implements IOffset, Stringable
 {
+    public const HOURS_MAX = +self::HOURS_LIMIT;
+    public const HOURS_MIN = -self::HOURS_LIMIT;
+    public const MINUTES_MAX = +self::MINUTES_LIMIT;
+    public const MINUTES_MIN = -self::MINUTES_LIMIT;
+    public const SECONDS_MAX = +self::SECONDS_LIMIT;
+    public const SECONDS_MIN = -self::SECONDS_LIMIT;
+    public const TOTAL_MINUTES_MAX = +self::TOTAL_MINUTES_LIMIT;
+    public const TOTAL_MINUTES_MIN = -self::TOTAL_MINUTES_LIMIT;
+    public const TOTAL_SECONDS_MAX = +self::TOTAL_SECONDS_LIMIT;
+    public const TOTAL_SECONDS_MIN = -self::TOTAL_SECONDS_LIMIT;
+
     private const HOURS_LIMIT = 18;
     private const MINUTES_LIMIT = 59;
     private const SECONDS_LIMIT = 59;
@@ -52,22 +62,22 @@ class Offset implements IOffset, Stringable
     }
 
     public static function of(
-        int $hours,
+        int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): static {
-        if ($hours < -self::HOURS_LIMIT
-            || $hours > +self::HOURS_LIMIT) {
+        if ($hours < self::HOURS_MIN
+            || $hours > self::HOURS_MAX) {
             throw new OutOfRangeException();
         }
 
-        if ($minutes < -self::MINUTES_LIMIT
-            || $minutes > +self::MINUTES_LIMIT) {
+        if ($minutes < self::MINUTES_MIN
+            || $minutes > self::MINUTES_MAX) {
             throw new OutOfRangeException();
         }
 
-        if ($seconds < -self::SECONDS_LIMIT
-            || $seconds > +self::SECONDS_LIMIT) {
+        if ($seconds < self::SECONDS_MIN
+            || $seconds > self::SECONDS_MAX) {
             throw new OutOfRangeException();
         }
 
@@ -76,8 +86,8 @@ class Offset implements IOffset, Stringable
 
     public static function fromTotalMinutes(int $minutes): static
     {
-        if ($minutes < -self::TOTAL_MINUTES_LIMIT
-            || $minutes > +self::TOTAL_MINUTES_LIMIT) {
+        if ($minutes < self::TOTAL_MINUTES_MIN
+            || $minutes > self::TOTAL_MINUTES_MAX) {
             throw new OutOfRangeException();
         }
 
@@ -86,8 +96,8 @@ class Offset implements IOffset, Stringable
 
     public static function fromTotalSeconds(int $seconds): static
     {
-        if ($seconds < -self::TOTAL_SECONDS_LIMIT
-            || $seconds > +self::TOTAL_SECONDS_LIMIT) {
+        if ($seconds < self::TOTAL_SECONDS_MIN
+            || $seconds > self::TOTAL_SECONDS_MAX) {
             throw new OutOfRangeException();
         }
 
