@@ -36,6 +36,9 @@ class Offset implements IOffset, Stringable
     private const TOTAL_MINUTES_LIMIT = (self::HOURS_LIMIT * 60) + self::MINUTES_LIMIT;
     private const TOTAL_SECONDS_LIMIT = (self::HOURS_LIMIT * 3600) + (self::MINUTES_LIMIT * 60) + self::SECONDS_LIMIT;
 
+    /** @var array<class-string, array<int, static>> */
+    private static array $cache = [];
+
     private const ISO8601_PATTERN = <<<'REGEX'
         /
             (?P<sign>[+-])
@@ -81,7 +84,7 @@ class Offset implements IOffset, Stringable
             throw new OutOfRangeException();
         }
 
-        return new static(($hours * 3600) + ($minutes * 60) + $seconds);
+        return static::fromTotalSeconds(($hours * 3600) + ($minutes * 60) + $seconds);
     }
 
     public static function fromTotalMinutes(int $minutes): static
@@ -91,7 +94,7 @@ class Offset implements IOffset, Stringable
             throw new OutOfRangeException();
         }
 
-        return new static($minutes * 60);
+        return static::fromTotalSeconds($minutes * 60);
     }
 
     public static function fromTotalSeconds(int $seconds): static
@@ -101,12 +104,14 @@ class Offset implements IOffset, Stringable
             throw new OutOfRangeException();
         }
 
-        return new static($seconds);
+        $class = static::class;
+
+        return self::$cache[$class][$seconds] ??= new static($seconds);
     }
 
     public static function zero(): static
     {
-        return new static(0);
+        return static::fromTotalSeconds(0);
     }
 
     /**
@@ -358,12 +363,12 @@ class Offset implements IOffset, Stringable
 
     public function abs(): static
     {
-        return new static(abs($this->value));
+        return static::fromTotalSeconds(abs($this->value));
     }
 
     public function negated(): static
     {
-        return new static(-$this->value);
+        return static::fromTotalSeconds(-$this->value);
     }
 
     public function with(

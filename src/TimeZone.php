@@ -17,6 +17,9 @@ use Stringable;
  */
 class TimeZone implements ITimeZone, Stringable
 {
+    /** @var array<class-string, array<string, static>> */
+    private static array $cache = [];
+
     private function __construct(
         private readonly StandardTimeZone $value,
     ) {
@@ -40,13 +43,25 @@ class TimeZone implements ITimeZone, Stringable
     public static function of(
         string $name,
     ): static {
-        return new static(new StandardTimeZone($name));
+        $class = static::class;
+
+        $timeZone = (
+            self::$cache[$class][$name]
+                ??= new static(new StandardTimeZone($name))
+        );
+
+        self::$cache[$class][$timeZone->name()] = $timeZone;
+
+        return $timeZone;
     }
 
     public static function fromStandard(
         StandardTimeZone $value
     ): static {
-        return new static($value);
+        $class = static::class;
+        $name = $value->getName();
+
+        return self::$cache[$class][$name] ??= new static($value);
     }
 
     public function toStandard(): StandardTimeZone

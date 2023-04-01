@@ -43,9 +43,9 @@ class DateTime implements IDateTime, Stringable
     ): static {
         try {
             $tz = match (true) {
+                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
                 $timeZone instanceof ITimeZone => $timeZone->toStandard(),
                 $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
-                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
             };
 
             $dt = new StandardDateTime('now', $tz);
@@ -92,9 +92,9 @@ class DateTime implements IDateTime, Stringable
         ITimeZone|IOffset|string $timeZone = 'UTC',
     ): Ok|Error {
         $tz = match (true) {
+            is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
             $timeZone instanceof ITimeZone => $timeZone->toStandard(),
             $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
-            is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
         };
 
         $dt = StandardDateTime::createFromFormat($format, $string, $tz);
@@ -409,9 +409,9 @@ class DateTime implements IDateTime, Stringable
 
         if ($timeZone !== null) {
             $dt = $dt->setTimezone(match (true) {
+                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
                 $timeZone instanceof ITimeZone => $timeZone->toStandard(),
                 $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
-                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
             });
         }
 

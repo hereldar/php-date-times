@@ -42,9 +42,9 @@ class LocalTime implements ILocalTime, Stringable
     ): static {
         try {
             $tz = match (true) {
+                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
                 $timeZone instanceof ITimeZone => $timeZone->toStandard(),
                 $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
-                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
             };
 
             $dt = new StandardDateTime('now', $tz);
