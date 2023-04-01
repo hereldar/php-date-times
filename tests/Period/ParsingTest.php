@@ -13,18 +13,24 @@ final class ParsingTest extends TestCase
     public function testEmptyString(): void
     {
         $this->expectException(ParseException::class);
+
+        /** @psalm-suppress UnusedMethodCall */
         Period::parse('', '%H:%i:%s')->orFail();
     }
 
     public function testTrailingData(): void
     {
         $this->expectException(ParseException::class);
+
+        /** @psalm-suppress UnusedMethodCall */
         Period::parse('01:30:25', '%H:%i')->orFail();
     }
 
     public function testInvalidSubstitute(): void
     {
         $this->expectException(ParseException::class);
+
+        /** @psalm-suppress UnusedMethodCall */
         Period::parse('4', '%N')->orFail();
     }
 

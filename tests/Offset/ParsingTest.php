@@ -14,18 +14,24 @@ final class ParsingTest extends TestCase
     public function testEmptyString(): void
     {
         $this->expectException(ParseException::class);
+
+        /** @psalm-suppress UnusedMethodCall */
         Offset::parse('', '%H:%i:%s')->orFail();
     }
 
     public function testTrailingData(): void
     {
         $this->expectException(ParseException::class);
+
+        /** @psalm-suppress UnusedMethodCall */
         Offset::parse('01:30:25', '%H:%i')->orFail();
     }
 
     public function testInvalidSubstitute(): void
     {
         $this->expectException(ParseException::class);
+
+        /** @psalm-suppress UnusedMethodCall */
         Offset::parse('4', '%N')->orFail();
     }
 
@@ -41,6 +47,8 @@ final class ParsingTest extends TestCase
         self::assertOffset($offset, 18, 0, 0);
 
         $this->expectException(OutOfRangeException::class);
+
+        /** @psalm-suppress UnusedMethodCall */
         Offset::parse('19', '%H')->orFail();
     }
 
@@ -55,6 +63,8 @@ final class ParsingTest extends TestCase
         self::assertOffset($offset, 0, 59, 0);
 
         $this->expectException(OutOfRangeException::class);
+
+        /** @psalm-suppress UnusedMethodCall */
         Offset::parse('60', '%I')->orFail();
     }
 
@@ -69,6 +79,8 @@ final class ParsingTest extends TestCase
         self::assertOffset($offset, 0, 0, 59);
 
         $this->expectException(OutOfRangeException::class);
+
+        /** @psalm-suppress UnusedMethodCall */
         Offset::parse('60', '%S')->orFail();
     }
 

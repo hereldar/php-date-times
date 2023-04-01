@@ -144,6 +144,7 @@ final class ParsingTest extends TestCase
     public function testEmptyString(): void
     {
         try {
+            /** @psalm-suppress UnusedMethodCall */
             DateTime::parse('', 'Y-m-d H:i:s')->orFail();
         } catch (ParseException $e) {
             self::assertSame('', $e->string());
@@ -155,6 +156,7 @@ final class ParsingTest extends TestCase
     public function testTrailingData(): void
     {
         try {
+            /** @psalm-suppress UnusedMethodCall */
             DateTime::parse('1970-01-01 15:00:00+02:00', 'Y-m-d H:i:s')->orFail();
         } catch (ParseException $e) {
             self::assertSame('1970-01-01 15:00:00+02:00', $e->string());
@@ -166,6 +168,7 @@ final class ParsingTest extends TestCase
     public function testInvalidFormat(): void
     {
         try {
+            /** @psalm-suppress UnusedMethodCall */
             DateTime::parse('4', 'b')->orFail();
         } catch (ParseException $e) {
             self::assertSame('4', $e->string());
@@ -177,6 +180,7 @@ final class ParsingTest extends TestCase
     public function testInvalidSubstitute(): void
     {
         try {
+            /** @psalm-suppress UnusedMethodCall */
             DateTime::parse('4', 'T')->orFail();
         } catch (ParseException $e) {
             self::assertSame('4', $e->string());
