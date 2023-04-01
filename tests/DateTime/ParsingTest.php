@@ -69,6 +69,34 @@ final class ParsingTest extends TestCase
         );
     }
 
+    public function testFromSql(): void
+    {
+        self::assertEquals(
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(-2)),
+            DateTime::fromSql('1986-12-25 12:30:25 -02:00')
+        );
+        self::assertEquals(
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::of(-2)),
+            DateTime::fromSql('1986-12-25 12:30:25.123 -02:00', milliseconds: true)
+        );
+        self::assertEquals(
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(-2)),
+            DateTime::fromSql('1986-12-25 12:30:25.123456 -02:00', microseconds: true)
+        );
+        self::assertEquals(
+            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(-2)),
+            DateTime::parse('1986-12-25 12:30:25 -02:00', IDateTime::SQL)->orFail()
+        );
+        self::assertEquals(
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::of(-2)),
+            DateTime::parse('1986-12-25 12:30:25.123 -02:00', IDateTime::SQL_MILLISECONDS)->orFail()
+        );
+        self::assertEquals(
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(-2)),
+            DateTime::parse('1986-12-25 12:30:25.123456 -02:00', IDateTime::SQL_MICROSECONDS)->orFail()
+        );
+    }
+
     public function testFromAtom(): void
     {
         self::assertEquals(

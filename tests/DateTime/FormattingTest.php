@@ -56,19 +56,47 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(
             '1986-12-25T12:30:25+03:00',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(3))->toRfc3339()
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->toRfc3339()
         );
         self::assertSame(
             '1986-12-25T12:30:25.123+03:00',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::of(3))->toRfc3339(milliseconds: true)
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->toRfc3339(milliseconds: true)
         );
         self::assertSame(
             '1986-12-25T12:30:25+03:00',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(3))->format(IDateTime::RFC3339)->orFail()
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->format(IDateTime::RFC3339)->orFail()
         );
         self::assertSame(
             '1986-12-25T12:30:25.123+03:00',
-            DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::of(3))->format(IDateTime::RFC3339_EXTENDED)->orFail()
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->format(IDateTime::RFC3339_EXTENDED)->orFail()
+        );
+    }
+
+    public function testToSql(): void
+    {
+        self::assertSame(
+            '1986-12-25 12:30:25 +03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->toSql()
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25.123 +03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->toSql(milliseconds: true)
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25.123456 +03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->toSql(microseconds: true)
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25 +03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->format(IDateTime::SQL)->orFail()
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25.123 +03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->format(IDateTime::SQL_MILLISECONDS)->orFail()
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25.123456 +03:00',
+            DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->format(IDateTime::SQL_MICROSECONDS)->orFail()
         );
     }
 

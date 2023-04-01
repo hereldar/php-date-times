@@ -115,9 +115,22 @@ class LocalTime implements ILocalTime, Stringable
 
     public static function fromRfc3339(string $value, bool $milliseconds = false): static
     {
-        return static::parse($value, ($milliseconds)
+        $format = ($milliseconds)
             ? ILocalTime::RFC3339_EXTENDED
-            : ILocalTime::RFC3339)->orFail();
+            : ILocalTime::RFC3339;
+
+        return static::parse($value, $format)->orFail();
+    }
+
+    public static function fromSql(string $value, bool $milliseconds = false, bool $microseconds = false): static
+    {
+        $format = match (true) {
+            $microseconds => ILocalTime::SQL_MICROSECONDS,
+            $milliseconds => ILocalTime::SQL_MILLISECONDS,
+            default => ILocalTime::SQL,
+        };
+
+        return static::parse($value, $format)->orFail();
     }
 
     public static function fromStandard(
@@ -148,6 +161,15 @@ class LocalTime implements ILocalTime, Stringable
         return $this->value->format(($milliseconds)
             ? ILocalTime::RFC3339_EXTENDED
             : ILocalTime::RFC3339);
+    }
+
+    public function toSql(bool $milliseconds = false, bool $microseconds = false): string
+    {
+        return $this->value->format(match (true) {
+            $microseconds => ILocalTime::SQL_MICROSECONDS,
+            $milliseconds => ILocalTime::SQL_MILLISECONDS,
+            default => ILocalTime::SQL,
+        });
     }
 
     public function toStandard(): StandardDateTime

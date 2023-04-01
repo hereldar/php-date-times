@@ -66,6 +66,18 @@ final class FormattingTest extends TestCase
         );
     }
 
+    public function testToSql(): void
+    {
+        self::assertSame(
+            '1986-12-25',
+            LocalDate::of(1986, 12, 25)->toSql()
+        );
+        self::assertSame(
+            '1986-12-25',
+            LocalDate::of(1986, 12, 25)->format(ILocalDate::SQL)->orFail()
+        );
+    }
+
     public function testToAtom(): void
     {
         self::assertSame(

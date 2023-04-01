@@ -54,19 +54,47 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(
             '1986-12-25T12:30:25',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25)->toRfc3339()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->toRfc3339()
         );
         self::assertSame(
             '1986-12-25T12:30:25.123',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_000)->toRfc3339(milliseconds: true)
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->toRfc3339(milliseconds: true)
         );
         self::assertSame(
             '1986-12-25T12:30:25',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25)->format(ILocalDateTime::RFC3339)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::RFC3339)->orFail()
         );
         self::assertSame(
             '1986-12-25T12:30:25.123',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_000)->format(ILocalDateTime::RFC3339_EXTENDED)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::RFC3339_EXTENDED)->orFail()
+        );
+    }
+
+    public function testToSql(): void
+    {
+        self::assertSame(
+            '1986-12-25 12:30:25',
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->toSql()
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25.123',
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->toSql(milliseconds: true)
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25.123456',
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->toSql(microseconds: true)
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25',
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::SQL)->orFail()
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25.123',
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::SQL_MILLISECONDS)->orFail()
+        );
+        self::assertSame(
+            '1986-12-25 12:30:25.123456',
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::SQL_MICROSECONDS)->orFail()
         );
     }
 

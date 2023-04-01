@@ -63,6 +63,18 @@ final class ParsingTest extends TestCase
         );
     }
 
+    public function testFromSql(): void
+    {
+        self::assertEquals(
+            LocalDate::of(1986, 12, 25),
+            LocalDate::fromSql('1986-12-25')
+        );
+        self::assertEquals(
+            LocalDate::of(1986, 12, 25),
+            LocalDate::parse('1986-12-25', ILocalDate::SQL)->orFail()
+        );
+    }
+
     public function testFromAtom(): void
     {
         self::assertEquals(

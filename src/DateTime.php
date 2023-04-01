@@ -124,9 +124,22 @@ class DateTime implements IDateTime, Stringable
 
     public static function fromRfc3339(string $value, bool $milliseconds = false): static
     {
-        return static::parse($value, ($milliseconds)
+        $format = ($milliseconds)
             ? IDateTime::RFC3339_EXTENDED
-            : IDateTime::RFC3339)->orFail();
+            : IDateTime::RFC3339;
+
+        return static::parse($value, $format)->orFail();
+    }
+
+    public static function fromSql(string $value, bool $milliseconds = false, bool $microseconds = false): static
+    {
+        $format = match (true) {
+            $microseconds => IDateTime::SQL_MICROSECONDS,
+            $milliseconds => IDateTime::SQL_MILLISECONDS,
+            default => IDateTime::SQL,
+        };
+
+        return static::parse($value, $format)->orFail();
     }
 
     public static function fromStandard(StandardDateTimeInterface $value): static
@@ -158,6 +171,15 @@ class DateTime implements IDateTime, Stringable
         return $this->value->format(($milliseconds)
             ? IDateTime::RFC3339_EXTENDED
             : IDateTime::RFC3339);
+    }
+
+    public function toSql(bool $milliseconds = false, bool $microseconds = false): string
+    {
+        return $this->value->format(match (true) {
+            $microseconds => IDateTime::SQL_MICROSECONDS,
+            $milliseconds => IDateTime::SQL_MILLISECONDS,
+            default => IDateTime::SQL,
+        });
     }
 
     public function toStandard(): StandardDateTime

@@ -25,6 +25,7 @@ interface ILocalDate
     final public const RFC3339_EXTENDED = 'Y-m-d';
     final public const RFC7231 = 'D, d M Y';
     final public const RSS = 'D, d M Y';
+    final public const SQL = 'Y-m-d';
     final public const W3C = 'Y-m-d';
 
     /**
@@ -37,6 +38,8 @@ interface ILocalDate
     public function toRfc2822(): string;
 
     public function toRfc3339(): string;
+
+    public function toSql(): string;
 
     public function toStandard(): StandardDateTime;
 

@@ -25,6 +25,9 @@ interface ILocalTime
     final public const RFC3339_EXTENDED = 'H:i:s.v';
     final public const RFC7231 = 'H:i:s';
     final public const RSS = 'H:i:s';
+    final public const SQL = 'H:i:s';
+    final public const SQL_MICROSECONDS = 'H:i:s.u';
+    final public const SQL_MILLISECONDS = 'H:i:s.v';
     final public const W3C = 'H:i:s';
 
     /**
@@ -37,6 +40,8 @@ interface ILocalTime
     public function toRfc2822(): string;
 
     public function toRfc3339(bool $milliseconds = false): string;
+
+    public function toSql(bool $milliseconds = false, bool $microseconds = false): string;
 
     public function toStandard(): StandardDateTime;
 

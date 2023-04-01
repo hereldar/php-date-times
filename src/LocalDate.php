@@ -112,6 +112,11 @@ class LocalDate implements ILocalDate, Stringable
         return static::parse($value, ILocalDate::RFC3339)->orFail();
     }
 
+    public static function fromSql(string $value): static
+    {
+        return static::parse($value, ILocalDate::SQL)->orFail();
+    }
+
     public static function fromStandard(
         StandardDateTimeInterface $value
     ): static {
@@ -138,6 +143,11 @@ class LocalDate implements ILocalDate, Stringable
     public function toRfc3339(): string
     {
         return $this->value->format(ILocalDate::RFC3339);
+    }
+
+    public function toSql(): string
+    {
+        return $this->value->format(ILocalDate::SQL);
     }
 
     public function toStandard(): StandardDateTime

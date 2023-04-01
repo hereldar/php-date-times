@@ -54,19 +54,47 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25)->toRfc3339()
+            LocalTime::of(12, 30, 25, 123_456)->toRfc3339()
         );
         self::assertSame(
             '12:30:25.123',
-            LocalTime::of(12, 30, 25, 123_000)->toRfc3339(milliseconds: true)
+            LocalTime::of(12, 30, 25, 123_456)->toRfc3339(milliseconds: true)
         );
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::RFC3339)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::RFC3339)->orFail()
         );
         self::assertSame(
             '12:30:25.123',
-            LocalTime::of(12, 30, 25, 123_000)->format(ILocalTime::RFC3339_EXTENDED)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::RFC3339_EXTENDED)->orFail()
+        );
+    }
+
+    public function testToSql(): void
+    {
+        self::assertSame(
+            '12:30:25',
+            LocalTime::of(12, 30, 25, 123_456)->toSql()
+        );
+        self::assertSame(
+            '12:30:25.123',
+            LocalTime::of(12, 30, 25, 123_456)->toSql(milliseconds: true)
+        );
+        self::assertSame(
+            '12:30:25.123456',
+            LocalTime::of(12, 30, 25, 123_456)->toSql(microseconds: true)
+        );
+        self::assertSame(
+            '12:30:25',
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::SQL)->orFail()
+        );
+        self::assertSame(
+            '12:30:25.123',
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::SQL_MILLISECONDS)->orFail()
+        );
+        self::assertSame(
+            '12:30:25.123456',
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::SQL_MICROSECONDS)->orFail()
         );
     }
 
