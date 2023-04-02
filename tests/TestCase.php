@@ -11,7 +11,6 @@ use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
-use PHPUnit\Framework\Constraint\ExceptionCode;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use Throwable;
 
@@ -37,28 +36,6 @@ abstract class TestCase extends PHPUnitTestCase
             $exception,
             new ExceptionConstraint(
                 $expectedException
-            )
-        );
-    }
-
-    /**
-     * @psalm-suppress InternalClass
-     * @psalm-suppress InternalMethod
-     */
-    public static function assertExceptionCode(
-        int|string $expectedCode,
-        callable $callback
-    ): void {
-        try {
-            $callback();
-            $exception = null;
-        } catch (Throwable $exception) {
-        }
-        /** @psalm-suppress PossiblyUndefinedVariable */
-        static::assertThat(
-            $exception,
-            new ExceptionCode(
-                $expectedCode
             )
         );
     }
