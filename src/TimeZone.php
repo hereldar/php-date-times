@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes;
 
-use DateTimeZone as StandardTimeZone;
+use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Enums\TimeZoneType;
 use Hereldar\DateTimes\Interfaces\ILocalDate;
 use Hereldar\DateTimes\Interfaces\ILocalDateTime;
@@ -21,7 +21,7 @@ class TimeZone implements ITimeZone, Stringable
     private static array $cache = [];
 
     private function __construct(
-        private readonly StandardTimeZone $value,
+        private readonly NativeTimeZone $value,
     ) {
     }
 
@@ -47,7 +47,7 @@ class TimeZone implements ITimeZone, Stringable
 
         $timeZone = (
             self::$cache[$class][$name]
-                ??= new static(new StandardTimeZone($name))
+                ??= new static(new NativeTimeZone($name))
         );
 
         self::$cache[$class][$timeZone->name()] = $timeZone;
@@ -55,8 +55,8 @@ class TimeZone implements ITimeZone, Stringable
         return $timeZone;
     }
 
-    public static function fromStandard(
-        StandardTimeZone $value
+    public static function fromNative(
+        NativeTimeZone $value
     ): static {
         $class = static::class;
         $name = $value->getName();
@@ -64,7 +64,7 @@ class TimeZone implements ITimeZone, Stringable
         return self::$cache[$class][$name] ??= new static($value);
     }
 
-    public function toStandard(): StandardTimeZone
+    public function toNative(): NativeTimeZone
     {
         return $this->value;
     }
@@ -91,14 +91,14 @@ class TimeZone implements ITimeZone, Stringable
 
     public function offset(ILocalDate|ILocalDateTime $date): IOffset
     {
-        $seconds = $this->value->getOffset($date->toStandard());
+        $seconds = $this->value->getOffset($date->toNative());
 
         return Offset::fromTotalSeconds($seconds);
     }
 
     public function compareTo(ITimeZone $that): int
     {
-        return ($this->value <=> $that->toStandard());
+        return ($this->value <=> $that->toNative());
     }
 
     public function is(ITimeZone $that): bool
@@ -117,11 +117,11 @@ class TimeZone implements ITimeZone, Stringable
 
     public function isEqual(ITimeZone $that): bool
     {
-        return ($this->value == $that->toStandard());
+        return ($this->value == $that->toNative());
     }
 
     public function isNotEqual(ITimeZone $that): bool
     {
-        return ($this->value != $that->toStandard());
+        return ($this->value != $that->toNative());
     }
 }

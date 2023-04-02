@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Services;
 
-use DateInterval as StandardDateInterval;
-use DateTimeImmutable as StandardDateTime;
+use DateInterval as NativeDateInterval;
+use DateTimeImmutable as NativeDateTime;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 
 /**
@@ -29,76 +29,76 @@ final class Adder
     ];
 
     public static function addPeriodWithoutOverflow(
-        StandardDateTime $stdDateTime,
+        NativeDateTime $dateTime,
         IPeriod $period,
-    ): StandardDateTime {
+    ): NativeDateTime {
         $periodWithoutYearsAndMonths = $period->with(0, 0);
 
         if ($period->months()) {
-            $stdDateTime = self::addMonths($stdDateTime, $period->months());
+            $dateTime = self::addMonths($dateTime, $period->months());
         }
 
         if ($period->years()) {
-            $stdDateTime = self::addYears($stdDateTime, $period->years());
+            $dateTime = self::addYears($dateTime, $period->years());
         }
 
         if (!$periodWithoutYearsAndMonths->isZero()) {
-            $stdDateTime = $stdDateTime->add(
-                $periodWithoutYearsAndMonths->toStandard()
+            $dateTime = $dateTime->add(
+                $periodWithoutYearsAndMonths->toNative()
             );
         }
 
-        return $stdDateTime;
+        return $dateTime;
     }
 
     private static function addMonths(
-        StandardDateTime $stdDateTime,
+        NativeDateTime $dateTime,
         int $months,
-    ): StandardDateTime {
-        $mayOverflow = ($stdDateTime->format('j') > 28);
+    ): NativeDateTime {
+        $mayOverflow = ($dateTime->format('j') > 28);
 
-        $stdDateInterval = new StandardDateInterval('PT0S');
-        $stdDateInterval->m = abs($months);
-        $stdDateInterval->invert = (0 > $months) ? 1 : 0;
-        $stdDateTime = $stdDateTime->add($stdDateInterval);
+        $dateInterval = new NativeDateInterval('PT0S');
+        $dateInterval->m = abs($months);
+        $dateInterval->invert = (0 > $months) ? 1 : 0;
+        $dateTime = $dateTime->add($dateInterval);
 
-        if (!$mayOverflow || 28 <= $stdDateTime->format('j')) {
-            return $stdDateTime;
+        if (!$mayOverflow || 28 <= $dateTime->format('j')) {
+            return $dateTime;
         }
 
-        $year = (int) $stdDateTime->format('Y');
+        $year = (int) $dateTime->format('Y');
 
-        $month = ((int) $stdDateTime->format('m')) - 1;
+        $month = ((int) $dateTime->format('m')) - 1;
         if ($month === 0) {
             --$year;
             ++$month;
         }
 
         $day = self::MONTH_LAST_DAY[$month];
-        if ($month === 2 && $stdDateTime->format('L')) {
+        if ($month === 2 && $dateTime->format('L')) {
             ++$day;
         }
 
-        return $stdDateTime->setDate($year, $month, $day);
+        return $dateTime->setDate($year, $month, $day);
     }
 
     private static function addYears(
-        StandardDateTime $stdDateTime,
+        NativeDateTime $dateTime,
         int $years,
-    ): StandardDateTime {
-        $isLeapDay = ($stdDateTime->format('n-j') === '2-29');
+    ): NativeDateTime {
+        $isLeapDay = ($dateTime->format('n-j') === '2-29');
 
-        $stdDateInterval = new StandardDateInterval('PT0S');
-        $stdDateInterval->y = abs($years);
-        $stdDateInterval->invert = (0 > $years) ? 1 : 0;
-        $stdDateTime = $stdDateTime->add($stdDateInterval);
+        $dateInterval = new NativeDateInterval('PT0S');
+        $dateInterval->y = abs($years);
+        $dateInterval->invert = (0 > $years) ? 1 : 0;
+        $dateTime = $dateTime->add($dateInterval);
 
-        if (!$isLeapDay || $stdDateTime->format('n') !== '3') {
-            return $stdDateTime;
+        if (!$isLeapDay || $dateTime->format('n') !== '3') {
+            return $dateTime;
         }
 
-        $year = (int) $stdDateTime->format('Y');
+        $year = (int) $dateTime->format('Y');
 
-        return $stdDateTime->setDate($year, 2, 28);
+        return $dateTime->setDate($year, 2, 28);
     }
 }

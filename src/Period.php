@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes;
 
 use ArithmeticError;
-use DateInterval as StandardDateInterval;
+use DateInterval as NativeDateInterval;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
@@ -197,8 +197,8 @@ class Period implements IPeriod, Stringable
         );
     }
 
-    public static function fromStandard(
-        StandardDateInterval $interval,
+    public static function fromNative(
+        NativeDateInterval $interval,
     ): static {
         $sign = ($interval->invert) ? -1 : 1;
 
@@ -315,9 +315,9 @@ class Period implements IPeriod, Stringable
         return $string;
     }
 
-    public function toStandard(): StandardDateInterval
+    public function toNative(): NativeDateInterval
     {
-        $interval = new StandardDateInterval('PT0S');
+        $interval = new NativeDateInterval('PT0S');
 
         $sign = ($this->isNegative()) ? -1 : 1;
 

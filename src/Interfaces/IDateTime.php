@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Interfaces;
 
 use ArithmeticError;
-use DateTimeImmutable as StandardDateTime;
+use DateTimeImmutable as NativeDateTime;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
@@ -43,7 +43,7 @@ interface IDateTime
 
     public function toSql(bool $milliseconds = false, bool $microseconds = false): string;
 
-    public function toStandard(): StandardDateTime;
+    public function toNative(): NativeDateTime;
 
     public function timestamp(): int;
 

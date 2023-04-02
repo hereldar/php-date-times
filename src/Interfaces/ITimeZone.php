@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Interfaces;
 
-use DateTimeZone as StandardTimeZone;
+use DateTimeZone as NativeTimeZone;
 
 interface ITimeZone
 {
-    public function toStandard(): StandardTimeZone;
+    public function toNative(): NativeTimeZone;
 
     public function name(): string;
 

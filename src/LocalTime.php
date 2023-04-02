@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes;
 
 use ArithmeticError;
-use DateTimeImmutable as StandardDateTime;
-use DateTimeInterface as StandardDateTimeInterface;
-use DateTimeZone as StandardTimeZone;
+use DateTimeImmutable as NativeDateTime;
+use DateTimeInterface as NativeDateTimeInterface;
+use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\DateTimes\Interfaces\ILocalDate;
@@ -28,7 +28,7 @@ use UnexpectedValueException;
 class LocalTime implements ILocalTime, Stringable
 {
     private function __construct(
-        private readonly StandardDateTime $value,
+        private readonly NativeDateTime $value,
     ) {
     }
 
@@ -42,12 +42,12 @@ class LocalTime implements ILocalTime, Stringable
     ): static {
         try {
             $tz = match (true) {
-                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
-                $timeZone instanceof ITimeZone => $timeZone->toStandard(),
-                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
+                is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+                $timeZone instanceof ITimeZone => $timeZone->toNative(),
+                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
             };
 
-            $dt = new StandardDateTime('now', $tz);
+            $dt = new NativeDateTime('now', $tz);
         } catch (Throwable $e) {
             throw new UnexpectedValueException(
                 message: get_debug_type($timeZone),
@@ -86,12 +86,12 @@ class LocalTime implements ILocalTime, Stringable
             $format = "!{$format}";
         }
 
-        $tz = new StandardTimeZone('UTC');
+        $tz = new NativeTimeZone('UTC');
 
-        $dt = StandardDateTime::createFromFormat($format, $string, $tz);
+        $dt = NativeDateTime::createFromFormat($format, $string, $tz);
 
         if (false === $dt) {
-            $info = StandardDateTime::getLastErrors();
+            $info = NativeDateTime::getLastErrors();
             $firstError = ($info)
                 ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
                 : null;
@@ -133,8 +133,8 @@ class LocalTime implements ILocalTime, Stringable
         return static::parse($value, $format)->orFail();
     }
 
-    public static function fromStandard(
-        StandardDateTimeInterface $value
+    public static function fromNative(
+        NativeDateTimeInterface $value
     ): static {
         $string = $value->format('G:i:s.u');
 
@@ -172,7 +172,7 @@ class LocalTime implements ILocalTime, Stringable
         });
     }
 
-    public function toStandard(): StandardDateTime
+    public function toNative(): NativeDateTime
     {
         return $this->value;
     }
@@ -185,7 +185,7 @@ class LocalTime implements ILocalTime, Stringable
             $date->day(),
         );
 
-        return LocalDateTime::fromStandard($dt);
+        return LocalDateTime::fromNative($dt);
     }
 
     public function hour(): int
@@ -215,7 +215,7 @@ class LocalTime implements ILocalTime, Stringable
 
     public function compareTo(ILocalTime $that): int
     {
-        return ($this->value <=> $that->toStandard());
+        return ($this->value <=> $that->toNative());
     }
 
     public function is(ILocalTime $that): bool
@@ -234,32 +234,32 @@ class LocalTime implements ILocalTime, Stringable
 
     public function isEqual(ILocalTime $that): bool
     {
-        return ($this->value == $that->toStandard());
+        return ($this->value == $that->toNative());
     }
 
     public function isNotEqual(ILocalTime $that): bool
     {
-        return ($this->value != $that->toStandard());
+        return ($this->value != $that->toNative());
     }
 
     public function isGreater(ILocalTime $that): bool
     {
-        return ($this->value > $that->toStandard());
+        return ($this->value > $that->toNative());
     }
 
     public function isGreaterOrEqual(ILocalTime $that): bool
     {
-        return ($this->value >= $that->toStandard());
+        return ($this->value >= $that->toNative());
     }
 
     public function isLess(ILocalTime $that): bool
     {
-        return ($this->value < $that->toStandard());
+        return ($this->value < $that->toNative());
     }
 
     public function isLessOrEqual(ILocalTime $that): bool
     {
-        return ($this->value <= $that->toStandard());
+        return ($this->value <= $that->toNative());
     }
 
     public function plus(
@@ -283,7 +283,7 @@ class LocalTime implements ILocalTime, Stringable
             );
         }
 
-        $value = $this->value->add($period->toStandard());
+        $value = $this->value->add($period->toNative());
 
         return new static($value);
     }
@@ -309,7 +309,7 @@ class LocalTime implements ILocalTime, Stringable
             );
         }
 
-        $value = $this->value->sub($period->toStandard());
+        $value = $this->value->sub($period->toNative());
 
         return new static($value);
     }

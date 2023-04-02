@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes;
 
 use ArithmeticError;
-use DateTime as MutableStandardDateTime;
-use DateTimeImmutable as StandardDateTime;
-use DateTimeInterface as StandardDateTimeInterface;
+use DateTime as MutableNativeDateTime;
+use DateTimeImmutable as NativeDateTime;
+use DateTimeInterface as NativeDateTimeInterface;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\DateTimes\Interfaces\IDateTime;
@@ -29,7 +29,7 @@ use UnexpectedValueException;
 class DateTime implements IDateTime, Stringable
 {
     private function __construct(
-        private readonly StandardDateTime $value
+        private readonly NativeDateTime $value
     ) {
     }
 
@@ -43,12 +43,12 @@ class DateTime implements IDateTime, Stringable
     ): static {
         try {
             $tz = match (true) {
-                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
-                $timeZone instanceof ITimeZone => $timeZone->toStandard(),
-                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
+                is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+                $timeZone instanceof ITimeZone => $timeZone->toNative(),
+                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
             };
 
-            $dt = new StandardDateTime('now', $tz);
+            $dt = new NativeDateTime('now', $tz);
         } catch (Throwable $e) {
             throw new UnexpectedValueException(
                 message: get_debug_type($timeZone),
@@ -92,15 +92,15 @@ class DateTime implements IDateTime, Stringable
         ITimeZone|IOffset|string $timeZone = 'UTC',
     ): Ok|Error {
         $tz = match (true) {
-            is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
-            $timeZone instanceof ITimeZone => $timeZone->toStandard(),
-            $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
+            is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+            $timeZone instanceof ITimeZone => $timeZone->toNative(),
+            $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
         };
 
-        $dt = StandardDateTime::createFromFormat($format, $string, $tz);
+        $dt = NativeDateTime::createFromFormat($format, $string, $tz);
 
         if (false === $dt) {
-            $info = StandardDateTime::getLastErrors();
+            $info = NativeDateTime::getLastErrors();
             $firstError = ($info)
                 ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
                 : null;
@@ -142,10 +142,10 @@ class DateTime implements IDateTime, Stringable
         return static::parse($value, $format)->orFail();
     }
 
-    public static function fromStandard(StandardDateTimeInterface $value): static
+    public static function fromNative(NativeDateTimeInterface $value): static
     {
-        if ($value instanceof MutableStandardDateTime) {
-            $value = StandardDateTime::createFromMutable($value);
+        if ($value instanceof MutableNativeDateTime) {
+            $value = NativeDateTime::createFromMutable($value);
         }
 
         return new static($value);
@@ -182,7 +182,7 @@ class DateTime implements IDateTime, Stringable
         });
     }
 
-    public function toStandard(): StandardDateTime
+    public function toNative(): NativeDateTime
     {
         return $this->value;
     }
@@ -194,7 +194,7 @@ class DateTime implements IDateTime, Stringable
 
     public function date(): ILocalDate
     {
-        return LocalDate::fromStandard($this->value);
+        return LocalDate::fromNative($this->value);
     }
 
     public function year(): int
@@ -234,7 +234,7 @@ class DateTime implements IDateTime, Stringable
 
     public function time(): ILocalTime
     {
-        return LocalTime::fromStandard($this->value);
+        return LocalTime::fromNative($this->value);
     }
 
     public function hour(): int
@@ -271,14 +271,14 @@ class DateTime implements IDateTime, Stringable
 
     public function timezone(): ITimeZone
     {
-        return TimeZone::fromStandard(
+        return TimeZone::fromNative(
             $this->value->getTimezone()
         );
     }
 
     public function compareTo(IDateTime $that): int
     {
-        return ($this->value <=> $that->toStandard());
+        return ($this->value <=> $that->toNative());
     }
 
     public function is(IDateTime $that): bool
@@ -297,32 +297,32 @@ class DateTime implements IDateTime, Stringable
 
     public function isEqual(IDateTime $that): bool
     {
-        return ($this->value == $that->toStandard());
+        return ($this->value == $that->toNative());
     }
 
     public function isNotEqual(IDateTime $that): bool
     {
-        return ($this->value != $that->toStandard());
+        return ($this->value != $that->toNative());
     }
 
     public function isGreater(IDateTime $that): bool
     {
-        return ($this->value > $that->toStandard());
+        return ($this->value > $that->toNative());
     }
 
     public function isGreaterOrEqual(IDateTime $that): bool
     {
-        return ($this->value >= $that->toStandard());
+        return ($this->value >= $that->toNative());
     }
 
     public function isLess(IDateTime $that): bool
     {
-        return ($this->value < $that->toStandard());
+        return ($this->value < $that->toNative());
     }
 
     public function isLessOrEqual(IDateTime $that): bool
     {
-        return ($this->value <= $that->toStandard());
+        return ($this->value <= $that->toNative());
     }
 
     public function plus(
@@ -355,7 +355,7 @@ class DateTime implements IDateTime, Stringable
 
         $value = (!$overflow && ($period->months() || $period->years()))
             ? Adder::addPeriodWithoutOverflow($this->value, $period)
-            : $this->value->add($period->toStandard());
+            : $this->value->add($period->toNative());
 
         return new static($value);
     }
@@ -390,7 +390,7 @@ class DateTime implements IDateTime, Stringable
 
         $value = (!$overflow && ($period->months() || $period->years()))
             ? Adder::addPeriodWithoutOverflow($this->value, $period->negated())
-            : $this->value->sub($period->toStandard());
+            : $this->value->sub($period->toNative());
 
         return new static($value);
     }
@@ -431,9 +431,9 @@ class DateTime implements IDateTime, Stringable
 
         if ($timeZone !== null) {
             $dt = $dt->setTimezone(match (true) {
-                is_string($timeZone) => TimeZone::of($timeZone)->toStandard(),
-                $timeZone instanceof ITimeZone => $timeZone->toStandard(),
-                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toStandard(),
+                is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+                $timeZone instanceof ITimeZone => $timeZone->toNative(),
+                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
             });
         }
 

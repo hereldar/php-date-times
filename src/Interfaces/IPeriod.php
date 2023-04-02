@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Interfaces;
 
 use ArithmeticError;
-use DateInterval as StandardDateInterval;
+use DateInterval as NativeDateInterval;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
@@ -22,7 +22,7 @@ interface IPeriod
 
     public function toIso8601(): string;
 
-    public function toStandard(): StandardDateInterval;
+    public function toNative(): NativeDateInterval;
 
     public function years(): int;
 
