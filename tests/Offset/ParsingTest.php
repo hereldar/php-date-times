@@ -42,14 +42,14 @@ final class ParsingTest extends TestCase
         self::assertOffset($offset, 1, 0, 0);
 
 
-        $offset = Offset::parse('18', '%H')->orFail();
+        $offset = Offset::parse('15', '%H')->orFail();
         self::assertInstanceOf(Offset::class, $offset);
-        self::assertOffset($offset, 18, 0, 0);
+        self::assertOffset($offset, 15, 0, 0);
 
         $this->expectException(OutOfRangeException::class);
 
         /** @psalm-suppress UnusedMethodCall */
-        Offset::parse('19', '%H')->orFail();
+        Offset::parse('16', '%H')->orFail();
     }
 
     public function testMinutes(): void

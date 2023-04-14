@@ -60,10 +60,6 @@ final class FormattingTest extends TestCase
             '1986-12-25',
             LocalDate::of(1986, 12, 25)->format(ILocalDate::RFC3339)->orFail()
         );
-        self::assertSame(
-            '1986-12-25',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::RFC3339_EXTENDED)->orFail()
-        );
     }
 
     public function testToSql(): void
@@ -75,78 +71,6 @@ final class FormattingTest extends TestCase
         self::assertSame(
             '1986-12-25',
             LocalDate::of(1986, 12, 25)->format(ILocalDate::SQL)->orFail()
-        );
-    }
-
-    public function testToAtom(): void
-    {
-        self::assertSame(
-            '1986-12-25',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::ATOM)->orFail()
-        );
-    }
-
-    public function testToCookie(): void
-    {
-        self::assertSame(
-            'Thursday, 25-Dec-1986',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::COOKIE)->orFail()
-        );
-    }
-
-    public function testToRfc822(): void
-    {
-        self::assertSame(
-            'Thu, 25 Dec 86',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::RFC822)->orFail()
-        );
-    }
-
-    public function testToRfc850(): void
-    {
-        self::assertSame(
-            'Thursday, 25-Dec-86',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::RFC850)->orFail()
-        );
-    }
-
-    public function testToRfc1036(): void
-    {
-        self::assertSame(
-            'Thu, 25 Dec 86',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::RFC1036)->orFail()
-        );
-    }
-
-    public function testToRfc1123(): void
-    {
-        self::assertSame(
-            'Thu, 25 Dec 1986',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::RFC1123)->orFail()
-        );
-    }
-
-    public function testToRfc7231(): void
-    {
-        self::assertSame(
-            'Thu, 25 Dec 1986',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::RFC7231)->orFail()
-        );
-    }
-
-    public function testToRss(): void
-    {
-        self::assertSame(
-            'Thu, 25 Dec 1986',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::RSS)->orFail()
-        );
-    }
-
-    public function testToW3c(): void
-    {
-        self::assertSame(
-            '1986-12-25',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::W3C)->orFail()
         );
     }
 }

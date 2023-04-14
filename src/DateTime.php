@@ -84,11 +84,13 @@ class DateTime implements IDateTime, Stringable
     }
 
     /**
+     * @param string|array<int, string> $format
+     *
      * @return Ok<static>|Error<ParseException>
      */
     public static function parse(
         string $string,
-        string $format = IDateTime::ISO8601,
+        string|array $format = IDateTime::ISO8601,
         ITimeZone|IOffset|string $timeZone = 'UTC',
     ): Ok|Error {
         $tz = match (true) {
@@ -97,24 +99,69 @@ class DateTime implements IDateTime, Stringable
             $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
         };
 
-        $dt = NativeDateTime::createFromFormat($format, $string, $tz);
+        /** @var array<int, string> $formats */
+        $formats = [];
 
-        if (false === $dt) {
-            $info = NativeDateTime::getLastErrors();
-            $firstError = ($info)
-                ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
-                : null;
-
-            return Error::withException(new ParseException($string, $format, $firstError));
+        if (!$format) {
+            throw new InvalidArgumentException(
+                'At least one format must be passed'
+            );
         }
 
-        /** @var Ok<static> */
-        return Ok::withValue(new static($dt));
+        if (is_array($format)) {
+            $formats = $format;
+            $format = reset($formats);
+        }
+
+        $dt = NativeDateTime::createFromFormat($format, $string, $tz);
+
+        if (false !== $dt) {
+            /** @var Ok<static> */
+            return Ok::withValue(new static($dt));
+        }
+
+        $info = NativeDateTime::getLastErrors();
+
+        if (count($formats) > 1) {
+            while ($fmt = next($formats)) {
+                $dt = NativeDateTime::createFromFormat($fmt, $string, $tz);
+
+                if (false !== $dt) {
+                    /** @var Ok<static> */
+                    return Ok::withValue(new static($dt));
+                }
+            }
+        }
+
+        $firstError = ($info)
+            ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
+            : null;
+
+        return Error::withException(new ParseException($string, $format, $firstError));
     }
 
-    public static function fromIso8601(string $value): static
+    public static function fromCookie(string $value): static
     {
-        return static::parse($value, IDateTime::ISO8601)->orFail();
+        return static::parse($value, IDateTime::COOKIE_VARIANTS)->orFail();
+    }
+
+    public static function fromHttp(string $value): static
+    {
+        return static::parse($value, IDateTime::HTTP_VARIANTS)->orFail();
+    }
+
+    public static function fromIso8601(
+        string $value,
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): static {
+        $format = match (true) {
+            $microseconds => IDateTime::ISO8601_MICROSECONDS,
+            $milliseconds => IDateTime::ISO8601_MILLISECONDS,
+            default => IDateTime::ISO8601,
+        };
+
+        return static::parse($value, $format)->orFail();
     }
 
     public static function fromRfc2822(string $value): static
@@ -122,17 +169,25 @@ class DateTime implements IDateTime, Stringable
         return static::parse($value, IDateTime::RFC2822)->orFail();
     }
 
-    public static function fromRfc3339(string $value, bool $milliseconds = false): static
-    {
-        $format = ($milliseconds)
-            ? IDateTime::RFC3339_EXTENDED
-            : IDateTime::RFC3339;
+    public static function fromRfc3339(
+        string $value,
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): static {
+        $format = match (true) {
+            $microseconds => IDateTime::RFC3339_MICROSECONDS,
+            $milliseconds => IDateTime::RFC3339_MILLISECONDS,
+            default => IDateTime::RFC3339,
+        };
 
         return static::parse($value, $format)->orFail();
     }
 
-    public static function fromSql(string $value, bool $milliseconds = false, bool $microseconds = false): static
-    {
+    public static function fromSql(
+        string $value,
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): static {
         $format = match (true) {
             $microseconds => IDateTime::SQL_MICROSECONDS,
             $milliseconds => IDateTime::SQL_MILLISECONDS,
@@ -156,9 +211,27 @@ class DateTime implements IDateTime, Stringable
         return Ok::withValue($this->value->format($format));
     }
 
-    public function toIso8601(): string
+    public function toCookie(): string
     {
-        return $this->value->format(IDateTime::ISO8601);
+        return $this->value->format(IDateTime::COOKIE);
+    }
+
+    public function toHttp(): string
+    {
+        $tz = TimeZone::utc()->toNative();
+
+        return $this->value->setTimezone($tz)->format(IDateTime::HTTP);
+    }
+
+    public function toIso8601(
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): string {
+        return $this->value->format(match (true) {
+            $microseconds => IDateTime::ISO8601_MICROSECONDS,
+            $milliseconds => IDateTime::ISO8601_MILLISECONDS,
+            default => IDateTime::ISO8601,
+        });
     }
 
     public function toRfc2822(): string
@@ -166,15 +239,21 @@ class DateTime implements IDateTime, Stringable
         return $this->value->format(IDateTime::RFC2822);
     }
 
-    public function toRfc3339(bool $milliseconds = false): string
-    {
-        return $this->value->format(($milliseconds)
-            ? IDateTime::RFC3339_EXTENDED
-            : IDateTime::RFC3339);
+    public function toRfc3339(
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): string {
+        return $this->value->format(match (true) {
+            $microseconds => IDateTime::RFC3339_MICROSECONDS,
+            $milliseconds => IDateTime::RFC3339_MILLISECONDS,
+            default => IDateTime::RFC3339,
+        });
     }
 
-    public function toSql(bool $milliseconds = false, bool $microseconds = false): string
-    {
+    public function toSql(
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): string {
         return $this->value->format(match (true) {
             $microseconds => IDateTime::SQL_MICROSECONDS,
             $milliseconds => IDateTime::SQL_MILLISECONDS,

@@ -30,7 +30,7 @@ class Offset implements IOffset, Stringable
     public const TOTAL_SECONDS_MAX = +self::TOTAL_SECONDS_LIMIT;
     public const TOTAL_SECONDS_MIN = -self::TOTAL_SECONDS_LIMIT;
 
-    private const HOURS_LIMIT = 18;
+    private const HOURS_LIMIT = 15;
     private const MINUTES_LIMIT = 59;
     private const SECONDS_LIMIT = 59;
     private const TOTAL_MINUTES_LIMIT = (self::HOURS_LIMIT * 60) + self::MINUTES_LIMIT;

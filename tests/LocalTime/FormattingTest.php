@@ -22,19 +22,35 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25)->toIso8601()
+            LocalTime::of(12, 30, 25, 123_456)->toIso8601()
+        );
+        self::assertSame(
+            '12:30:25.123',
+            LocalTime::of(12, 30, 25, 123_456)->toIso8601(milliseconds: true)
+        );
+        self::assertSame(
+            '12:30:25.123456',
+            LocalTime::of(12, 30, 25, 123_456)->toIso8601(microseconds: true)
         );
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::ISO8601)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::ISO8601)->orFail()
+        );
+        self::assertSame(
+            '12:30:25.123',
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::ISO8601_MILLISECONDS)->orFail()
+        );
+        self::assertSame(
+            '12:30:25.123456',
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::ISO8601_MICROSECONDS)->orFail()
         );
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25)->format()->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format()->orFail()
         );
         self::assertSame(
             '12:30:25',
-            (string) LocalTime::of(12, 30, 25)
+            (string) LocalTime::of(12, 30, 25, 123_456)
         );
     }
 
@@ -42,11 +58,11 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25)->toRfc2822()
+            LocalTime::of(12, 30, 25, 0)->toRfc2822()
         );
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::RFC2822)->orFail()
+            LocalTime::of(12, 30, 25, 0)->format(ILocalTime::RFC2822)->orFail()
         );
     }
 
@@ -61,12 +77,20 @@ final class FormattingTest extends TestCase
             LocalTime::of(12, 30, 25, 123_456)->toRfc3339(milliseconds: true)
         );
         self::assertSame(
+            '12:30:25.123456',
+            LocalTime::of(12, 30, 25, 123_456)->toRfc3339(microseconds: true)
+        );
+        self::assertSame(
             '12:30:25',
             LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::RFC3339)->orFail()
         );
         self::assertSame(
             '12:30:25.123',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::RFC3339_EXTENDED)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::RFC3339_MILLISECONDS)->orFail()
+        );
+        self::assertSame(
+            '12:30:25.123456',
+            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::RFC3339_MICROSECONDS)->orFail()
         );
     }
 
@@ -95,78 +119,6 @@ final class FormattingTest extends TestCase
         self::assertSame(
             '12:30:25.123456',
             LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::SQL_MICROSECONDS)->orFail()
-        );
-    }
-
-    public function testToAtom(): void
-    {
-        self::assertSame(
-            '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::ATOM)->orFail()
-        );
-    }
-
-    public function testToCookie(): void
-    {
-        self::assertSame(
-            '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::COOKIE)->orFail()
-        );
-    }
-
-    public function testToRfc822(): void
-    {
-        self::assertSame(
-            '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::RFC822)->orFail()
-        );
-    }
-
-    public function testToRfc850(): void
-    {
-        self::assertSame(
-            '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::RFC850)->orFail()
-        );
-    }
-
-    public function testToRfc1036(): void
-    {
-        self::assertSame(
-            '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::RFC1036)->orFail()
-        );
-    }
-
-    public function testToRfc1123(): void
-    {
-        self::assertSame(
-            '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::RFC1123)->orFail()
-        );
-    }
-
-    public function testToRfc7231(): void
-    {
-        self::assertSame(
-            '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::RFC7231)->orFail()
-        );
-    }
-
-    public function testToRss(): void
-    {
-        self::assertSame(
-            '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::RSS)->orFail()
-        );
-    }
-
-    public function testToW3c(): void
-    {
-        self::assertSame(
-            '12:30:25',
-            LocalTime::of(12, 30, 25)->format(ILocalTime::W3C)->orFail()
         );
     }
 }

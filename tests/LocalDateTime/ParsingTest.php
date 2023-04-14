@@ -8,30 +8,59 @@ use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\ILocalDateTime;
 use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Tests\TestCase;
+use InvalidArgumentException;
 
 final class ParsingTest extends TestCase
 {
     public function testParse(): void
     {
+        self::assertException(
+            InvalidArgumentException::class,
+            fn ()  => LocalDateTime::parse('25th of December, 1986, 1pm', '')
+        );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 13),
             LocalDateTime::parse('25th of December, 1986, 1pm', 'jS \o\f F, Y, ga')->orFail()
+        );
+        self::assertException(
+            InvalidArgumentException::class,
+            fn ()  => LocalDateTime::parse('25th of December, 1986, 1pm', [])
+        );
+        self::assertEquals(
+            LocalDateTime::of(1986, 12, 25, 13),
+            LocalDateTime::parse('25th of December, 1986, 1pm', ['jS \o\f F, Y, ga'])->orFail()
+        );
+        self::assertEquals(
+            LocalDateTime::of(1986, 12, 25, 13),
+            LocalDateTime::parse('25th of December, 1986, 1pm', ['Y-m-d H:i:s', 'jS \o\f F, Y, ga'])->orFail()
         );
     }
 
     public function testFromIso8601(): void
     {
         self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 0),
             LocalDateTime::fromIso8601('1986-12-25T12:30:25')
         );
         self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_000),
+            LocalDateTime::fromIso8601('1986-12-25T12:30:25.123', milliseconds: true)
+        );
+        self::assertEquals(
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456),
+            LocalDateTime::fromIso8601('1986-12-25T12:30:25.123456', microseconds: true)
+        );
+        self::assertEquals(
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 0),
             LocalDateTime::parse('1986-12-25T12:30:25', ILocalDateTime::ISO8601)->orFail()
         );
         self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('1986-12-25T12:30:25')->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_000),
+            LocalDateTime::parse('1986-12-25T12:30:25.123', ILocalDateTime::ISO8601_MILLISECONDS)->orFail()
+        );
+        self::assertEquals(
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456),
+            LocalDateTime::parse('1986-12-25T12:30:25.123456', ILocalDateTime::ISO8601_MICROSECONDS)->orFail()
         );
     }
 
@@ -50,7 +79,7 @@ final class ParsingTest extends TestCase
     public function testFromRfc3339(): void
     {
         self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 0),
             LocalDateTime::fromRfc3339('1986-12-25T12:30:25')
         );
         self::assertEquals(
@@ -58,12 +87,20 @@ final class ParsingTest extends TestCase
             LocalDateTime::fromRfc3339('1986-12-25T12:30:25.123', milliseconds: true)
         );
         self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456),
+            LocalDateTime::fromRfc3339('1986-12-25T12:30:25.123456', microseconds: true)
+        );
+        self::assertEquals(
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 0),
             LocalDateTime::parse('1986-12-25T12:30:25', ILocalDateTime::RFC3339)->orFail()
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_000),
-            LocalDateTime::parse('1986-12-25T12:30:25.123', ILocalDateTime::RFC3339_EXTENDED)->orFail()
+            LocalDateTime::parse('1986-12-25T12:30:25.123', ILocalDateTime::RFC3339_MILLISECONDS)->orFail()
+        );
+        self::assertEquals(
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456),
+            LocalDateTime::parse('1986-12-25T12:30:25.123456', ILocalDateTime::RFC3339_MICROSECONDS)->orFail()
         );
     }
 
@@ -92,78 +129,6 @@ final class ParsingTest extends TestCase
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456),
             LocalDateTime::parse('1986-12-25 12:30:25.123456', ILocalDateTime::SQL_MICROSECONDS)->orFail()
-        );
-    }
-
-    public function testFromAtom(): void
-    {
-        self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('1986-12-25T12:30:25', ILocalDateTime::ATOM)->orFail()
-        );
-    }
-
-    public function testFromCookie(): void
-    {
-        self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('Thursday, 25-Dec-1986 12:30:25', ILocalDateTime::COOKIE)->orFail()
-        );
-    }
-
-    public function testFromRfc822(): void
-    {
-        self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('Thu, 25 Dec 86 12:30:25', ILocalDateTime::RFC822)->orFail()
-        );
-    }
-
-    public function testFromRfc850(): void
-    {
-        self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('Thursday, 25-Dec-86 12:30:25', ILocalDateTime::RFC850)->orFail()
-        );
-    }
-
-    public function testFromRfc1036(): void
-    {
-        self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('Thu, 25 Dec 86 12:30:25', ILocalDateTime::RFC1036)->orFail()
-        );
-    }
-
-    public function testFromRfc1123(): void
-    {
-        self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('Thu, 25 Dec 1986 12:30:25', ILocalDateTime::RFC1123)->orFail()
-        );
-    }
-
-    public function testFromRfc7231(): void
-    {
-        self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('Thu, 25 Dec 1986 12:30:25', ILocalDateTime::RFC7231)->orFail()
-        );
-    }
-
-    public function testFromRss(): void
-    {
-        self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('Thu, 25 Dec 1986 12:30:25', ILocalDateTime::RSS)->orFail()
-        );
-    }
-
-    public function testFromW3c(): void
-    {
-        self::assertEquals(
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('1986-12-25T12:30:25', ILocalDateTime::W3C)->orFail()
         );
     }
 

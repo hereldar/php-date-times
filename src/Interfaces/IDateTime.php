@@ -9,39 +9,66 @@ use DateTimeImmutable as NativeDateTime;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
-use InvalidArgumentException;
 
 interface IDateTime
 {
-    final public const ATOM = 'Y-m-d\TH:i:sP';
-    final public const COOKIE = 'l, d-M-Y H:i:s T';
+    final public const COOKIE_VARIANTS = [
+        'D, d M Y H:i:s T',
+        'l, d-M-y H:i:s T',
+        'l, d-M-Y H:i:s T',
+        'D M j G:i:s Y',
+        'D M d H:i:s Y T',
+    ];
+    final public const COOKIE = self::COOKIE_VARIANTS[0];
+
+    final public const HTTP_VARIANTS = [
+        'D, d M Y H:i:s \G\M\T',
+        'l, d-M-y H:i:s \G\M\T',
+        'l, d-M-Y H:i:s \G\M\T',
+        'D M j G:i:s Y',
+        'D M j H:i:s Y \G\M\T',
+    ];
+    final public const HTTP = self::HTTP_VARIANTS[0];
+
     final public const ISO8601 = 'Y-m-d\TH:i:sp';
-    final public const RFC822 = 'D, d M y H:i:s O';
-    final public const RFC850 = 'l, d-M-y H:i:s T';
-    final public const RFC1036 = 'D, d M y H:i:s O';
-    final public const RFC1123 = 'D, d M Y H:i:s O';
+    final public const ISO8601_MILLISECONDS = 'Y-m-d\TH:i:s.vp';
+    final public const ISO8601_MICROSECONDS = 'Y-m-d\TH:i:s.up';
+
     final public const RFC2822 = 'D, d M Y H:i:s O';
+
     final public const RFC3339 = 'Y-m-d\TH:i:sP';
-    final public const RFC3339_EXTENDED = 'Y-m-d\TH:i:s.vP';
-    final public const RFC7231 = 'D, d M Y H:i:s \G\M\T';
-    final public const RSS = 'D, d M Y H:i:s O';
-    final public const SQL = 'Y-m-d H:i:s P';
-    final public const SQL_MICROSECONDS = 'Y-m-d H:i:s.u P';
-    final public const SQL_MILLISECONDS = 'Y-m-d H:i:s.v P';
-    final public const W3C = 'Y-m-d\TH:i:sP';
+    final public const RFC3339_MILLISECONDS = 'Y-m-d\TH:i:s.vP';
+    final public const RFC3339_MICROSECONDS = 'Y-m-d\TH:i:s.uP';
+
+    final public const SQL = 'Y-m-d H:i:sP';
+    final public const SQL_MILLISECONDS = 'Y-m-d H:i:s.vP';
+    final public const SQL_MICROSECONDS = 'Y-m-d H:i:s.uP';
 
     /**
      * @return Ok<string>|Error<FormatException>
      */
     public function format(string $format = self::ISO8601): Ok|Error;
 
-    public function toIso8601(): string;
+    public function toCookie(): string;
+
+    public function toHttp(): string;
+
+    public function toIso8601(
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): string;
 
     public function toRfc2822(): string;
 
-    public function toRfc3339(bool $milliseconds = false): string;
+    public function toRfc3339(
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): string;
 
-    public function toSql(bool $milliseconds = false, bool $microseconds = false): string;
+    public function toSql(
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): string;
 
     public function toNative(): NativeDateTime;
 

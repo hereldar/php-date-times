@@ -13,20 +13,10 @@ use InvalidArgumentException;
 
 interface ILocalDate
 {
-    final public const ATOM = 'Y-m-d';
-    final public const COOKIE = 'l, d-M-Y';
     final public const ISO8601 = 'Y-m-d';
-    final public const RFC822 = 'D, d M y';
-    final public const RFC850 = 'l, d-M-y';
-    final public const RFC1036 = 'D, d M y';
-    final public const RFC1123 = 'D, d M Y';
     final public const RFC2822 = 'D, d M Y';
     final public const RFC3339 = 'Y-m-d';
-    final public const RFC3339_EXTENDED = 'Y-m-d';
-    final public const RFC7231 = 'D, d M Y';
-    final public const RSS = 'D, d M Y';
     final public const SQL = 'Y-m-d';
-    final public const W3C = 'Y-m-d';
 
     /**
      * @return Ok<string>|Error<FormatException>

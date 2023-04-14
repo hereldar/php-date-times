@@ -13,35 +13,41 @@ use InvalidArgumentException;
 
 interface ILocalTime
 {
-    final public const ATOM = 'H:i:s';
-    final public const COOKIE = 'H:i:s';
     final public const ISO8601 = 'H:i:s';
-    final public const RFC822 = 'H:i:s';
-    final public const RFC850 = 'H:i:s';
-    final public const RFC1036 = 'H:i:s';
-    final public const RFC1123 = 'H:i:s';
+    final public const ISO8601_MILLISECONDS = 'H:i:s.v';
+    final public const ISO8601_MICROSECONDS = 'H:i:s.u';
+
     final public const RFC2822 = 'H:i:s';
+
     final public const RFC3339 = 'H:i:s';
-    final public const RFC3339_EXTENDED = 'H:i:s.v';
-    final public const RFC7231 = 'H:i:s';
-    final public const RSS = 'H:i:s';
+    final public const RFC3339_MILLISECONDS = 'H:i:s.v';
+    final public const RFC3339_MICROSECONDS = 'H:i:s.u';
+
     final public const SQL = 'H:i:s';
-    final public const SQL_MICROSECONDS = 'H:i:s.u';
     final public const SQL_MILLISECONDS = 'H:i:s.v';
-    final public const W3C = 'H:i:s';
+    final public const SQL_MICROSECONDS = 'H:i:s.u';
 
     /**
      * @return Ok<string>|Error<FormatException>
      */
     public function format(string $format = self::ISO8601): Ok|Error;
 
-    public function toIso8601(): string;
+    public function toIso8601(
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): string;
 
     public function toRfc2822(): string;
 
-    public function toRfc3339(bool $milliseconds = false): string;
+    public function toRfc3339(
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): string;
 
-    public function toSql(bool $milliseconds = false, bool $microseconds = false): string;
+    public function toSql(
+        bool $milliseconds = false,
+        bool $microseconds = false,
+    ): string;
 
     public function toNative(): NativeDateTime;
 

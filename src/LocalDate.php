@@ -7,7 +7,6 @@ namespace Hereldar\DateTimes;
 use ArithmeticError;
 use DateTimeImmutable as NativeDateTime;
 use DateTimeInterface as NativeDateTimeInterface;
-use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use Hereldar\DateTimes\Interfaces\ILocalDate;
@@ -70,31 +69,63 @@ class LocalDate implements ILocalDate, Stringable
     }
 
     /**
+     * @param string|array<int, string> $format
+     *
      * @return Ok<static>|Error<ParseException>
      */
     public static function parse(
         string $string,
-        string $format = ILocalDate::ISO8601,
+        string|array $format = ILocalDate::ISO8601,
     ): Ok|Error {
+        $tz = TimeZone::utc()->toNative();
+
+        /** @var array<int, string> $formats */
+        $formats = [];
+
+        if (!$format) {
+            throw new InvalidArgumentException(
+                'At least one format must be passed'
+            );
+        }
+
+        if (is_array($format)) {
+            $formats = $format;
+            $format = reset($formats);
+        }
+
         if (!str_starts_with($format, '!')) {
             $format = "!{$format}";
         }
 
-        $tz = new NativeTimeZone('UTC');
-
         $dt = NativeDateTime::createFromFormat($format, $string, $tz);
 
-        if (false === $dt) {
-            $info = NativeDateTime::getLastErrors();
-            $firstError = ($info)
-                ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
-                : null;
-
-            return Error::withException(new ParseException($string, $format, $firstError));
+        if (false !== $dt) {
+            /** @var Ok<static> */
+            return Ok::withValue(new static($dt));
         }
 
-        /** @var Ok<static> */
-        return Ok::withValue(new static($dt));
+        $info = NativeDateTime::getLastErrors();
+
+        if (count($formats) > 1) {
+            while ($fmt = next($formats)) {
+                if (!str_starts_with($fmt, '!')) {
+                    $fmt = "!{$fmt}";
+                }
+
+                $dt = NativeDateTime::createFromFormat($fmt, $string, $tz);
+
+                if (false !== $dt) {
+                    /** @var Ok<static> */
+                    return Ok::withValue(new static($dt));
+                }
+            }
+        }
+
+        $firstError = ($info)
+            ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
+            : null;
+
+        return Error::withException(new ParseException($string, $format, $firstError));
     }
 
     public static function fromIso8601(string $value): static
