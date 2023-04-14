@@ -98,30 +98,39 @@ class TimeZone implements ITimeZone, Stringable
 
     public function compareTo(ITimeZone $that): int
     {
-        return ($this->value <=> $that->toNative());
+        $dt = DateTime::epoch()->toNative();
+
+        $a = $this->value;
+        $b = $that->toNative();
+
+        $result = $a->getOffset($dt) <=> $b->getOffset($dt);
+
+        if ($result !== 0) {
+            return $result;
+        }
+
+        return $a->getName() <=> $b->getName();
     }
 
     public function is(ITimeZone $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->value == $that->value; // @phpstan-ignore-line
+            && $this->name() === $that->name();
     }
 
     public function isNot(ITimeZone $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->value != $that->value; // @phpstan-ignore-line
+            || $this->name() !== $that->name();
     }
 
     public function isEqual(ITimeZone $that): bool
     {
-        return ($this->value == $that->toNative());
+        return ($this->name() === $that->name());
     }
 
     public function isNotEqual(ITimeZone $that): bool
     {
-        return ($this->value != $that->toNative());
+        return ($this->name() !== $that->name());
     }
 }

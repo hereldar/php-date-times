@@ -28,9 +28,9 @@
     <testsuite name="period">
       <directory>tests/Period</directory>
     </testsuite>
-    <!--<testsuite name="time-zone">
+    <testsuite name="time-zone">
       <directory>tests/TimeZone</directory>
-    </testsuite>-->
+    </testsuite>
   </testsuites>
   <source>
     <include>

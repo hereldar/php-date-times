@@ -28,6 +28,9 @@ use UnexpectedValueException;
  */
 class DateTime implements IDateTime, Stringable
 {
+    /** @var array<class-string, static> */
+    private static array $cache = [];
+
     private function __construct(
         private readonly NativeDateTime $value
     ) {
@@ -36,6 +39,20 @@ class DateTime implements IDateTime, Stringable
     public function __toString(): string
     {
         return $this->format()->orFail();
+    }
+
+    public static function epoch(): static
+    {
+        $class = static::class;
+
+        $dateTime = (
+            self::$cache[$class]
+                ??= static::of(1970, 1, 1, 0, 0, 0, 0, 'UTC')
+        );
+
+        self::$cache[$class] = $dateTime;
+
+        return $dateTime;
     }
 
     public static function now(

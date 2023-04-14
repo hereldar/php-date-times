@@ -16,6 +16,8 @@ interface ITimeZone
 
     public function offset(ILocalDate|ILocalDateTime $date): IOffset;
 
+    public function compareTo(ITimeZone $that): int;
+
     public function is(self $that): bool;
 
     public function isNot(self $that): bool;
