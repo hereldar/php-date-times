@@ -51,7 +51,7 @@ final class FormattingTest extends TestCase
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->toIso8601()
         );
         self::assertSame(
-            '1986-12-25T12:30:25.123+00:00',
+            '1986-12-25T12:30:25.123Z',
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(0))->toIso8601(milliseconds: true)
         );
         self::assertSame(
@@ -67,7 +67,7 @@ final class FormattingTest extends TestCase
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(3))->format(IDateTime::ISO8601)->orFail()
         );
         self::assertSame(
-            '1986-12-25T12:30:25.123+00:00',
+            '1986-12-25T12:30:25.123Z',
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(0))->format(IDateTime::ISO8601_MILLISECONDS)->orFail()
         );
         self::assertSame(
