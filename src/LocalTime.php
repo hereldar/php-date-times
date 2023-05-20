@@ -14,12 +14,11 @@ use Hereldar\DateTimes\Interfaces\ILocalDateTime;
 use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
+use Hereldar\DateTimes\Services\Validator;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
 use Stringable;
-use Throwable;
-use UnexpectedValueException;
 
 /**
  * @psalm-consistent-constructor
@@ -39,22 +38,21 @@ class LocalTime implements ILocalTime, Stringable
     public static function now(
         ITimeZone|IOffset|string $timeZone = 'UTC',
     ): static {
-        try {
-            $tz = match (true) {
-                is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
-                $timeZone instanceof ITimeZone => $timeZone->toNative(),
-                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
-            };
+        $tz = match (true) {
+            is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+            $timeZone instanceof ITimeZone => $timeZone->toNative(),
+            $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
+        };
 
-            $dt = new NativeDateTime('now', $tz);
-        } catch (Throwable $e) {
-            throw new UnexpectedValueException(
-                message: get_debug_type($timeZone),
-                previous: $e
-            );
+        $dt = new NativeDateTime('now', $tz);
+
+        if ($timeZone === 'UTC' || $tz->getName() === 'UTC') {
+            return new static($dt);
         }
 
-        return new static($dt);
+        $string = $dt->format('G:i:s.u');
+
+        return static::parse($string, 'G:i:s.u')->orFail();
     }
 
     public static function of(
@@ -63,6 +61,11 @@ class LocalTime implements ILocalTime, Stringable
         int $second = 0,
         int $microsecond = 0,
     ): static {
+        Validator::hour($hour);
+        Validator::minute($minute);
+        Validator::second($second);
+        Validator::microsecond($microsecond);
+
         $string = sprintf(
             '%d:%02d:%02d.%06d',
             $hour,

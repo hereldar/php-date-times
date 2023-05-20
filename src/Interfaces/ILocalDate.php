@@ -52,6 +52,8 @@ interface ILocalDate
 
     public function dayOfYear(): int;
 
+    public function inLeapYear(): bool;
+
     public function compareTo(self $that): int;
 
     public function is(self $that): bool;

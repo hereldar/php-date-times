@@ -8,6 +8,7 @@ use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
+use Hereldar\DateTimes\Services\Validator;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
@@ -69,40 +70,23 @@ class Offset implements IOffset, Stringable
         int $minutes = 0,
         int $seconds = 0,
     ): static {
-        if ($hours < self::HOURS_MIN
-            || $hours > self::HOURS_MAX) {
-            throw new OutOfRangeException();
-        }
-
-        if ($minutes < self::MINUTES_MIN
-            || $minutes > self::MINUTES_MAX) {
-            throw new OutOfRangeException();
-        }
-
-        if ($seconds < self::SECONDS_MIN
-            || $seconds > self::SECONDS_MAX) {
-            throw new OutOfRangeException();
-        }
+        Validator::range('hours', $hours, self::HOURS_MIN, self::HOURS_MAX);
+        Validator::range('minutes', $minutes, self::MINUTES_MIN, self::MINUTES_MAX);
+        Validator::range('seconds', $seconds, self::SECONDS_MIN, self::SECONDS_MAX);
 
         return static::fromTotalSeconds(($hours * 3600) + ($minutes * 60) + $seconds);
     }
 
     public static function fromTotalMinutes(int $minutes): static
     {
-        if ($minutes < self::TOTAL_MINUTES_MIN
-            || $minutes > self::TOTAL_MINUTES_MAX) {
-            throw new OutOfRangeException();
-        }
+        Validator::range('minutes', $minutes, self::TOTAL_MINUTES_MIN, self::TOTAL_MINUTES_MAX);
 
         return static::fromTotalSeconds($minutes * 60);
     }
 
     public static function fromTotalSeconds(int $seconds): static
     {
-        if ($seconds < self::TOTAL_SECONDS_MIN
-            || $seconds > self::TOTAL_SECONDS_MAX) {
-            throw new OutOfRangeException();
-        }
+        Validator::range('seconds', $seconds, self::TOTAL_SECONDS_MIN, self::TOTAL_SECONDS_MAX);
 
         $class = static::class;
 

@@ -77,6 +77,8 @@ interface ILocalDateTime
 
     public function dayOfYear(): int;
 
+    public function inLeapYear(): bool;
+
     /**
      * Returns the `LocalTime` part of this date-time.
      */

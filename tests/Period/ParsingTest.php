@@ -7,31 +7,44 @@ namespace Hereldar\DateTimes\Tests\Period;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
+use Throwable;
 
 final class ParsingTest extends TestCase
 {
     public function testEmptyString(): void
     {
-        $this->expectException(ParseException::class);
-
-        /** @psalm-suppress UnusedMethodCall */
-        Period::parse('', '%H:%i:%s')->orFail();
+        try {
+            /** @psalm-suppress UnusedMethodCall */
+            Period::parse('', '%H:%i:%s')->orFail();
+        } catch (Throwable $e) {
+            self::assertInstanceOf(ParseException::class, $e);
+            self::assertSame('', $e->string());
+            self::assertSame('%H:%i:%s', $e->format());
+        }
     }
 
     public function testTrailingData(): void
     {
-        $this->expectException(ParseException::class);
-
-        /** @psalm-suppress UnusedMethodCall */
-        Period::parse('01:30:25', '%H:%i')->orFail();
+        try {
+            /** @psalm-suppress UnusedMethodCall */
+            Period::parse('01:30:25', '%H:%i')->orFail();
+        } catch (Throwable $e) {
+            self::assertInstanceOf(ParseException::class, $e);
+            self::assertSame('01:30:25', $e->string());
+            self::assertSame('%H:%i', $e->format());
+        }
     }
 
     public function testInvalidSubstitute(): void
     {
-        $this->expectException(ParseException::class);
-
-        /** @psalm-suppress UnusedMethodCall */
-        Period::parse('4', '%N')->orFail();
+        try {
+            /** @psalm-suppress UnusedMethodCall */
+            Period::parse('4', '%N')->orFail();
+        } catch (Throwable $e) {
+            self::assertInstanceOf(ParseException::class, $e);
+            self::assertSame('4', $e->string());
+            self::assertSame('%N', $e->format());
+        }
     }
 
     public function testYears(): void

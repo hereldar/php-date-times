@@ -16,12 +16,11 @@ use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Hereldar\DateTimes\Services\Adder;
+use Hereldar\DateTimes\Services\Validator;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
 use Stringable;
-use Throwable;
-use UnexpectedValueException;
 
 /**
  * @psalm-consistent-constructor
@@ -41,26 +40,25 @@ class LocalDateTime implements ILocalDateTime, Stringable
     public static function now(
         ITimeZone|IOffset|string $timeZone = 'UTC',
     ): static {
-        try {
-            $tz = match (true) {
-                is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
-                $timeZone instanceof ITimeZone => $timeZone->toNative(),
-                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
-            };
+        $tz = match (true) {
+            is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+            $timeZone instanceof ITimeZone => $timeZone->toNative(),
+            $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
+        };
 
-            $dt = new NativeDateTime('now', $tz);
-        } catch (Throwable $e) {
-            throw new UnexpectedValueException(
-                message: get_debug_type($timeZone),
-                previous: $e
-            );
+        $dt = new NativeDateTime('now', $tz);
+
+        if ($timeZone === 'UTC' || $tz->getName() === 'UTC') {
+            return new static($dt);
         }
 
-        return new static($dt);
+        $string = $dt->format('Y-n-j G:i:s.u');
+
+        return static::parse($string, 'Y-n-j G:i:s.u')->orFail();
     }
 
     public static function of(
-        int $year,
+        int $year = 1970,
         int $month = 1,
         int $day = 1,
         int $hour = 0,
@@ -68,8 +66,25 @@ class LocalDateTime implements ILocalDateTime, Stringable
         int $second = 0,
         int $microsecond = 0,
     ): static {
+        Validator::month($month);
+        Validator::day($day, $month, $year);
+        Validator::hour($hour);
+        Validator::minute($minute);
+        Validator::second($second);
+        Validator::microsecond($microsecond);
+
+        if ($year < 0) {
+            $extraYears = $year;
+            $year = 0;
+        } elseif ($year > 9999) {
+            $extraYears = $year - 9999;
+            $year = 9999;
+        } else {
+            $extraYears = 0;
+        }
+
         $string = sprintf(
-            '%d-%d-%d %d:%02d:%02d.%06d',
+            '%04d-%d-%d %d:%02d:%02d.%06d',
             $year,
             $month,
             $day,
@@ -79,7 +94,13 @@ class LocalDateTime implements ILocalDateTime, Stringable
             $microsecond,
         );
 
-        return static::parse($string, 'Y-n-j G:i:s.u')->orFail();
+        $dateTime = static::parse($string, 'Y-n-j G:i:s.u')->orFail();
+
+        if ($extraYears !== 0) {
+            return $dateTime->plus($extraYears);
+        }
+
+        return $dateTime;
     }
 
     /**
@@ -300,6 +321,11 @@ class LocalDateTime implements ILocalDateTime, Stringable
     public function dayOfYear(): int
     {
         return (int) $this->value->format('z') + 1;
+    }
+
+    public function inLeapYear(): bool
+    {
+        return ($this->value->format('L') === '1');
     }
 
     public function time(): ILocalTime

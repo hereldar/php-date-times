@@ -96,6 +96,8 @@ interface IDateTime
 
     public function dayOfYear(): int;
 
+    public function inLeapYear(): bool;
+
     /**
      * Returns the `LocalTime` part of this date-time.
      */
@@ -113,7 +115,9 @@ interface IDateTime
 
     public function offset(): IOffset;
 
-    public function timezone(): ITimeZone;
+    public function timeZone(): ITimeZone;
+
+    public function inDaylightSavingTime(): bool;
 
     public function compareTo(self $that): int;
 

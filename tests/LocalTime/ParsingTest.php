@@ -9,6 +9,7 @@ use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\LocalTime;
 use Hereldar\DateTimes\Tests\TestCase;
 use InvalidArgumentException;
+use Throwable;
 
 final class ParsingTest extends TestCase
 {
@@ -137,7 +138,8 @@ final class ParsingTest extends TestCase
         try {
             /** @psalm-suppress UnusedMethodCall */
             LocalTime::parse('', 'H:i:s')->orFail();
-        } catch (ParseException $e) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(ParseException::class, $e);
             self::assertSame('', $e->string());
             self::assertSame('!H:i:s', $e->format());
             self::assertSame('Not enough data available to satisfy format', $e->error());
@@ -149,7 +151,8 @@ final class ParsingTest extends TestCase
         try {
             /** @psalm-suppress UnusedMethodCall */
             LocalTime::parse('15:00:00+02:00', 'H:i:s')->orFail();
-        } catch (ParseException $e) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(ParseException::class, $e);
             self::assertSame('15:00:00+02:00', $e->string());
             self::assertSame('!H:i:s', $e->format());
             self::assertSame('Trailing data', $e->error());
@@ -161,7 +164,8 @@ final class ParsingTest extends TestCase
         try {
             /** @psalm-suppress UnusedMethodCall */
             LocalTime::parse('4', 'b')->orFail();
-        } catch (ParseException $e) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(ParseException::class, $e);
             self::assertSame('4', $e->string());
             self::assertSame('!b', $e->format());
             self::assertSame('The format separator does not match', $e->error());
@@ -173,7 +177,8 @@ final class ParsingTest extends TestCase
         try {
             /** @psalm-suppress UnusedMethodCall */
             LocalTime::parse('4', 'T')->orFail();
-        } catch (ParseException $e) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(ParseException::class, $e);
             self::assertSame('4', $e->string());
             self::assertSame('!T', $e->format());
             self::assertSame('The timezone could not be found in the database', $e->error());

@@ -2,6 +2,8 @@
 <psalm
     errorLevel="1"
     phpVersion="8.1"
+    findUnusedBaselineEntry="false"
+    findUnusedCode="false"
     findUnusedVariablesAndParams="true"
     resolveFromConfigFile="true"
     strictBinaryOperands="true"
@@ -16,4 +18,12 @@
             <directory name="vendor"/>
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <InaccessibleProperty errorLevel="suppress"/>
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <directory name="tests"/>
+            </errorLevel>
+        </UnusedClass>
+    </issueHandlers>
 </psalm>

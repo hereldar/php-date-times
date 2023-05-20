@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests;
 
+use Exception;
+use Generator;
 use Hereldar\DateTimes\Interfaces\IDateTime;
 use Hereldar\DateTimes\Interfaces\ILocalDate;
 use Hereldar\DateTimes\Interfaces\ILocalDateTime;
@@ -11,33 +13,49 @@ use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\IPeriod;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
+use PHPUnit\Framework\Constraint\ExceptionCode;
+use PHPUnit\Framework\Constraint\ExceptionMessageIsOrContains;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use Throwable;
 
 abstract class TestCase extends PHPUnitTestCase
 {
     /**
-     * @param class-string<Throwable> $expectedException
+     * @param Exception|class-string<Throwable> $expectedException
      *
      * @psalm-suppress InternalClass
      * @psalm-suppress InternalMethod
      */
     public static function assertException(
-        string $expectedException,
+        Exception|string $expectedException,
         callable $callback
     ): void {
+        $exception = null;
+
         try {
             $callback();
-            $exception = null;
         } catch (Throwable $exception) {
         }
-        /** @psalm-suppress PossiblyUndefinedVariable */
-        static::assertThat(
-            $exception,
-            new ExceptionConstraint(
-                $expectedException
-            )
-        );
+
+        if (is_string($expectedException)) {
+            static::assertThat(
+                $exception,
+                new ExceptionConstraint($expectedException)
+            );
+        } else {
+            static::assertThat(
+                $exception,
+                new ExceptionConstraint($expectedException::class)
+            );
+            static::assertThat(
+                $exception?->getMessage(),
+                new ExceptionMessageIsOrContains($expectedException->getMessage())
+            );
+            static::assertThat(
+                $exception?->getCode(),
+                new ExceptionCode($expectedException->getCode())
+            );
+        }
     }
 
     public static function assertDateTime(
@@ -86,7 +104,7 @@ abstract class TestCase extends PHPUnitTestCase
         }
 
         if ($timeZone !== null) {
-            $actual['timeZone'] = $dateTime->timezone()->name();
+            $actual['timeZone'] = $dateTime->timeZone()->name();
             $expected['timeZone'] = $timeZone;
         }
 
@@ -260,5 +278,21 @@ abstract class TestCase extends PHPUnitTestCase
         }
 
         static::assertSame($expected, $actual);
+    }
+
+    public static function timeZoneNames(): Generator
+    {
+        $timeZoneNames = [
+            '-12:00',
+            '+00:00',
+            '+14:00',
+            'Pacific/Pago_Pago',
+            'Europe/London',
+            'Pacific/Kiritimati',
+        ];
+
+        foreach ($timeZoneNames as $timeZoneName) {
+            yield [$timeZoneName];
+        }
     }
 }

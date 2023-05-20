@@ -15,12 +15,11 @@ use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Hereldar\DateTimes\Services\Adder;
+use Hereldar\DateTimes\Services\Validator;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
 use Stringable;
-use Throwable;
-use UnexpectedValueException;
 
 /**
  * @psalm-consistent-constructor
@@ -40,32 +39,55 @@ class LocalDate implements ILocalDate, Stringable
     public static function today(
         ITimeZone|IOffset|string $timeZone = 'UTC',
     ): static {
-        try {
-            $tz = match (true) {
-                is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
-                $timeZone instanceof ITimeZone => $timeZone->toNative(),
-                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
-            };
+        $tz = match (true) {
+            is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+            $timeZone instanceof ITimeZone => $timeZone->toNative(),
+            $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
+        };
 
-            $dt = new NativeDateTime('today', $tz);
-        } catch (Throwable $e) {
-            throw new UnexpectedValueException(
-                message: get_debug_type($timeZone),
-                previous: $e
-            );
+        $dt = new NativeDateTime('today', $tz);
+
+        if ($timeZone === 'UTC' || $tz->getName() === 'UTC') {
+            return new static($dt);
         }
 
-        return new static($dt);
+        $string = $dt->format('Y-n-j');
+
+        return static::parse($string, 'Y-n-j')->orFail();
     }
 
     public static function of(
-        int $year,
+        int $year = 1970,
         int $month = 1,
         int $day = 1,
     ): static {
-        $string = "{$year}-{$month}-{$day}";
+        Validator::month($month);
+        Validator::day($day, $month, $year);
 
-        return static::parse($string, 'Y-n-j')->orFail();
+        if ($year < 0) {
+            $extraYears = $year;
+            $year = 0;
+        } elseif ($year > 9999) {
+            $extraYears = $year - 9999;
+            $year = 9999;
+        } else {
+            $extraYears = 0;
+        }
+
+        $string = sprintf(
+            '%04d-%d-%d',
+            $year,
+            $month,
+            $day,
+        );
+
+        $dateTime = static::parse($string, 'Y-n-j')->orFail();
+
+        if ($extraYears !== 0) {
+            return $dateTime->plus($extraYears);
+        }
+
+        return $dateTime;
     }
 
     /**
@@ -231,6 +253,11 @@ class LocalDate implements ILocalDate, Stringable
     public function dayOfYear(): int
     {
         return (int) $this->value->format('z') + 1;
+    }
+
+    public function inLeapYear(): bool
+    {
+        return ($this->value->format('L') === '1');
     }
 
     public function compareTo(ILocalDate $that): int
