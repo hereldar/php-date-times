@@ -6,11 +6,13 @@ namespace Hereldar\DateTimes;
 
 use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Enums\TimeZoneType;
+use Hereldar\DateTimes\Exceptions\TimeZoneException;
 use Hereldar\DateTimes\Interfaces\ILocalDate;
 use Hereldar\DateTimes\Interfaces\ILocalDateTime;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Stringable;
+use Throwable;
 
 /**
  * @psalm-consistent-constructor
@@ -45,14 +47,17 @@ class TimeZone implements ITimeZone, Stringable
     ): static {
         $class = static::class;
 
-        $timeZone = (
-            self::$cache[$class][$name]
-                ??= new static(new NativeTimeZone($name))
-        );
+        if (isset(self::$cache[$class][$name])) {
+            return self::$cache[$class][$name];
+        }
 
-        self::$cache[$class][$timeZone->name()] = $timeZone;
+        try {
+            $timeZone = new static(new NativeTimeZone($name));
+        } catch (Throwable $e) {
+            throw new TimeZoneException($name, $e);
+        }
 
-        return $timeZone;
+        return self::$cache[$class][$timeZone->name()] = $timeZone;
     }
 
     public static function fromNative(
