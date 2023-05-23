@@ -2,51 +2,52 @@
 
 declare(strict_types=1);
 
-namespace Hereldar\DateTimes\Tests\LocalDate;
+namespace Hereldar\DateTimes\Tests\LocalTime;
 
 use DateTimeImmutable as NativeDateTime;
 use Generator;
-use Hereldar\DateTimes\LocalDate;
+use Hereldar\DateTimes\LocalTime;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class NativeDateTimeTest extends TestCase
+final class NativeTest extends TestCase
 {
     /**
      * @dataProvider dataForNativeDateTime
      */
     public function testNativeDateTime(
         NativeDateTime $nativeDateTime,
-        LocalDate $localDate,
+        LocalTime $localTime,
         bool $reversible = true,
     ): void {
-        self::assertEquals($localDate, LocalDate::fromNative($nativeDateTime));
+        self::assertEquals($localTime, LocalTime::fromNative($nativeDateTime));
 
         if ($reversible) {
-            self::assertEquals($nativeDateTime, $localDate->toNative());
+            self::assertEquals($nativeDateTime, $localTime->toNative());
         } else {
-            self::assertNotEquals($nativeDateTime, $localDate->toNative());
+            self::assertNotEquals($nativeDateTime, $localTime->toNative());
         }
     }
 
     public static function dataForNativeDateTime(): Generator
     {
         yield [
-            new NativeDateTime('2010-04-24'),
-            LocalDate::of(2010, 4, 24),
+            new NativeDateTime('10:24:16'),
+            LocalTime::of(10, 24, 16),
+            false,
         ];
         yield [
-            new NativeDateTime('2010-04-24 -04:00'),
-            LocalDate::of(2010, 4, 24),
+            new NativeDateTime('10:24:16-04:00'),
+            LocalTime::of(10, 24, 16),
             false,
         ];
         yield [
             new NativeDateTime('2010-04-24 10:24:16'),
-            LocalDate::of(2010, 4, 24),
+            LocalTime::of(10, 24, 16),
             false,
         ];
         yield [
             new NativeDateTime('2010-04-24 10:24:16-04:00'),
-            LocalDate::of(2010, 4, 24),
+            LocalTime::of(10, 24, 16),
             false,
         ];
     }

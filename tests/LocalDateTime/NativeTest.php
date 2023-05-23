@@ -9,7 +9,7 @@ use Generator;
 use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Tests\TestCase;
 
-final class NativeDateTimeTest extends TestCase
+final class NativeTest extends TestCase
 {
     /**
      * @dataProvider dataForNativeDateTime

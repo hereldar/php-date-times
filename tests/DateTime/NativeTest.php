@@ -11,7 +11,7 @@ use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
 use Hereldar\DateTimes\TimeZone;
 
-final class NativeDateTimeTest extends TestCase
+final class NativeTest extends TestCase
 {
     /**
      * @dataProvider dataForNativeDateTime
