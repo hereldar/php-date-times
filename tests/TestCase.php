@@ -12,6 +12,7 @@ use Hereldar\DateTimes\Interfaces\ILocalDateTime;
 use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Interfaces\IPeriod;
+use Hereldar\DateTimes\Interfaces\ITimeZone;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
 use PHPUnit\Framework\Constraint\ExceptionCode;
 use PHPUnit\Framework\Constraint\ExceptionMessageIsOrContains;
@@ -211,26 +212,33 @@ abstract class TestCase extends PHPUnitTestCase
     }
 
     public static function assertOffset(
-        IOffset $times,
+        IOffset $offset,
         int $hours,
         ?int $minutes = null,
         ?int $seconds = null,
     ): void {
-        $actual = ['hours' => $times->hours()];
+        $actual = ['hours' => $offset->hours()];
 
         $expected = ['hours' => $hours];
 
         if ($minutes !== null) {
-            $actual['minutes'] = $times->minutes();
+            $actual['minutes'] = $offset->minutes();
             $expected['minutes'] = $minutes;
         }
 
         if ($seconds !== null) {
-            $actual['seconds'] = $times->seconds();
+            $actual['seconds'] = $offset->seconds();
             $expected['seconds'] = $seconds;
         }
 
         static::assertSame($expected, $actual);
+    }
+
+    public static function assertTimeZone(
+        ITimeZone $timeZone,
+        string $name,
+    ): void {
+        static::assertSame($name, $timeZone->name());
     }
 
     public static function assertPeriod(
