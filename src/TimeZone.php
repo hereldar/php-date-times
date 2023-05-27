@@ -97,19 +97,19 @@ class TimeZone implements ITimeZone, Stringable
         return $this->value->getName();
     }
 
-    public function type(): int
+    public function type(): TimeZoneType
     {
         $name = $this->name();
 
         if (str_contains($name, '/')) {
-            return TimeZoneType::TIMEZONE_IDENTIFIER;
+            return TimeZoneType::Identifier;
         }
 
         if (str_starts_with($name, '+') || str_starts_with($name, '-')) {
-            return TimeZoneType::UTC_OFFSET;
+            return TimeZoneType::Offset;
         }
 
-        return TimeZoneType::TIMEZONE_ABBREVIATION;
+        return TimeZoneType::Abbreviation;
     }
 
     public function compareTo(ITimeZone $that): int

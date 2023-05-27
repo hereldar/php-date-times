@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Interfaces;
 
 use DateTimeZone as NativeTimeZone;
+use Hereldar\DateTimes\Enums\TimeZoneType;
 
 interface ITimeZone
 {
@@ -12,7 +13,7 @@ interface ITimeZone
 
     public function name(): string;
 
-    public function type(): int;
+    public function type(): TimeZoneType;
 
     public function toOffset(ILocalDate|ILocalDateTime $date): IOffset;
 

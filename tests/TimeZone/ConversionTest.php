@@ -35,12 +35,16 @@ final class ConversionTest extends TestCase
         self::assertOffset(TimeZone::of('-8:45')->toOffset($winter), -8, -45);
 
         $offset = Offset::of(-5, -15);
-        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($summer), $offset->hours(), $offset->minutes());
-        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($winter), $offset->hours(), $offset->minutes());
+        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($summer), -5, -15);
+        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($winter), -5, -15);
 
         $offset = Offset::fromTotalMinutes(-150);
-        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($summer), $offset->hours(), $offset->minutes());
-        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($winter), $offset->hours(), $offset->minutes());
+        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($summer), -2, -30);
+        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($winter), -2, -30);
+
+        $offset = Offset::fromTotalSeconds(-31_500);
+        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($summer), -8, -45, 0);
+        self::assertOffset(TimeZone::fromOffset($offset)->toOffset($winter), -8, -45, 0);
     }
 
     /**

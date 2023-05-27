@@ -6,6 +6,7 @@ namespace Hereldar\DateTimes\Tests\TimeZone;
 
 use DateTimeZone as NativeTimeZone;
 use Generator;
+use Hereldar\DateTimes\Enums\TimeZoneType;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
 use Hereldar\DateTimes\TimeZone;
 use Hereldar\DateTimes\Tests\TestCase;
@@ -23,7 +24,7 @@ final class CreationTest extends TestCase
         date_default_timezone_set($tz->getName());
         $timeZone = TimeZone::system();
 
-        self::assertEquals($tz->getName(), $timeZone->name());
+        self::assertSame($tz->getName(), $timeZone->name());
     }
 
     public static function validTimeZoneIds(): Generator
@@ -45,47 +46,48 @@ final class CreationTest extends TestCase
      * @dataProvider validTimeZoneIdsAndOffsets
      */
     public function testCustomTimeZone(
-        string $timeZoneId,
+        string $timeZoneName,
+        TimeZoneType $timeZoneType,
     ): void {
-        $tz = new NativeTimeZone($timeZoneId);
-        $timeZone = TimeZone::of($timeZoneId);
+        $tz = new NativeTimeZone($timeZoneName);
+        $timeZone = TimeZone::of($timeZoneName);
 
-        self::assertEquals($tz->getName(), $timeZone->name());
+        self::assertSame($tz->getName(), $timeZone->name());
+        self::assertSame($timeZoneType, $timeZone->type());
     }
 
-    public static function validTimeZoneIdsAndOffsets(): Generator
+    public static function validTimeZoneIdsAndOffsets(): array
     {
-        $timeZones = [
-            'Europe/London',
-            'GMT+04:45',
-            '-06:00',
-            'CEST',
+        return [
+            ['Europe/London', TimeZoneType::Identifier],
+            ['GMT+04:45', TimeZoneType::Offset],
+            ['-06:00', TimeZoneType::Offset],
+            ['CEST', TimeZoneType::Abbreviation],
         ];
-
-        foreach ($timeZones as $timeZone) {
-            yield [$timeZone];
-        }
     }
 
     /**
-     * @dataProvider invalidTimeZoneIds
+     * @dataProvider invalidTimeZoneIdsAndOffsets
      */
     public function testTimeZoneException(
-        string $timeZoneId,
+        string $timeZoneName,
     ): void {
         try {
-            TimeZone::of($timeZoneId);
+            TimeZone::of($timeZoneName);
         } catch (Throwable $e) {
             self::assertInstanceOf(TimeZoneException::class, $e);
-            self::assertSame($timeZoneId, $e->name());
+            self::assertSame($timeZoneName, $e->name());
         }
     }
 
-    public static function invalidTimeZoneIds(): Generator
+    public static function invalidTimeZoneIdsAndOffsets(): Generator
     {
         $timeZones = [
             'Mars/Phobos',
             'Jupiter/Europa',
+            'CET+04:45',
+            '6:00',
+            'BILBO',
         ];
 
         foreach ($timeZones as $timeZone) {

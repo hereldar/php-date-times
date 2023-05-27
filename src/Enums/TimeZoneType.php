@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Enums;
 
-final class TimeZoneType
+enum TimeZoneType: int
 {
-    public const UTC_OFFSET = 1;
-    public const TIMEZONE_ABBREVIATION = 2;
-    public const TIMEZONE_IDENTIFIER = 3;
+    /** UTC offset (-06:00) */
+    case Offset = 1;
+
+    /** Time-zone abbreviation (BST) */
+    case Abbreviation = 2;
+
+    /** Time-zone identifier (Australia/Hobart) */
+    case Identifier = 3;
 }
