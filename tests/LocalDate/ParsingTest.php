@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Tests\LocalDate;
 
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\ILocalDate;
 use Hereldar\DateTimes\LocalDate;
 use Hereldar\DateTimes\Tests\TestCase;
 use InvalidArgumentException;
@@ -15,10 +14,6 @@ final class ParsingTest extends TestCase
 {
     public function testParse(): void
     {
-        self::assertException(
-            InvalidArgumentException::class,
-            fn ()  => LocalDate::parse('25th of December, 1986', '')
-        );
         self::assertEquals(
             LocalDate::of(1986, 12, 25),
             LocalDate::parse('25th of December, 1986', 'jS \o\f F, Y')->orFail()
@@ -45,7 +40,7 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalDate::of(1986, 12, 25),
-            LocalDate::parse('1986-12-25', ILocalDate::ISO8601)->orFail()
+            LocalDate::parse('1986-12-25', LocalDate::ISO8601)->orFail()
         );
         self::assertEquals(
             LocalDate::of(1986, 12, 25),
@@ -61,7 +56,7 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalDate::of(1986, 12, 25),
-            LocalDate::parse('Thu, 25 Dec 1986', ILocalDate::RFC2822)->orFail()
+            LocalDate::parse('Thu, 25 Dec 1986', LocalDate::RFC2822)->orFail()
         );
     }
 
@@ -73,7 +68,7 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalDate::of(1986, 12, 25),
-            LocalDate::parse('1986-12-25', ILocalDate::RFC3339)->orFail()
+            LocalDate::parse('1986-12-25', LocalDate::RFC3339)->orFail()
         );
     }
 
@@ -85,7 +80,7 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalDate::of(1986, 12, 25),
-            LocalDate::parse('1986-12-25', ILocalDate::SQL)->orFail()
+            LocalDate::parse('1986-12-25', LocalDate::SQL)->orFail()
         );
     }
 

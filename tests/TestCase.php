@@ -6,13 +6,13 @@ namespace Hereldar\DateTimes\Tests;
 
 use Exception;
 use Generator;
-use Hereldar\DateTimes\Interfaces\IDateTime;
-use Hereldar\DateTimes\Interfaces\ILocalDate;
-use Hereldar\DateTimes\Interfaces\ILocalDateTime;
-use Hereldar\DateTimes\Interfaces\ILocalTime;
-use Hereldar\DateTimes\Interfaces\IOffset;
-use Hereldar\DateTimes\Interfaces\IPeriod;
-use Hereldar\DateTimes\Interfaces\ITimeZone;
+use Hereldar\DateTimes\DateTime;
+use Hereldar\DateTimes\LocalDate;
+use Hereldar\DateTimes\LocalDateTime;
+use Hereldar\DateTimes\LocalTime;
+use Hereldar\DateTimes\Offset;
+use Hereldar\DateTimes\Period;
+use Hereldar\DateTimes\TimeZone;
 use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
 use PHPUnit\Framework\Constraint\ExceptionCode;
 use PHPUnit\Framework\Constraint\ExceptionMessageIsOrContains;
@@ -60,7 +60,7 @@ abstract class TestCase extends PHPUnitTestCase
     }
 
     public static function assertDateTime(
-        IDateTime $dateTime,
+        DateTime $dateTime,
         int $year,
         ?int $month = null,
         ?int $day = null,
@@ -113,7 +113,7 @@ abstract class TestCase extends PHPUnitTestCase
     }
 
     public static function assertLocalDate(
-        ILocalDate $date,
+        LocalDate $date,
         int $year,
         ?int $month = null,
         ?int $day = null,
@@ -136,7 +136,7 @@ abstract class TestCase extends PHPUnitTestCase
     }
 
     public static function assertLocalDateTime(
-        ILocalDateTime $dateTime,
+        LocalDateTime $dateTime,
         int $year,
         ?int $month = null,
         ?int $day = null,
@@ -183,7 +183,7 @@ abstract class TestCase extends PHPUnitTestCase
     }
 
     public static function assertLocalTime(
-        ILocalTime $time,
+        LocalTime $time,
         int $hour,
         ?int $minute = null,
         ?int $second = null,
@@ -212,7 +212,7 @@ abstract class TestCase extends PHPUnitTestCase
     }
 
     public static function assertOffset(
-        IOffset $offset,
+        Offset $offset,
         int $hours,
         ?int $minutes = null,
         ?int $seconds = null,
@@ -235,14 +235,14 @@ abstract class TestCase extends PHPUnitTestCase
     }
 
     public static function assertTimeZone(
-        ITimeZone $timeZone,
+        TimeZone $timeZone,
         string $name,
     ): void {
         static::assertSame($name, $timeZone->name());
     }
 
     public static function assertPeriod(
-        IPeriod $period,
+        Period $period,
         int $years,
         ?int $months = null,
         ?int $days = null,

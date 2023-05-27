@@ -7,13 +7,12 @@ namespace Hereldar\DateTimes;
 use ArithmeticError;
 use DateTimeImmutable as NativeDateTime;
 use DateTimeInterface as NativeDateTimeInterface;
+use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\IPeriod;
-use Hereldar\DateTimes\Interfaces\ILocalDate;
-use Hereldar\DateTimes\Interfaces\ILocalDateTime;
-use Hereldar\DateTimes\Interfaces\ILocalTime;
-use Hereldar\DateTimes\Interfaces\IOffset;
-use Hereldar\DateTimes\Interfaces\ITimeZone;
+use Hereldar\DateTimes\Interfaces\Formattable;
+use Hereldar\DateTimes\Interfaces\Summable;
+use Hereldar\DateTimes\Interfaces\Parsable;
+use Hereldar\DateTimes\Interfaces\Timelike;
 use Hereldar\DateTimes\Services\Validator;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
@@ -23,8 +22,22 @@ use Stringable;
 /**
  * @psalm-consistent-constructor
  */
-class LocalTime implements ILocalTime, Stringable
+class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
 {
+    final public const ISO8601 = 'H:i:s';
+    final public const ISO8601_MILLISECONDS = 'H:i:s.v';
+    final public const ISO8601_MICROSECONDS = 'H:i:s.u';
+
+    final public const RFC2822 = 'H:i:s';
+
+    final public const RFC3339 = 'H:i:s';
+    final public const RFC3339_MILLISECONDS = 'H:i:s.v';
+    final public const RFC3339_MICROSECONDS = 'H:i:s.u';
+
+    final public const SQL = 'H:i:s';
+    final public const SQL_MILLISECONDS = 'H:i:s.v';
+    final public const SQL_MICROSECONDS = 'H:i:s.u';
+
     private function __construct(
         private readonly NativeDateTime $value,
     ) {
@@ -36,12 +49,12 @@ class LocalTime implements ILocalTime, Stringable
     }
 
     public static function now(
-        ITimeZone|IOffset|string $timeZone = 'UTC',
+        TimeZone|Offset|string $timeZone = 'UTC',
     ): static {
         $tz = match (true) {
             is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
-            $timeZone instanceof ITimeZone => $timeZone->toNative(),
-            $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
+            $timeZone instanceof TimeZone => $timeZone->toNative(),
+            $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
         };
 
         $dt = new NativeDateTime('now', $tz);
@@ -77,62 +90,68 @@ class LocalTime implements ILocalTime, Stringable
         return static::parse($string, 'G:i:s.u')->orFail();
     }
 
-    /**
-     * @param string|array<int, string> $format
-     *
-     * @return Ok<static>|Error<ParseException>
-     */
     public static function parse(
         string $string,
-        string|array $format = ILocalTime::ISO8601,
+        string|array $format = LocalTime::ISO8601,
     ): Ok|Error {
         $tz = TimeZone::utc()->toNative();
 
         /** @var array<int, string> $formats */
         $formats = [];
 
-        if (!$format) {
-            throw new InvalidArgumentException(
-                'At least one format must be passed'
-            );
-        }
-
         if (is_array($format)) {
+            if (count($format) === 0) {
+                throw new InvalidArgumentException(
+                    'At least one format must be passed'
+                );
+            }
             $formats = $format;
             $format = reset($formats);
         }
 
+        $result = self::parseSimple($string, $format, $tz);
+
+        if ($result->isOk()) {
+            return $result;
+        }
+
+        if (count($formats) > 1) {
+            while ($fmt = next($formats)) {
+                $r = self::parseSimple($string, $fmt, $tz);
+
+                if ($r->isOk()) {
+                    return $r;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return Ok<static>|Error<ParseException>
+     */
+    private static function parseSimple(
+        string $string,
+        string $format,
+        NativeTimeZone $tz,
+    ): Ok|Error {
         if (!str_starts_with($format, '!')) {
             $format = "!{$format}";
         }
 
         $dt = NativeDateTime::createFromFormat($format, $string, $tz);
 
-        if (false !== $dt) {
+        $info = NativeDateTime::getLastErrors();
+
+        /** @psalm-suppress PossiblyFalseArgument */
+        if (empty($info['errors']) && empty($info['warnings'])) {
             /** @var Ok<static> */
             return Ok::withValue(new static($dt));
         }
 
-        $info = NativeDateTime::getLastErrors();
-
-        if (count($formats) > 1) {
-            while ($fmt = next($formats)) {
-                if (!str_starts_with($fmt, '!')) {
-                    $fmt = "!{$fmt}";
-                }
-
-                $dt = NativeDateTime::createFromFormat($fmt, $string, $tz);
-
-                if (false !== $dt) {
-                    /** @var Ok<static> */
-                    return Ok::withValue(new static($dt));
-                }
-            }
-        }
-
-        $firstError = ($info)
-            ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
-            : null;
+        /** @psalm-suppress PossiblyInvalidArrayAccess */
+        $firstError = reset($info['errors']) ?: reset($info['warnings']) ?: null;
 
         return Error::withException(new ParseException($string, $format, $firstError));
     }
@@ -143,9 +162,9 @@ class LocalTime implements ILocalTime, Stringable
         bool $microseconds = false,
     ): static {
         $format = match (true) {
-            $microseconds => ILocalTime::ISO8601_MICROSECONDS,
-            $milliseconds => ILocalTime::ISO8601_MILLISECONDS,
-            default => ILocalTime::ISO8601,
+            $microseconds => self::ISO8601_MICROSECONDS,
+            $milliseconds => self::ISO8601_MILLISECONDS,
+            default => self::ISO8601,
         };
 
         return static::parse($value, $format)->orFail();
@@ -153,7 +172,7 @@ class LocalTime implements ILocalTime, Stringable
 
     public static function fromRfc2822(string $value): static
     {
-        return static::parse($value, ILocalTime::RFC2822)->orFail();
+        return static::parse($value, self::RFC2822)->orFail();
     }
 
     public static function fromRfc3339(
@@ -162,9 +181,9 @@ class LocalTime implements ILocalTime, Stringable
         bool $microseconds = false,
     ): static {
         $format = match (true) {
-            $microseconds => ILocalTime::RFC3339_MICROSECONDS,
-            $milliseconds => ILocalTime::RFC3339_MILLISECONDS,
-            default => ILocalTime::RFC3339,
+            $microseconds => self::RFC3339_MICROSECONDS,
+            $milliseconds => self::RFC3339_MILLISECONDS,
+            default => self::RFC3339,
         };
 
         return static::parse($value, $format)->orFail();
@@ -176,9 +195,9 @@ class LocalTime implements ILocalTime, Stringable
         bool $microseconds = false,
     ): static {
         $format = match (true) {
-            $microseconds => ILocalTime::SQL_MICROSECONDS,
-            $milliseconds => ILocalTime::SQL_MILLISECONDS,
-            default => ILocalTime::SQL,
+            $microseconds => self::SQL_MICROSECONDS,
+            $milliseconds => self::SQL_MILLISECONDS,
+            default => self::SQL,
         };
 
         return static::parse($value, $format)->orFail();
@@ -192,7 +211,7 @@ class LocalTime implements ILocalTime, Stringable
         return static::parse($string, 'G:i:s.u')->orFail();
     }
 
-    public function format(string $format = ILocalTime::ISO8601): Ok|Error
+    public function format(string $format = LocalTime::ISO8601): Ok|Error
     {
         return Ok::withValue($this->value->format($format));
     }
@@ -202,15 +221,15 @@ class LocalTime implements ILocalTime, Stringable
         bool $microseconds = false,
     ): string {
         return $this->value->format(match (true) {
-            $microseconds => ILocalTime::ISO8601_MICROSECONDS,
-            $milliseconds => ILocalTime::ISO8601_MILLISECONDS,
-            default => ILocalTime::ISO8601,
+            $microseconds => self::ISO8601_MICROSECONDS,
+            $milliseconds => self::ISO8601_MILLISECONDS,
+            default => self::ISO8601,
         });
     }
 
     public function toRfc2822(): string
     {
-        return $this->value->format(ILocalTime::RFC2822);
+        return $this->value->format(self::RFC2822);
     }
 
     public function toRfc3339(
@@ -218,9 +237,9 @@ class LocalTime implements ILocalTime, Stringable
         bool $microseconds = false,
     ): string {
         return $this->value->format(match (true) {
-            $microseconds => ILocalTime::RFC3339_MICROSECONDS,
-            $milliseconds => ILocalTime::RFC3339_MILLISECONDS,
-            default => ILocalTime::RFC3339,
+            $microseconds => self::RFC3339_MICROSECONDS,
+            $milliseconds => self::RFC3339_MILLISECONDS,
+            default => self::RFC3339,
         });
     }
 
@@ -229,9 +248,9 @@ class LocalTime implements ILocalTime, Stringable
         bool $microseconds = false,
     ): string {
         return $this->value->format(match (true) {
-            $microseconds => ILocalTime::SQL_MICROSECONDS,
-            $milliseconds => ILocalTime::SQL_MILLISECONDS,
-            default => ILocalTime::SQL,
+            $microseconds => self::SQL_MICROSECONDS,
+            $milliseconds => self::SQL_MILLISECONDS,
+            default => self::SQL,
         });
     }
 
@@ -240,7 +259,7 @@ class LocalTime implements ILocalTime, Stringable
         return $this->value;
     }
 
-    public function atDate(ILocalDate $date): ILocalDateTime
+    public function atDate(LocalDate $date): LocalDateTime
     {
         $dt = $this->value->setDate(
             $date->year(),
@@ -253,80 +272,83 @@ class LocalTime implements ILocalTime, Stringable
 
     public function hour(): int
     {
+        /** @var int<0, 23> */
         return (int) $this->value->format('G');
     }
 
     public function minute(): int
     {
+        /** @var int<0, 59> */
         return (int) $this->value->format('i');
     }
 
     public function second(): int
     {
+        /** @var int<0, 59> */
         return (int) $this->value->format('s');
     }
 
     public function millisecond(): int
     {
+        /** @var int<0, 999> */
         return (int) $this->value->format('v');
     }
 
     public function microsecond(): int
     {
+        /** @var int<0, 999999> */
         return (int) $this->value->format('u');
     }
 
-    public function compareTo(ILocalTime $that): int
+    public function compareTo(LocalTime $that): int
     {
         return ($this->value <=> $that->toNative());
     }
 
-    public function is(ILocalTime $that): bool
+    public function is(LocalTime $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->value == $that->value; // @phpstan-ignore-line
+            && $this->value == $that->value;
     }
 
-    public function isNot(ILocalTime $that): bool
+    public function isNot(LocalTime $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->value != $that->value; // @phpstan-ignore-line
+            || $this->value != $that->value;
     }
 
-    public function isEqual(ILocalTime $that): bool
+    public function isEqual(LocalTime $that): bool
     {
         return ($this->value == $that->toNative());
     }
 
-    public function isNotEqual(ILocalTime $that): bool
+    public function isNotEqual(LocalTime $that): bool
     {
         return ($this->value != $that->toNative());
     }
 
-    public function isGreater(ILocalTime $that): bool
+    public function isGreater(LocalTime $that): bool
     {
         return ($this->value > $that->toNative());
     }
 
-    public function isGreaterOrEqual(ILocalTime $that): bool
+    public function isGreaterOrEqual(LocalTime $that): bool
     {
         return ($this->value >= $that->toNative());
     }
 
-    public function isLess(ILocalTime $that): bool
+    public function isLess(LocalTime $that): bool
     {
         return ($this->value < $that->toNative());
     }
 
-    public function isLessOrEqual(ILocalTime $that): bool
+    public function isLessOrEqual(LocalTime $that): bool
     {
         return ($this->value <= $that->toNative());
     }
 
     public function plus(
-        int|IPeriod $hours = 0,
+        int|Period $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
         int $milliseconds = 0,
@@ -352,7 +374,7 @@ class LocalTime implements ILocalTime, Stringable
     }
 
     public function minus(
-        int|IPeriod $hours = 0,
+        int|Period $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
         int $milliseconds = 0,
@@ -392,7 +414,7 @@ class LocalTime implements ILocalTime, Stringable
     }
 
     public function add(
-        int|IPeriod $hours = 0,
+        int|Period $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
         int $milliseconds = 0,
@@ -412,7 +434,7 @@ class LocalTime implements ILocalTime, Stringable
     }
 
     public function subtract(
-        int|IPeriod $hours = 0,
+        int|Period $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
         int $milliseconds = 0,

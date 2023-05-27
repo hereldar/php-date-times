@@ -6,7 +6,7 @@ namespace Hereldar\DateTimes\Services;
 
 use DateInterval as NativeDateInterval;
 use DateTimeImmutable as NativeDateTime;
-use Hereldar\DateTimes\Interfaces\IPeriod;
+use Hereldar\DateTimes\Period;
 
 /**
  * @internal
@@ -30,7 +30,7 @@ final class Adder
 
     public static function addPeriodWithoutOverflow(
         NativeDateTime $dateTime,
-        IPeriod $period,
+        Period $period,
     ): NativeDateTime {
         $periodWithoutYearsAndMonths = $period->with(0, 0);
 

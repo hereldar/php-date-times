@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Tests\LocalTime;
 
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\LocalTime;
 use Hereldar\DateTimes\Tests\TestCase;
 use InvalidArgumentException;
@@ -15,10 +14,6 @@ final class ParsingTest extends TestCase
 {
     public function testParse(): void
     {
-        self::assertException(
-            InvalidArgumentException::class,
-            fn ()  => LocalTime::parse('1pm', '')
-        );
         self::assertEquals(
             LocalTime::of(13),
             LocalTime::parse('1pm', 'ga')->orFail()
@@ -53,15 +48,15 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25, 0),
-            LocalTime::parse('12:30:25', ILocalTime::ISO8601)->orFail()
+            LocalTime::parse('12:30:25', LocalTime::ISO8601)->orFail()
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25, 123_000),
-            LocalTime::parse('12:30:25.123', ILocalTime::ISO8601_MILLISECONDS)->orFail()
+            LocalTime::parse('12:30:25.123', LocalTime::ISO8601_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25, 123_456),
-            LocalTime::parse('12:30:25.123456', ILocalTime::ISO8601_MICROSECONDS)->orFail()
+            LocalTime::parse('12:30:25.123456', LocalTime::ISO8601_MICROSECONDS)->orFail()
         );
     }
 
@@ -73,7 +68,7 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25),
-            LocalTime::parse('12:30:25', ILocalTime::RFC2822)->orFail()
+            LocalTime::parse('12:30:25', LocalTime::RFC2822)->orFail()
         );
     }
 
@@ -93,15 +88,15 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25, 0),
-            LocalTime::parse('12:30:25', ILocalTime::RFC3339)->orFail()
+            LocalTime::parse('12:30:25', LocalTime::RFC3339)->orFail()
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25, 123_000),
-            LocalTime::parse('12:30:25.123', ILocalTime::RFC3339_MILLISECONDS)->orFail()
+            LocalTime::parse('12:30:25.123', LocalTime::RFC3339_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25, 123_456),
-            LocalTime::parse('12:30:25.123456', ILocalTime::RFC3339_MICROSECONDS)->orFail()
+            LocalTime::parse('12:30:25.123456', LocalTime::RFC3339_MICROSECONDS)->orFail()
         );
     }
 
@@ -121,15 +116,15 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25, 0),
-            LocalTime::parse('12:30:25', ILocalTime::SQL)->orFail()
+            LocalTime::parse('12:30:25', LocalTime::SQL)->orFail()
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25, 123_000),
-            LocalTime::parse('12:30:25.123', ILocalTime::SQL_MILLISECONDS)->orFail()
+            LocalTime::parse('12:30:25.123', LocalTime::SQL_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             LocalTime::of(12, 30, 25, 123_456),
-            LocalTime::parse('12:30:25.123456', ILocalTime::SQL_MICROSECONDS)->orFail()
+            LocalTime::parse('12:30:25.123456', LocalTime::SQL_MICROSECONDS)->orFail()
         );
     }
 

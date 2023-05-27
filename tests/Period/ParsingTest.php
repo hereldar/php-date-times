@@ -7,6 +7,7 @@ namespace Hereldar\DateTimes\Tests\Period;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
+use InvalidArgumentException;
 use Throwable;
 
 final class ParsingTest extends TestCase
@@ -173,6 +174,22 @@ final class ParsingTest extends TestCase
         $period = Period::parse('2000-01-02 03:04:05.500000', '%Y-%M-%D %H:%I:%S.%U')->orFail();
         self::assertInstanceOf(Period::class, $period);
         self::assertPeriod($period, 2000, 1, 2, 3, 4, 5, 500000);
+    }
+
+    public function testMultipleFormats(): void
+    {
+        self::assertException(
+            InvalidArgumentException::class,
+            fn ()  => Period::parse('01:02:03', [])
+        );
+        self::assertEquals(
+            Period::of(1, 2, 0, 3),
+            Period::parse('0001/02/03', ['%Y/%M/%D'])->orFail()
+        );
+        self::assertEquals(
+            Period::of(1, 2, 0, 3),
+            Period::parse('0001/02/03', ['%Y%M%D', '%Y/%M/%D'])->orFail()
+        );
     }
 
     public function testCopy(): void

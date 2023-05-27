@@ -6,8 +6,9 @@ namespace Hereldar\DateTimes;
 
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\IOffset;
-use Hereldar\DateTimes\Interfaces\ITimeZone;
+use Hereldar\DateTimes\Interfaces\Formattable;
+use Hereldar\DateTimes\Interfaces\Summable;
+use Hereldar\DateTimes\Interfaces\Parsable;
 use Hereldar\DateTimes\Services\Validator;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
@@ -18,8 +19,10 @@ use Stringable;
 /**
  * @psalm-consistent-constructor
  */
-class Offset implements IOffset, Stringable
+class Offset implements Formattable, Summable, Parsable, Stringable
 {
+    final public const ISO8601 = '%R%H:%I'; // +02:00
+
     public const HOURS_MAX = +self::HOURS_LIMIT;
     public const HOURS_MIN = -self::HOURS_LIMIT;
     public const MINUTES_MAX = +self::MINUTES_LIMIT;
@@ -98,18 +101,54 @@ class Offset implements IOffset, Stringable
         return static::fromTotalSeconds(0);
     }
 
-    /**
-     * @return Ok<static>|Error<ParseException>
-     */
     public static function parse(
         string $string,
-        string $format = IOffset::ISO8601,
+        string|array $format = Offset::ISO8601,
     ): Ok|Error {
-        if ($format === IOffset::ISO8601) {
+        if ($format === self::ISO8601) {
             /** @var Ok<static> */
             return Ok::withValue(static::fromIso8601($string));
         }
 
+        /** @var array<int, string> $formats */
+        $formats = [];
+
+        if (is_array($format)) {
+            if (count($format) === 0) {
+                throw new InvalidArgumentException(
+                    'At least one format must be passed'
+                );
+            }
+            $formats = $format;
+            $format = reset($formats);
+        }
+
+        $result = self::parseSimple($string, $format);
+
+        if ($result->isOk()) {
+            return $result;
+        }
+
+        if (count($formats) > 1) {
+            while ($fmt = next($formats)) {
+                $r = self::parseSimple($string, $fmt);
+
+                if ($r->isOk()) {
+                    return $r;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return Ok<static>|Error<ParseException>
+     */
+    private static function parseSimple(
+        string $string,
+        string $format,
+    ): Ok|Error {
         $pattern = preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
             callback: static fn (array $matches) => match ($matches[1]) {
@@ -150,7 +189,7 @@ class Offset implements IOffset, Stringable
         $matches = [];
 
         if (!preg_match(self::ISO8601_PATTERN, $string, $matches)) {
-            throw new ParseException($string, IOffset::ISO8601);
+            throw new ParseException($string, self::ISO8601);
         }
 
         $sign = match ($matches['sign']) {
@@ -165,9 +204,9 @@ class Offset implements IOffset, Stringable
         );
     }
 
-    public function format(string $format = IOffset::ISO8601): Ok|Error
+    public function format(string $format = Offset::ISO8601): Ok|Error
     {
-        if ($format === IOffset::ISO8601) {
+        if ($format === self::ISO8601) {
             return Ok::withValue($this->toIso8601());
         }
 
@@ -215,7 +254,7 @@ class Offset implements IOffset, Stringable
         return $string;
     }
 
-    public function toTimeZone(): ITimeZone
+    public function toTimeZone(): TimeZone
     {
         return TimeZone::of($this->toIso8601(false));
     }
@@ -245,51 +284,49 @@ class Offset implements IOffset, Stringable
         return $this->value;
     }
 
-    public function compareTo(IOffset $that): int
+    public function compareTo(Offset $that): int
     {
         return $this->value <=> $that->totalSeconds();
     }
 
-    public function is(IOffset $that): bool
+    public function is(Offset $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->value === $that->value; // @phpstan-ignore-line
+            && $this->value === $that->value;
     }
 
-    public function isNot(IOffset $that): bool
+    public function isNot(Offset $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->value !== $that->value; // @phpstan-ignore-line
+            || $this->value !== $that->value;
     }
 
-    public function isEqual(IOffset $that): bool
+    public function isEqual(Offset $that): bool
     {
         return ($this->value === $that->totalSeconds());
     }
 
-    public function isNotEqual(IOffset $that): bool
+    public function isNotEqual(Offset $that): bool
     {
         return ($this->value !== $that->totalSeconds());
     }
 
-    public function isGreater(IOffset $that): bool
+    public function isGreater(Offset $that): bool
     {
         return ($this->value > $that->totalSeconds());
     }
 
-    public function isGreaterOrEqual(IOffset $that): bool
+    public function isGreaterOrEqual(Offset $that): bool
     {
         return ($this->value >= $that->totalSeconds());
     }
 
-    public function isLess(IOffset $that): bool
+    public function isLess(Offset $that): bool
     {
         return ($this->value < $that->totalSeconds());
     }
 
-    public function isLessOrEqual(IOffset $that): bool
+    public function isLessOrEqual(Offset $that): bool
     {
         return ($this->value <= $that->totalSeconds());
     }
@@ -310,7 +347,7 @@ class Offset implements IOffset, Stringable
     }
 
     public function plus(
-        int|IOffset $hours = 0,
+        int|Offset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): static {
@@ -328,7 +365,7 @@ class Offset implements IOffset, Stringable
     }
 
     public function minus(
-        int|IOffset $hours = 0,
+        int|Offset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): static {
@@ -368,7 +405,7 @@ class Offset implements IOffset, Stringable
     }
 
     public function add(
-        int|IOffset $hours = 0,
+        int|Offset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): Ok|Error {
@@ -383,7 +420,7 @@ class Offset implements IOffset, Stringable
     }
 
     public function subtract(
-        int|IOffset $hours = 0,
+        int|Offset $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
     ): Ok|Error {

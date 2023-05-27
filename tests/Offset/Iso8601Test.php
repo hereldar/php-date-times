@@ -6,7 +6,6 @@ namespace Hereldar\DateTimes\Tests\Offset;
 
 use Generator;
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\IOffset;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
 
@@ -21,12 +20,12 @@ final class Iso8601Test extends TestCase
         bool $reversible = true,
     ): void {
         self::assertEquals($offset, Offset::fromIso8601($expected));
-        self::assertEquals($offset, Offset::parse($expected, IOffset::ISO8601)->orFail());
+        self::assertEquals($offset, Offset::parse($expected, Offset::ISO8601)->orFail());
         self::assertEquals($offset, Offset::parse($expected)->orFail());
 
         if ($reversible) {
             self::assertEquals($expected, $offset->toIso8601());
-            self::assertEquals($expected, $offset->format(IOffset::ISO8601)->orFail());
+            self::assertEquals($expected, $offset->format(Offset::ISO8601)->orFail());
             self::assertEquals($expected, $offset->format()->orFail());
             self::assertEquals($expected, (string) $offset);
         }
@@ -35,12 +34,12 @@ final class Iso8601Test extends TestCase
         $expected = Offset::fromIso8601($expected)->negated()->toIso8601();
 
         self::assertEquals($offset, Offset::fromIso8601($expected));
-        self::assertEquals($offset, Offset::parse($expected, IOffset::ISO8601)->orFail());
+        self::assertEquals($offset, Offset::parse($expected, Offset::ISO8601)->orFail());
         self::assertEquals($offset, Offset::parse($expected)->orFail());
 
         if ($reversible) {
             self::assertEquals($expected, $offset->toIso8601());
-            self::assertEquals($expected, $offset->format(IOffset::ISO8601)->orFail());
+            self::assertEquals($expected, $offset->format(Offset::ISO8601)->orFail());
             self::assertEquals($expected, $offset->format()->orFail());
             self::assertEquals($expected, (string) $offset);
         }

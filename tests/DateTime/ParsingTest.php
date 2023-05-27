@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Tests\DateTime;
 
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\IDateTime;
 use Hereldar\DateTimes\DateTime;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
@@ -17,10 +16,6 @@ final class ParsingTest extends TestCase
 {
     public function testParse(): void
     {
-        self::assertException(
-            InvalidArgumentException::class,
-            fn ()  => DateTime::parse('25th of December, 1986, 1pm', '')
-        );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 13),
             DateTime::parse('25th of December, 1986, 1pm', 'jS \o\f F, Y, ga')->orFail()
@@ -63,7 +58,7 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 8, 30, 25, 0, TimeZone::of('+05:00')),
-            DateTime::parse('Thu, 25 Dec 1986 08:30:25 +05:00', IDateTime::COOKIE)->orFail()
+            DateTime::parse('Thu, 25 Dec 1986 08:30:25 +05:00', DateTime::COOKIE)->orFail()
         );
     }
 
@@ -91,7 +86,7 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 8, 30, 25, 0, TimeZone::of('+00:00')),
-            DateTime::parse('Thu, 25 Dec 1986 08:30:25 GMT', IDateTime::HTTP)->orFail()
+            DateTime::parse('Thu, 25 Dec 1986 08:30:25 GMT', DateTime::HTTP)->orFail()
         );
     }
 
@@ -127,31 +122,31 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25),
-            DateTime::parse('1986-12-25T12:30:25Z', IDateTime::ISO8601)->orFail()
+            DateTime::parse('1986-12-25T12:30:25Z', DateTime::ISO8601)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::fromTotalMinutes(0)),
-            DateTime::parse('1986-12-25T12:30:25.123Z', IDateTime::ISO8601_MILLISECONDS)->orFail()
+            DateTime::parse('1986-12-25T12:30:25.123Z', DateTime::ISO8601_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, TimeZone::utc()),
-            DateTime::parse('1986-12-25T12:30:25.123456Z', IDateTime::ISO8601_MICROSECONDS)->orFail()
+            DateTime::parse('1986-12-25T12:30:25.123456Z', DateTime::ISO8601_MICROSECONDS)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25),
-            DateTime::parse('1986-12-25T12:30:25+00:00', IDateTime::ISO8601)->orFail()
+            DateTime::parse('1986-12-25T12:30:25+00:00', DateTime::ISO8601)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::fromTotalMinutes(120)),
-            DateTime::parse('1986-12-25T12:30:25+02:00', IDateTime::ISO8601)->orFail()
+            DateTime::parse('1986-12-25T12:30:25+02:00', DateTime::ISO8601)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::fromTotalMinutes(0)),
-            DateTime::parse('1986-12-25T12:30:25.123+00:00', IDateTime::ISO8601_MILLISECONDS)->orFail()
+            DateTime::parse('1986-12-25T12:30:25.123+00:00', DateTime::ISO8601_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::fromTotalMinutes(-120)),
-            DateTime::parse('1986-12-25T12:30:25.123456-02:00', IDateTime::ISO8601_MICROSECONDS)->orFail()
+            DateTime::parse('1986-12-25T12:30:25.123456-02:00', DateTime::ISO8601_MICROSECONDS)->orFail()
         );
     }
 
@@ -175,19 +170,19 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25),
-            DateTime::parse('Thu, 25 Dec 1986 12:30:25 +0000', IDateTime::RFC2822)->orFail()
+            DateTime::parse('Thu, 25 Dec 1986 12:30:25 +0000', DateTime::RFC2822)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::fromTotalMinutes(120)),
-            DateTime::parse('Thu, 25 Dec 1986 12:30:25 +0200', IDateTime::RFC2822)->orFail()
+            DateTime::parse('Thu, 25 Dec 1986 12:30:25 +0200', DateTime::RFC2822)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::fromTotalMinutes(0)),
-            DateTime::parse('Thu, 25 Dec 1986 12:30:25 +0000', IDateTime::RFC2822)->orFail()
+            DateTime::parse('Thu, 25 Dec 1986 12:30:25 +0000', DateTime::RFC2822)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::fromTotalMinutes(-120)),
-            DateTime::parse('Thu, 25 Dec 1986 12:30:25 -0200', IDateTime::RFC2822)->orFail()
+            DateTime::parse('Thu, 25 Dec 1986 12:30:25 -0200', DateTime::RFC2822)->orFail()
         );
     }
 
@@ -211,19 +206,19 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25),
-            DateTime::parse('1986-12-25T12:30:25+00:00', IDateTime::RFC3339)->orFail()
+            DateTime::parse('1986-12-25T12:30:25+00:00', DateTime::RFC3339)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::fromTotalMinutes(120)),
-            DateTime::parse('1986-12-25T12:30:25+02:00', IDateTime::RFC3339)->orFail()
+            DateTime::parse('1986-12-25T12:30:25+02:00', DateTime::RFC3339)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::fromTotalMinutes(0)),
-            DateTime::parse('1986-12-25T12:30:25.123+00:00', IDateTime::RFC3339_MILLISECONDS)->orFail()
+            DateTime::parse('1986-12-25T12:30:25.123+00:00', DateTime::RFC3339_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::fromTotalMinutes(-120)),
-            DateTime::parse('1986-12-25T12:30:25.123456-02:00', IDateTime::RFC3339_MICROSECONDS)->orFail()
+            DateTime::parse('1986-12-25T12:30:25.123456-02:00', DateTime::RFC3339_MICROSECONDS)->orFail()
         );
     }
 
@@ -247,19 +242,19 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25),
-            DateTime::parse('1986-12-25 12:30:25+00:00', IDateTime::SQL)->orFail()
+            DateTime::parse('1986-12-25 12:30:25+00:00', DateTime::SQL)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 0, Offset::of(2)),
-            DateTime::parse('1986-12-25 12:30:25+02:00', IDateTime::SQL)->orFail()
+            DateTime::parse('1986-12-25 12:30:25+02:00', DateTime::SQL)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_000, Offset::of(0)),
-            DateTime::parse('1986-12-25 12:30:25.123+00:00', IDateTime::SQL_MILLISECONDS)->orFail()
+            DateTime::parse('1986-12-25 12:30:25.123+00:00', DateTime::SQL_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 12, 30, 25, 123_456, Offset::of(-2)),
-            DateTime::parse('1986-12-25 12:30:25.123456-02:00', IDateTime::SQL_MICROSECONDS)->orFail()
+            DateTime::parse('1986-12-25 12:30:25.123456-02:00', DateTime::SQL_MICROSECONDS)->orFail()
         );
     }
 

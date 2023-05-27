@@ -7,6 +7,7 @@ namespace Hereldar\DateTimes\Tests\Offset;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
+use InvalidArgumentException;
 use OutOfRangeException;
 use Throwable;
 
@@ -102,6 +103,22 @@ final class ParsingTest extends TestCase
         $offset = Offset::parse('01:02:03', '%H:%I:%S')->orFail();
         self::assertInstanceOf(Offset::class, $offset);
         self::assertOffset($offset, 1, 2, 3);
+    }
+
+    public function testMultipleFormats(): void
+    {
+        self::assertException(
+            InvalidArgumentException::class,
+            fn ()  => Offset::parse('01:02:03', [])
+        );
+        self::assertEquals(
+            Offset::of(1, 2, 3),
+            Offset::parse('01:02:03', ['%H:%I:%S'])->orFail()
+        );
+        self::assertEquals(
+            Offset::of(1, 2, 3),
+            Offset::parse('01:02:03', ['%H%I%S', '%H:%I:%S'])->orFail()
+        );
     }
 
     public function testCopy(): void

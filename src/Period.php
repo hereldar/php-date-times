@@ -8,7 +8,10 @@ use ArithmeticError;
 use DateInterval as NativeDateInterval;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\IPeriod;
+use Hereldar\DateTimes\Interfaces\Formattable;
+use Hereldar\DateTimes\Interfaces\Multiplicable;
+use Hereldar\DateTimes\Interfaces\Summable;
+use Hereldar\DateTimes\Interfaces\Parsable;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
@@ -17,8 +20,10 @@ use Stringable;
 /**
  * @psalm-consistent-constructor
  */
-class Period implements IPeriod, Stringable
+class Period implements Formattable, Parsable, Stringable, Summable, Multiplicable
 {
+    final public const ISO8601 = 'P%yY%mM%dDT%hH%iM%s%fS';
+
     private const ISO8601_PATTERN = <<<'REGEX'
         /
             (?P<sign>[+-])?
@@ -105,22 +110,60 @@ class Period implements IPeriod, Stringable
         return new static(0);
     }
 
-    /**
-     * @return Ok<static>|Error<ParseException>
-     */
     public static function parse(
         string $string,
-        string $format = IPeriod::ISO8601,
+        string|array $format = Period::ISO8601,
     ): Ok|Error {
-        if ($format === IPeriod::ISO8601) {
+        if ($format === self::ISO8601) {
             /** @var Ok<static> */
             return Ok::withValue(static::fromIso8601($string));
         }
 
+        /** @var array<int, string> $formats */
+        $formats = [];
+
+        if (is_array($format)) {
+            if (count($format) === 0) {
+                throw new InvalidArgumentException(
+                    'At least one format must be passed'
+                );
+            }
+            $formats = $format;
+            $format = reset($formats);
+        }
+
+        $result = self::parseSimple($string, $format);
+
+        if ($result->isOk()) {
+            return $result;
+        }
+
+        if (count($formats) > 1) {
+            while ($fmt = next($formats)) {
+                $r = self::parseSimple($string, $fmt);
+
+                if ($r->isOk()) {
+                    return $r;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return Ok<static>|Error<ParseException>
+     */
+    private static function parseSimple(
+        string $string,
+        string $format,
+    ): Ok|Error {
         $pattern = preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
             callback: static fn (array $matches) => match ($matches[1]) {
                 '%' => '%',
+                'R' => '(?P<sign>[+-])',
+                'r' => '(?P<sign>\-?)',
                 'Y' => '(?P<years>[+-]?[0-9]{4,})',
                 'y' => '(?P<years>[+-]?[0-9]+)',
                 'M' => '(?P<months>[+-]?[0-9]{2,})',
@@ -151,6 +194,13 @@ class Period implements IPeriod, Stringable
             return Error::withException(new ParseException($string, $format));
         }
 
+        $sign = match ($matches['sign'] ?? '') {
+            '-' => -1,
+            default => 1,
+        };
+
+        unset($matches['sign']);
+
         $arguments = [];
         foreach ($matches as $key => $value) {
             if ($value && !is_int($key)) {
@@ -158,7 +208,7 @@ class Period implements IPeriod, Stringable
                     $key = 'microseconds';
                     $value = str_pad($value, 6, '0');
                 }
-                $arguments[$key] = (int) $value;
+                $arguments[$key] = $sign * (int) $value;
             }
         }
 
@@ -171,7 +221,7 @@ class Period implements IPeriod, Stringable
         $matches = [];
 
         if (!preg_match(self::ISO8601_PATTERN, $string, $matches)) {
-            throw new ParseException($string, IPeriod::ISO8601);
+            throw new ParseException($string, self::ISO8601);
         }
 
         $sign = match ($matches['sign'] ?? '') {
@@ -213,9 +263,9 @@ class Period implements IPeriod, Stringable
         );
     }
 
-    public function format(string $format = IPeriod::ISO8601): Ok|Error
+    public function format(string $format = Period::ISO8601): Ok|Error
     {
-        if ($format === IPeriod::ISO8601) {
+        if ($format === self::ISO8601) {
             return Ok::withValue($this->toIso8601());
         }
 
@@ -371,7 +421,7 @@ class Period implements IPeriod, Stringable
         return $this->microseconds;
     }
 
-    public function compareTo(IPeriod $that): int
+    public function compareTo(Period $that): int
     {
         $a = $this->normalized();
         $b = $that->normalized();
@@ -403,33 +453,31 @@ class Period implements IPeriod, Stringable
         return ($a->microseconds <=> $b->microseconds());
     }
 
-    public function is(IPeriod $that): bool
+    public function is(Period $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->microseconds === $that->microseconds // @phpstan-ignore-line
-            && $this->seconds === $that->seconds // @phpstan-ignore-line
-            && $this->minutes === $that->minutes // @phpstan-ignore-line
-            && $this->hours === $that->hours // @phpstan-ignore-line
-            && $this->days === $that->days // @phpstan-ignore-line
-            && $this->months === $that->months // @phpstan-ignore-line
-            && $this->years === $that->years; // @phpstan-ignore-line
+            && $this->microseconds === $that->microseconds
+            && $this->seconds === $that->seconds
+            && $this->minutes === $that->minutes
+            && $this->hours === $that->hours
+            && $this->days === $that->days
+            && $this->months === $that->months
+            && $this->years === $that->years;
     }
 
-    public function isNot(IPeriod $that): bool
+    public function isNot(Period $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->microseconds !== $that->microseconds // @phpstan-ignore-line
-            || $this->seconds !== $that->seconds // @phpstan-ignore-line
-            || $this->minutes !== $that->minutes // @phpstan-ignore-line
-            || $this->hours !== $that->hours // @phpstan-ignore-line
-            || $this->days !== $that->days // @phpstan-ignore-line
-            || $this->months !== $that->months // @phpstan-ignore-line
-            || $this->years !== $that->years; // @phpstan-ignore-line
+            || $this->microseconds !== $that->microseconds
+            || $this->seconds !== $that->seconds
+            || $this->minutes !== $that->minutes
+            || $this->hours !== $that->hours
+            || $this->days !== $that->days
+            || $this->months !== $that->months
+            || $this->years !== $that->years;
     }
 
-    public function isEqual(IPeriod $that): bool
+    public function isEqual(Period $that): bool
     {
         return $this->microseconds === $that->microseconds()
             && $this->seconds === $that->seconds()
@@ -440,7 +488,7 @@ class Period implements IPeriod, Stringable
             && $this->years === $that->years();
     }
 
-    public function isNotEqual(IPeriod $that): bool
+    public function isNotEqual(Period $that): bool
     {
         return $this->microseconds !== $that->microseconds()
             || $this->seconds !== $that->seconds()
@@ -451,32 +499,32 @@ class Period implements IPeriod, Stringable
             || $this->years !== $that->years();
     }
 
-    public function isSimilar(IPeriod $that): bool
+    public function isSimilar(Period $that): bool
     {
         return 0 === $this->compareTo($that);
     }
 
-    public function isNotSimilar(IPeriod $that): bool
+    public function isNotSimilar(Period $that): bool
     {
         return 0 !== $this->compareTo($that);
     }
 
-    public function isGreater(IPeriod $that): bool
+    public function isGreater(Period $that): bool
     {
         return (0 < $this->compareTo($that));
     }
 
-    public function isGreaterOrEqual(IPeriod $that): bool
+    public function isGreaterOrEqual(Period $that): bool
     {
         return (0 <= $this->compareTo($that));
     }
 
-    public function isLess(IPeriod $that): bool
+    public function isLess(Period $that): bool
     {
         return (0 > $this->compareTo($that));
     }
 
-    public function isLessOrEqual(IPeriod $that): bool
+    public function isLessOrEqual(Period $that): bool
     {
         return (0 >= $this->compareTo($that));
     }
@@ -527,7 +575,7 @@ class Period implements IPeriod, Stringable
     }
 
     public function plus(
-        int|IPeriod $years = 0,
+        int|Period $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -565,7 +613,7 @@ class Period implements IPeriod, Stringable
     }
 
     public function minus(
-        int|IPeriod $years = 0,
+        int|Period $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -809,7 +857,7 @@ class Period implements IPeriod, Stringable
     }
 
     public function add(
-        int|IPeriod $years = 0,
+        int|Period $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -834,7 +882,7 @@ class Period implements IPeriod, Stringable
     }
 
     public function subtract(
-        int|IPeriod $years = 0,
+        int|Period $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,

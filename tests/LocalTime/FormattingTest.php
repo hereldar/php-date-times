@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\LocalTime;
 
-use Hereldar\DateTimes\Interfaces\ILocalTime;
 use Hereldar\DateTimes\LocalTime;
 use Hereldar\DateTimes\Tests\TestCase;
 
@@ -34,15 +33,15 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::ISO8601)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(LocalTime::ISO8601)->orFail()
         );
         self::assertSame(
             '12:30:25.123',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::ISO8601_MILLISECONDS)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(LocalTime::ISO8601_MILLISECONDS)->orFail()
         );
         self::assertSame(
             '12:30:25.123456',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::ISO8601_MICROSECONDS)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(LocalTime::ISO8601_MICROSECONDS)->orFail()
         );
         self::assertSame(
             '12:30:25',
@@ -62,7 +61,7 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25, 0)->format(ILocalTime::RFC2822)->orFail()
+            LocalTime::of(12, 30, 25, 0)->format(LocalTime::RFC2822)->orFail()
         );
     }
 
@@ -82,15 +81,15 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::RFC3339)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(LocalTime::RFC3339)->orFail()
         );
         self::assertSame(
             '12:30:25.123',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::RFC3339_MILLISECONDS)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(LocalTime::RFC3339_MILLISECONDS)->orFail()
         );
         self::assertSame(
             '12:30:25.123456',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::RFC3339_MICROSECONDS)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(LocalTime::RFC3339_MICROSECONDS)->orFail()
         );
     }
 
@@ -110,15 +109,15 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '12:30:25',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::SQL)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(LocalTime::SQL)->orFail()
         );
         self::assertSame(
             '12:30:25.123',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::SQL_MILLISECONDS)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(LocalTime::SQL_MILLISECONDS)->orFail()
         );
         self::assertSame(
             '12:30:25.123456',
-            LocalTime::of(12, 30, 25, 123_456)->format(ILocalTime::SQL_MICROSECONDS)->orFail()
+            LocalTime::of(12, 30, 25, 123_456)->format(LocalTime::SQL_MICROSECONDS)->orFail()
         );
     }
 }

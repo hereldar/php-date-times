@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\LocalDate;
 
-use Hereldar\DateTimes\Interfaces\ILocalDate;
 use Hereldar\DateTimes\LocalDate;
 use Hereldar\DateTimes\Tests\TestCase;
 
@@ -26,7 +25,7 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '1986-12-25',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::ISO8601)->orFail()
+            LocalDate::of(1986, 12, 25)->format(LocalDate::ISO8601)->orFail()
         );
         self::assertSame(
             '1986-12-25',
@@ -46,7 +45,7 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             'Thu, 25 Dec 1986',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::RFC2822)->orFail()
+            LocalDate::of(1986, 12, 25)->format(LocalDate::RFC2822)->orFail()
         );
     }
 
@@ -58,7 +57,7 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '1986-12-25',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::RFC3339)->orFail()
+            LocalDate::of(1986, 12, 25)->format(LocalDate::RFC3339)->orFail()
         );
     }
 
@@ -70,7 +69,7 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '1986-12-25',
-            LocalDate::of(1986, 12, 25)->format(ILocalDate::SQL)->orFail()
+            LocalDate::of(1986, 12, 25)->format(LocalDate::SQL)->orFail()
         );
     }
 }

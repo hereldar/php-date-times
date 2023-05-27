@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Tests\LocalDateTime;
 
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\ILocalDateTime;
 use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Tests\TestCase;
 use InvalidArgumentException;
@@ -15,10 +14,6 @@ final class ParsingTest extends TestCase
 {
     public function testParse(): void
     {
-        self::assertException(
-            InvalidArgumentException::class,
-            fn ()  => LocalDateTime::parse('25th of December, 1986, 1pm', '')
-        );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 13),
             LocalDateTime::parse('25th of December, 1986, 1pm', 'jS \o\f F, Y, ga')->orFail()
@@ -53,15 +48,15 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 0),
-            LocalDateTime::parse('1986-12-25T12:30:25', ILocalDateTime::ISO8601)->orFail()
+            LocalDateTime::parse('1986-12-25T12:30:25', LocalDateTime::ISO8601)->orFail()
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_000),
-            LocalDateTime::parse('1986-12-25T12:30:25.123', ILocalDateTime::ISO8601_MILLISECONDS)->orFail()
+            LocalDateTime::parse('1986-12-25T12:30:25.123', LocalDateTime::ISO8601_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456),
-            LocalDateTime::parse('1986-12-25T12:30:25.123456', ILocalDateTime::ISO8601_MICROSECONDS)->orFail()
+            LocalDateTime::parse('1986-12-25T12:30:25.123456', LocalDateTime::ISO8601_MICROSECONDS)->orFail()
         );
     }
 
@@ -73,7 +68,7 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25),
-            LocalDateTime::parse('Thu, 25 Dec 1986 12:30:25', ILocalDateTime::RFC2822)->orFail()
+            LocalDateTime::parse('Thu, 25 Dec 1986 12:30:25', LocalDateTime::RFC2822)->orFail()
         );
     }
 
@@ -93,15 +88,15 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 0),
-            LocalDateTime::parse('1986-12-25T12:30:25', ILocalDateTime::RFC3339)->orFail()
+            LocalDateTime::parse('1986-12-25T12:30:25', LocalDateTime::RFC3339)->orFail()
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_000),
-            LocalDateTime::parse('1986-12-25T12:30:25.123', ILocalDateTime::RFC3339_MILLISECONDS)->orFail()
+            LocalDateTime::parse('1986-12-25T12:30:25.123', LocalDateTime::RFC3339_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456),
-            LocalDateTime::parse('1986-12-25T12:30:25.123456', ILocalDateTime::RFC3339_MICROSECONDS)->orFail()
+            LocalDateTime::parse('1986-12-25T12:30:25.123456', LocalDateTime::RFC3339_MICROSECONDS)->orFail()
         );
     }
 
@@ -121,15 +116,15 @@ final class ParsingTest extends TestCase
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 0),
-            LocalDateTime::parse('1986-12-25 12:30:25', ILocalDateTime::SQL)->orFail()
+            LocalDateTime::parse('1986-12-25 12:30:25', LocalDateTime::SQL)->orFail()
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_000),
-            LocalDateTime::parse('1986-12-25 12:30:25.123', ILocalDateTime::SQL_MILLISECONDS)->orFail()
+            LocalDateTime::parse('1986-12-25 12:30:25.123', LocalDateTime::SQL_MILLISECONDS)->orFail()
         );
         self::assertEquals(
             LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456),
-            LocalDateTime::parse('1986-12-25 12:30:25.123456', ILocalDateTime::SQL_MICROSECONDS)->orFail()
+            LocalDateTime::parse('1986-12-25 12:30:25.123456', LocalDateTime::SQL_MICROSECONDS)->orFail()
         );
     }
 

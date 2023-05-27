@@ -7,14 +7,14 @@ namespace Hereldar\DateTimes;
 use ArithmeticError;
 use DateTime as MutableNativeDateTime;
 use DateTimeImmutable as NativeDateTime;
+use DateTimeZone as NativeTimeZone;
 use DateTimeInterface as NativeDateTimeInterface;
 use Hereldar\DateTimes\Exceptions\ParseException;
-use Hereldar\DateTimes\Interfaces\IPeriod;
-use Hereldar\DateTimes\Interfaces\IDateTime;
-use Hereldar\DateTimes\Interfaces\ILocalDate;
-use Hereldar\DateTimes\Interfaces\IOffset;
-use Hereldar\DateTimes\Interfaces\ILocalTime;
-use Hereldar\DateTimes\Interfaces\ITimeZone;
+use Hereldar\DateTimes\Interfaces\Datelike;
+use Hereldar\DateTimes\Interfaces\Formattable;
+use Hereldar\DateTimes\Interfaces\Summable;
+use Hereldar\DateTimes\Interfaces\Parsable;
+use Hereldar\DateTimes\Interfaces\Timelike;
 use Hereldar\DateTimes\Services\Adder;
 use Hereldar\DateTimes\Services\Validator;
 use Hereldar\Results\Error;
@@ -25,8 +25,40 @@ use Stringable;
 /**
  * @psalm-consistent-constructor
  */
-class DateTime implements IDateTime, Stringable
+class DateTime implements Datelike, Timelike, Formattable, Summable, Parsable, Stringable
 {
+    final public const COOKIE_VARIANTS = [
+        'D, d M Y H:i:s T',
+        'l, d-M-y H:i:s T',
+        'l, d-M-Y H:i:s T',
+        'D M j G:i:s Y',
+        'D M d H:i:s Y T',
+    ];
+    final public const COOKIE = self::COOKIE_VARIANTS[0];
+
+    final public const HTTP_VARIANTS = [
+        'D, d M Y H:i:s \G\M\T',
+        'l, d-M-y H:i:s \G\M\T',
+        'l, d-M-Y H:i:s \G\M\T',
+        'D M j G:i:s Y',
+        'D M j H:i:s Y \G\M\T',
+    ];
+    final public const HTTP = self::HTTP_VARIANTS[0];
+
+    final public const ISO8601 = 'Y-m-d\TH:i:sp';
+    final public const ISO8601_MILLISECONDS = 'Y-m-d\TH:i:s.vp';
+    final public const ISO8601_MICROSECONDS = 'Y-m-d\TH:i:s.up';
+
+    final public const RFC2822 = 'D, d M Y H:i:s O';
+
+    final public const RFC3339 = 'Y-m-d\TH:i:sP';
+    final public const RFC3339_MILLISECONDS = 'Y-m-d\TH:i:s.vP';
+    final public const RFC3339_MICROSECONDS = 'Y-m-d\TH:i:s.uP';
+
+    final public const SQL = 'Y-m-d H:i:sP';
+    final public const SQL_MILLISECONDS = 'Y-m-d H:i:s.vP';
+    final public const SQL_MICROSECONDS = 'Y-m-d H:i:s.uP';
+
     /** @var array<class-string, static> */
     private static array $cache = [];
 
@@ -48,12 +80,12 @@ class DateTime implements IDateTime, Stringable
     }
 
     public static function now(
-        ITimeZone|IOffset|string $timeZone = 'UTC',
+        TimeZone|Offset|string $timeZone = 'UTC',
     ): static {
         $tz = match (true) {
             is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
-            $timeZone instanceof ITimeZone => $timeZone->toNative(),
-            $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
+            $timeZone instanceof TimeZone => $timeZone->toNative(),
+            $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
         };
 
         $dt = new NativeDateTime('now', $tz);
@@ -69,7 +101,7 @@ class DateTime implements IDateTime, Stringable
         int $minute = 0,
         int $second = 0,
         int $microsecond = 0,
-        ITimeZone|IOffset|string $timeZone = 'UTC',
+        TimeZone|Offset|string $timeZone = 'UTC',
     ): static {
         Validator::month($month);
         Validator::day($day, $month, $year);
@@ -108,71 +140,81 @@ class DateTime implements IDateTime, Stringable
         return $dateTime;
     }
 
-    /**
-     * @param string|array<int, string> $format
-     *
-     * @return Ok<static>|Error<ParseException>
-     */
     public static function parse(
         string $string,
-        string|array $format = IDateTime::ISO8601,
-        ITimeZone|IOffset|string $timeZone = 'UTC',
+        string|array $format = DateTime::ISO8601,
+        TimeZone|Offset|string $timeZone = 'UTC',
     ): Ok|Error {
         $tz = match (true) {
             is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
-            $timeZone instanceof ITimeZone => $timeZone->toNative(),
-            $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
+            $timeZone instanceof TimeZone => $timeZone->toNative(),
+            $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
         };
 
         /** @var array<int, string> $formats */
         $formats = [];
 
-        if (!$format) {
-            throw new InvalidArgumentException(
-                'At least one format must be passed'
-            );
-        }
-
         if (is_array($format)) {
+            if (count($format) === 0) {
+                throw new InvalidArgumentException(
+                    'At least one format must be passed'
+                );
+            }
             $formats = $format;
             $format = reset($formats);
         }
 
-        $dt = NativeDateTime::createFromFormat($format, $string, $tz);
+        $result = self::parseSimple($string, $format, $tz);
 
-        if (false !== $dt) {
-            /** @var Ok<static> */
-            return Ok::withValue(new static($dt));
+        if ($result->isOk()) {
+            return $result;
         }
-
-        $info = NativeDateTime::getLastErrors();
 
         if (count($formats) > 1) {
             while ($fmt = next($formats)) {
-                $dt = NativeDateTime::createFromFormat($fmt, $string, $tz);
+                $r = self::parseSimple($string, $fmt, $tz);
 
-                if (false !== $dt) {
-                    /** @var Ok<static> */
-                    return Ok::withValue(new static($dt));
+                if ($r->isOk()) {
+                    return $r;
                 }
             }
         }
 
-        $firstError = ($info)
-            ? (reset($info['errors']) ?: reset($info['warnings']) ?: null)
-            : null;
+        return $result;
+    }
+
+    /**
+     * @return Ok<static>|Error<ParseException>
+     */
+    private static function parseSimple(
+        string $string,
+        string $format,
+        NativeTimeZone $tz,
+    ): Ok|Error {
+        $dt = NativeDateTime::createFromFormat($format, $string, $tz);
+
+        $info = NativeDateTime::getLastErrors();
+
+        /** @psalm-suppress PossiblyFalseArgument */
+        if (empty($info['errors']) && empty($info['warnings'])) {
+            /** @var Ok<static> */
+            return Ok::withValue(new static($dt));
+        }
+
+        /** @psalm-suppress PossiblyInvalidArrayAccess */
+        $firstError = reset($info['errors']) ?: reset($info['warnings']) ?: null;
 
         return Error::withException(new ParseException($string, $format, $firstError));
     }
 
     public static function fromCookie(string $value): static
     {
-        return static::parse($value, IDateTime::COOKIE_VARIANTS)->orFail();
+        return static::parse($value, self::COOKIE_VARIANTS)->orFail();
     }
 
     public static function fromHttp(string $value): static
     {
-        return static::parse($value, IDateTime::HTTP_VARIANTS)->orFail();
+        return static::parse($value, self::HTTP_VARIANTS)->orFail();
     }
 
     public static function fromIso8601(
@@ -181,9 +223,9 @@ class DateTime implements IDateTime, Stringable
         bool $microseconds = false,
     ): static {
         $format = match (true) {
-            $microseconds => IDateTime::ISO8601_MICROSECONDS,
-            $milliseconds => IDateTime::ISO8601_MILLISECONDS,
-            default => IDateTime::ISO8601,
+            $microseconds => self::ISO8601_MICROSECONDS,
+            $milliseconds => self::ISO8601_MILLISECONDS,
+            default => self::ISO8601,
         };
 
         return static::parse($value, $format)->orFail();
@@ -191,7 +233,7 @@ class DateTime implements IDateTime, Stringable
 
     public static function fromRfc2822(string $value): static
     {
-        return static::parse($value, IDateTime::RFC2822)->orFail();
+        return static::parse($value, self::RFC2822)->orFail();
     }
 
     public static function fromRfc3339(
@@ -200,9 +242,9 @@ class DateTime implements IDateTime, Stringable
         bool $microseconds = false,
     ): static {
         $format = match (true) {
-            $microseconds => IDateTime::RFC3339_MICROSECONDS,
-            $milliseconds => IDateTime::RFC3339_MILLISECONDS,
-            default => IDateTime::RFC3339,
+            $microseconds => self::RFC3339_MICROSECONDS,
+            $milliseconds => self::RFC3339_MILLISECONDS,
+            default => self::RFC3339,
         };
 
         return static::parse($value, $format)->orFail();
@@ -214,9 +256,9 @@ class DateTime implements IDateTime, Stringable
         bool $microseconds = false,
     ): static {
         $format = match (true) {
-            $microseconds => IDateTime::SQL_MICROSECONDS,
-            $milliseconds => IDateTime::SQL_MILLISECONDS,
-            default => IDateTime::SQL,
+            $microseconds => self::SQL_MICROSECONDS,
+            $milliseconds => self::SQL_MILLISECONDS,
+            default => self::SQL,
         };
 
         return static::parse($value, $format)->orFail();
@@ -231,21 +273,21 @@ class DateTime implements IDateTime, Stringable
         return new static($value);
     }
 
-    public function format(string $format = IDateTime::ISO8601): Ok|Error
+    public function format(string $format = DateTime::ISO8601): Ok|Error
     {
         return Ok::withValue($this->value->format($format));
     }
 
     public function toCookie(): string
     {
-        return $this->value->format(IDateTime::COOKIE);
+        return $this->value->format(self::COOKIE);
     }
 
     public function toHttp(): string
     {
         $tz = TimeZone::utc()->toNative();
 
-        return $this->value->setTimezone($tz)->format(IDateTime::HTTP);
+        return $this->value->setTimezone($tz)->format(self::HTTP);
     }
 
     public function toIso8601(
@@ -253,15 +295,15 @@ class DateTime implements IDateTime, Stringable
         bool $microseconds = false,
     ): string {
         return $this->value->format(match (true) {
-            $microseconds => IDateTime::ISO8601_MICROSECONDS,
-            $milliseconds => IDateTime::ISO8601_MILLISECONDS,
-            default => IDateTime::ISO8601,
+            $microseconds => self::ISO8601_MICROSECONDS,
+            $milliseconds => self::ISO8601_MILLISECONDS,
+            default => self::ISO8601,
         });
     }
 
     public function toRfc2822(): string
     {
-        return $this->value->format(IDateTime::RFC2822);
+        return $this->value->format(self::RFC2822);
     }
 
     public function toRfc3339(
@@ -269,9 +311,9 @@ class DateTime implements IDateTime, Stringable
         bool $microseconds = false,
     ): string {
         return $this->value->format(match (true) {
-            $microseconds => IDateTime::RFC3339_MICROSECONDS,
-            $milliseconds => IDateTime::RFC3339_MILLISECONDS,
-            default => IDateTime::RFC3339,
+            $microseconds => self::RFC3339_MICROSECONDS,
+            $milliseconds => self::RFC3339_MILLISECONDS,
+            default => self::RFC3339,
         });
     }
 
@@ -280,9 +322,9 @@ class DateTime implements IDateTime, Stringable
         bool $microseconds = false,
     ): string {
         return $this->value->format(match (true) {
-            $microseconds => IDateTime::SQL_MICROSECONDS,
-            $milliseconds => IDateTime::SQL_MILLISECONDS,
-            default => IDateTime::SQL,
+            $microseconds => self::SQL_MICROSECONDS,
+            $milliseconds => self::SQL_MILLISECONDS,
+            default => self::SQL,
         });
     }
 
@@ -296,7 +338,10 @@ class DateTime implements IDateTime, Stringable
         return $this->value->getTimestamp();
     }
 
-    public function date(): ILocalDate
+    /**
+     * Returns the `LocalDate` part of this date-time.
+     */
+    public function date(): LocalDate
     {
         return LocalDate::fromNative($this->value);
     }
@@ -308,6 +353,7 @@ class DateTime implements IDateTime, Stringable
 
     public function month(): int
     {
+        /** @var int<1, 12> */
         return (int) $this->value->format('n');
     }
 
@@ -323,16 +369,19 @@ class DateTime implements IDateTime, Stringable
 
     public function day(): int
     {
+        /** @var int<1, 31> */
         return (int) $this->value->format('j');
     }
 
     public function dayOfWeek(): int
     {
+        /** @var int<1, 7> */
         return (int) $this->value->format('N');
     }
 
     public function dayOfYear(): int
     {
+        /** @var int<1, 366> */
         return (int) $this->value->format('z') + 1;
     }
 
@@ -341,44 +390,52 @@ class DateTime implements IDateTime, Stringable
         return ($this->value->format('L') === '1');
     }
 
-    public function time(): ILocalTime
+    /**
+     * Returns the `LocalTime` part of this date-time.
+     */
+    public function time(): LocalTime
     {
         return LocalTime::fromNative($this->value);
     }
 
     public function hour(): int
     {
+        /** @var int<0, 23> */
         return (int) $this->value->format('G');
     }
 
     public function minute(): int
     {
+        /** @var int<0, 59> */
         return (int) $this->value->format('i');
     }
 
     public function second(): int
     {
+        /** @var int<0, 59> */
         return (int) $this->value->format('s');
     }
 
     public function millisecond(): int
     {
+        /** @var int<0, 999> */
         return (int) $this->value->format('v');
     }
 
     public function microsecond(): int
     {
+        /** @var int<0, 999999> */
         return (int) $this->value->format('u');
     }
 
-    public function offset(): IOffset
+    public function offset(): Offset
     {
         return Offset::fromTotalSeconds(
             $this->value->getOffset()
         );
     }
 
-    public function timeZone(): ITimeZone
+    public function timeZone(): TimeZone
     {
         return TimeZone::fromNative(
             $this->value->getTimezone()
@@ -390,57 +447,55 @@ class DateTime implements IDateTime, Stringable
         return ($this->value->format('I') === '1');
     }
 
-    public function compareTo(IDateTime $that): int
+    public function compareTo(DateTime $that): int
     {
         return ($this->value <=> $that->toNative());
     }
 
-    public function is(IDateTime $that): bool
+    public function is(DateTime $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class === $that::class
-            && $this->value == $that->value; // @phpstan-ignore-line
+            && $this->value == $that->value;
     }
 
-    public function isNot(IDateTime $that): bool
+    public function isNot(DateTime $that): bool
     {
-        /** @psalm-suppress NoInterfaceProperties */
         return $this::class !== $that::class
-            || $this->value != $that->value; // @phpstan-ignore-line
+            || $this->value != $that->value;
     }
 
-    public function isEqual(IDateTime $that): bool
+    public function isEqual(DateTime $that): bool
     {
         return ($this->value == $that->toNative());
     }
 
-    public function isNotEqual(IDateTime $that): bool
+    public function isNotEqual(DateTime $that): bool
     {
         return ($this->value != $that->toNative());
     }
 
-    public function isGreater(IDateTime $that): bool
+    public function isGreater(DateTime $that): bool
     {
         return ($this->value > $that->toNative());
     }
 
-    public function isGreaterOrEqual(IDateTime $that): bool
+    public function isGreaterOrEqual(DateTime $that): bool
     {
         return ($this->value >= $that->toNative());
     }
 
-    public function isLess(IDateTime $that): bool
+    public function isLess(DateTime $that): bool
     {
         return ($this->value < $that->toNative());
     }
 
-    public function isLessOrEqual(IDateTime $that): bool
+    public function isLessOrEqual(DateTime $that): bool
     {
         return ($this->value <= $that->toNative());
     }
 
     public function plus(
-        int|IPeriod $years = 0,
+        int|Period $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -475,7 +530,7 @@ class DateTime implements IDateTime, Stringable
     }
 
     public function minus(
-        int|IPeriod $years = 0,
+        int|Period $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -517,7 +572,7 @@ class DateTime implements IDateTime, Stringable
         ?int $minute = null,
         ?int $second = null,
         ?int $microsecond = null,
-        ITimeZone|IOffset|string|null $timeZone = null,
+        TimeZone|Offset|string|null $timeZone = null,
     ): static {
         $dt = $this->value;
 
@@ -546,15 +601,16 @@ class DateTime implements IDateTime, Stringable
         if ($timeZone !== null) {
             $dt = $dt->setTimezone(match (true) {
                 is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
-                $timeZone instanceof ITimeZone => $timeZone->toNative(),
-                $timeZone instanceof IOffset => $timeZone->toTimeZone()->toNative(),
+                $timeZone instanceof TimeZone => $timeZone->toNative(),
+                $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
             });
         }
 
         return new static($dt);
     }
+
     public function add(
-        int|IPeriod $years = 0,
+        int|Period $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,
@@ -581,7 +637,7 @@ class DateTime implements IDateTime, Stringable
     }
 
     public function subtract(
-        int|IPeriod $years = 0,
+        int|Period $years = 0,
         int $months = 0,
         int $weeks = 0,
         int $days = 0,

@@ -56,6 +56,9 @@ final class CreationTest extends TestCase
         self::assertSame($timeZoneType, $timeZone->type());
     }
 
+    /**
+     * @return list<array{0: string, 1: TimeZoneType}>
+     */
     public static function validTimeZoneIdsAndOffsets(): array
     {
         return [

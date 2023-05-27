@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\LocalDateTime;
 
-use Hereldar\DateTimes\Interfaces\ILocalDateTime;
 use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Tests\TestCase;
 
@@ -34,15 +33,15 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '1986-12-25T12:30:25',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::ISO8601)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(LocalDateTime::ISO8601)->orFail()
         );
         self::assertSame(
             '1986-12-25T12:30:25.123',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::ISO8601_MILLISECONDS)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(LocalDateTime::ISO8601_MILLISECONDS)->orFail()
         );
         self::assertSame(
             '1986-12-25T12:30:25.123456',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::ISO8601_MICROSECONDS)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(LocalDateTime::ISO8601_MICROSECONDS)->orFail()
         );
         self::assertSame(
             '1986-12-25T12:30:25',
@@ -62,7 +61,7 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             'Thu, 25 Dec 1986 12:30:25',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 0)->format(ILocalDateTime::RFC2822)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 0)->format(LocalDateTime::RFC2822)->orFail()
         );
     }
 
@@ -82,15 +81,15 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '1986-12-25T12:30:25',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::RFC3339)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(LocalDateTime::RFC3339)->orFail()
         );
         self::assertSame(
             '1986-12-25T12:30:25.123',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::RFC3339_MILLISECONDS)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(LocalDateTime::RFC3339_MILLISECONDS)->orFail()
         );
         self::assertSame(
             '1986-12-25T12:30:25.123456',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::RFC3339_MICROSECONDS)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(LocalDateTime::RFC3339_MICROSECONDS)->orFail()
         );
     }
 
@@ -110,15 +109,15 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '1986-12-25 12:30:25',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::SQL)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(LocalDateTime::SQL)->orFail()
         );
         self::assertSame(
             '1986-12-25 12:30:25.123',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::SQL_MILLISECONDS)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(LocalDateTime::SQL_MILLISECONDS)->orFail()
         );
         self::assertSame(
             '1986-12-25 12:30:25.123456',
-            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(ILocalDateTime::SQL_MICROSECONDS)->orFail()
+            LocalDateTime::of(1986, 12, 25, 12, 30, 25, 123_456)->format(LocalDateTime::SQL_MICROSECONDS)->orFail()
         );
     }
 }

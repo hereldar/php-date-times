@@ -7,17 +7,13 @@ namespace Hereldar\DateTimes;
 use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Enums\TimeZoneType;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
-use Hereldar\DateTimes\Interfaces\ILocalDate;
-use Hereldar\DateTimes\Interfaces\ILocalDateTime;
-use Hereldar\DateTimes\Interfaces\IOffset;
-use Hereldar\DateTimes\Interfaces\ITimeZone;
 use Stringable;
 use Throwable;
 
 /**
  * @psalm-consistent-constructor
  */
-class TimeZone implements ITimeZone, Stringable
+class TimeZone implements Stringable
 {
     /** @var array<class-string, array<string, static>> */
     private static array $cache = [];
@@ -73,7 +69,7 @@ class TimeZone implements ITimeZone, Stringable
     }
 
     public static function fromOffset(
-        IOffset $offset
+        Offset $offset
     ): static {
         return static::of($offset->toIso8601(false));
     }
@@ -83,7 +79,7 @@ class TimeZone implements ITimeZone, Stringable
         return $this->value;
     }
 
-    public function toOffset(ILocalDate|ILocalDateTime|null $date = null): IOffset
+    public function toOffset(LocalDate|LocalDateTime|null $date = null): Offset
     {
         $date ??= LocalDateTime::now();
 
@@ -112,7 +108,7 @@ class TimeZone implements ITimeZone, Stringable
         return TimeZoneType::Abbreviation;
     }
 
-    public function compareTo(ITimeZone $that): int
+    public function compareTo(TimeZone $that): int
     {
         $dt = DateTime::epoch()->toNative();
 
@@ -128,24 +124,24 @@ class TimeZone implements ITimeZone, Stringable
         return $a->getName() <=> $b->getName();
     }
 
-    public function is(ITimeZone $that): bool
+    public function is(TimeZone $that): bool
     {
         return $this::class === $that::class
             && $this->name() === $that->name();
     }
 
-    public function isNot(ITimeZone $that): bool
+    public function isNot(TimeZone $that): bool
     {
         return $this::class !== $that::class
             || $this->name() !== $that->name();
     }
 
-    public function isEqual(ITimeZone $that): bool
+    public function isEqual(TimeZone $that): bool
     {
         return ($this->name() === $that->name());
     }
 
-    public function isNotEqual(ITimeZone $that): bool
+    public function isNotEqual(TimeZone $that): bool
     {
         return ($this->name() !== $that->name());
     }
