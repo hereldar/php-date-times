@@ -14,7 +14,7 @@ interface ITimeZone
 
     public function type(): int;
 
-    public function offset(ILocalDate|ILocalDateTime $date): IOffset;
+    public function toOffset(ILocalDate|ILocalDateTime $date): IOffset;
 
     public function compareTo(ITimeZone $that): int;
 

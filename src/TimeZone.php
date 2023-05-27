@@ -57,7 +57,10 @@ class TimeZone implements ITimeZone, Stringable
             throw new TimeZoneException($name, $e);
         }
 
-        return self::$cache[$class][$timeZone->name()] = $timeZone;
+        self::$cache[$class][$name] = $timeZone;
+        self::$cache[$class][$timeZone->name()] = $timeZone;
+
+        return $timeZone;
     }
 
     public static function fromNative(
@@ -69,9 +72,24 @@ class TimeZone implements ITimeZone, Stringable
         return self::$cache[$class][$name] ??= new static($value);
     }
 
+    public static function fromOffset(
+        IOffset $offset
+    ): static {
+        return static::of($offset->toIso8601(false));
+    }
+
     public function toNative(): NativeTimeZone
     {
         return $this->value;
+    }
+
+    public function toOffset(ILocalDate|ILocalDateTime|null $date = null): IOffset
+    {
+        $date ??= LocalDateTime::now();
+
+        $seconds = $this->value->getOffset($date->toNative());
+
+        return Offset::fromTotalSeconds($seconds);
     }
 
     public function name(): string
@@ -92,13 +110,6 @@ class TimeZone implements ITimeZone, Stringable
         }
 
         return TimeZoneType::TIMEZONE_ABBREVIATION;
-    }
-
-    public function offset(ILocalDate|ILocalDateTime $date): IOffset
-    {
-        $seconds = $this->value->getOffset($date->toNative());
-
-        return Offset::fromTotalSeconds($seconds);
     }
 
     public function compareTo(ITimeZone $that): int

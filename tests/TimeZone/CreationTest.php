@@ -9,6 +9,7 @@ use Generator;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
 use Hereldar\DateTimes\TimeZone;
 use Hereldar\DateTimes\Tests\TestCase;
+use Throwable;
 
 final class CreationTest extends TestCase
 {
@@ -72,10 +73,12 @@ final class CreationTest extends TestCase
     public function testTimeZoneException(
         string $timeZoneId,
     ): void {
-        self::assertException(
-            new TimeZoneException($timeZoneId),
-            fn () => TimeZone::of($timeZoneId)
-        );
+        try {
+            TimeZone::of($timeZoneId);
+        } catch (Throwable $e) {
+            self::assertInstanceOf(TimeZoneException::class, $e);
+            self::assertSame($timeZoneId, $e->name());
+        }
     }
 
     public static function invalidTimeZoneIds(): Generator
