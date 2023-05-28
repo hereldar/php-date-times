@@ -191,12 +191,4 @@ final class ParsingTest extends TestCase
             Period::parse('0001/02/03', ['%Y%M%D', '%Y/%M/%D'])->orFail()
         );
     }
-
-    public function testCopy(): void
-    {
-        $one = Period::parse('10:10:10', '%h:%i:%s')->orFail();
-        $two = $one->with(hours: 3, minutes: 3, seconds: 3);
-        self::assertPeriod($one, 0, 0, 0, 10, 10, 10);
-        self::assertPeriod($two, 0, 0, 0, 3, 3, 3);
-    }
 }

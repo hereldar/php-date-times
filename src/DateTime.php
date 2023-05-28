@@ -599,11 +599,17 @@ class DateTime implements Datelike, Timelike, Formattable, Summable, Parsable, S
         }
 
         if ($timeZone !== null) {
-            $dt = $dt->setTimezone(match (true) {
+            $tz = match (true) {
                 is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
                 $timeZone instanceof TimeZone => $timeZone->toNative(),
                 $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
-            });
+            };
+            /** @var NativeDateTime $dt */
+            $dt = NativeDateTime::createFromFormat(
+                'Y-n-j G:i:s.u',
+                $dt->format('Y-n-j G:i:s.u'),
+                $tz,
+            );
         }
 
         return new static($dt);

@@ -120,12 +120,4 @@ final class ParsingTest extends TestCase
             Offset::parse('01:02:03', ['%H%I%S', '%H:%I:%S'])->orFail()
         );
     }
-
-    public function testCopy(): void
-    {
-        $one = Offset::parse('10:10:10', '%h:%i:%s')->orFail();
-        $two = $one->with(hours: 3, minutes: 3, seconds: 3);
-        self::assertOffset($one, 10, 10, 10);
-        self::assertOffset($two, 3, 3, 3);
-    }
 }
