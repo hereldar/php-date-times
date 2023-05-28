@@ -25,6 +25,7 @@ final class CreationTest extends TestCase
         $timeZone = TimeZone::system();
 
         self::assertSame($tz->getName(), $timeZone->name());
+        self::assertSame($tz->getName(), (string) $timeZone);
     }
 
     public static function validTimeZoneIds(): Generator
@@ -53,6 +54,7 @@ final class CreationTest extends TestCase
         $timeZone = TimeZone::of($timeZoneName);
 
         self::assertSame($tz->getName(), $timeZone->name());
+        self::assertSame($tz->getName(), (string) $timeZone);
         self::assertSame($timeZoneType, $timeZone->type());
     }
 

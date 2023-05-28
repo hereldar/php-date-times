@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Tests\Offset;
 
 use ArithmeticError;
-use DivisionByZeroError;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
 use InvalidArgumentException;
@@ -29,7 +28,12 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             OutOfRangeException::class,
-            fn () => Offset::of(18)->add(Offset::of(1))->orFail()
+            fn () => Offset::of(Offset::HOURS_MAX)->add(1)->orFail()
+        );
+
+        self::assertException(
+            ArithmeticError::class,
+            fn () => Offset::of(seconds: 1)->add(seconds: PHP_INT_MAX)->orFail()
         );
 
         self::assertException(
@@ -54,7 +58,12 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             OutOfRangeException::class,
-            fn () => Offset::of(-18)->subtract(Offset::of(1))->orFail()
+            fn () => Offset::of(Offset::HOURS_MIN)->subtract(1)->orFail()
+        );
+
+        self::assertException(
+            ArithmeticError::class,
+            fn () => Offset::of(seconds: -2)->subtract(seconds: PHP_INT_MAX)->orFail()
         );
 
         self::assertException(

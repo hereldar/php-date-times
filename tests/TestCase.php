@@ -291,6 +291,7 @@ abstract class TestCase extends PHPUnitTestCase
     public static function timeZoneNames(): Generator
     {
         $timeZoneNames = [
+            'UTC',
             '-12:00',
             '+00:00',
             '+14:00',

@@ -60,7 +60,7 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
         $dt = new NativeDateTime('now', $tz);
 
         if ($timeZone === 'UTC' || $tz->getName() === 'UTC') {
-            return new static($dt);
+            return new static($dt->setDate(1970, 1, 1));
         }
 
         $string = $dt->format('G:i:s.u');
