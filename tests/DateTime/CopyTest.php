@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Tests\DateTime;
 
 use Hereldar\DateTimes\DateTime;
+use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
+use Hereldar\DateTimes\TimeZone;
 
 final class CopyTest extends TestCase
 {
@@ -71,6 +73,16 @@ final class CopyTest extends TestCase
         $two = $one->with(timeZone: 'MST');
         self::assertDateTime($one, 1970, 1, 1, 0, 0, 0, 0, 'EST');
         self::assertDateTime($two, 1970, 1, 1, 0, 0, 0, 0, 'MST');
+
+        $one = DateTime::of(timeZone: TimeZone::of('EST'));
+        $two = $one->with(timeZone: TimeZone::of('MST'));
+        self::assertDateTime($one, 1970, 1, 1, 0, 0, 0, 0, 'EST');
+        self::assertDateTime($two, 1970, 1, 1, 0, 0, 0, 0, 'MST');
+
+        $one = DateTime::of(timeZone: Offset::of(4, 30));
+        $two = $one->with(timeZone: Offset::of(-3));
+        self::assertDateTime($one, 1970, 1, 1, 0, 0, 0, 0, '+04:30');
+        self::assertDateTime($two, 1970, 1, 1, 0, 0, 0, 0, '-03:00');
     }
 
     public function testAll(): void
