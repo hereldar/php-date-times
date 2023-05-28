@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\LocalDate;
 
+use DateTime as MutableNativeDateTime;
 use DateTimeImmutable as NativeDateTime;
+use DateTimeInterface as NativeDateTimeInterface;
 use Generator;
 use Hereldar\DateTimes\LocalDate;
 use Hereldar\DateTimes\Tests\TestCase;
@@ -15,7 +17,7 @@ final class NativeTest extends TestCase
      * @dataProvider dataForNativeDateTime
      */
     public function testNativeDateTime(
-        NativeDateTime $nativeDateTime,
+        NativeDateTimeInterface $nativeDateTime,
         LocalDate $localDate,
         bool $reversible = true,
     ): void {
@@ -46,6 +48,25 @@ final class NativeTest extends TestCase
         ];
         yield [
             new NativeDateTime('2010-04-24 10:24:16-04:00'),
+            LocalDate::of(2010, 4, 24),
+            false,
+        ];
+        yield [
+            new MutableNativeDateTime('2010-04-24'),
+            LocalDate::of(2010, 4, 24),
+        ];
+        yield [
+            new MutableNativeDateTime('2010-04-24 -04:00'),
+            LocalDate::of(2010, 4, 24),
+            false,
+        ];
+        yield [
+            new MutableNativeDateTime('2010-04-24 10:24:16'),
+            LocalDate::of(2010, 4, 24),
+            false,
+        ];
+        yield [
+            new MutableNativeDateTime('2010-04-24 10:24:16-04:00'),
             LocalDate::of(2010, 4, 24),
             false,
         ];
