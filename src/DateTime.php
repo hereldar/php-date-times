@@ -273,6 +273,22 @@ class DateTime implements Datelike, Timelike, Formattable, Summable, Parsable, S
         return new static($value);
     }
 
+    public static function fromSecondsSinceEpoch(int $seconds): static
+    {
+        $timestamp = (string) $seconds;
+        $tz = TimeZone::utc()->toNative();
+
+        return self::parseSimple($timestamp, 'U', $tz)->orFail();
+    }
+
+    public static function fromMicrosecondsSinceEpoch(int $seconds, int $microseconds): static
+    {
+        $timestamp = sprintf('%d.%06d', $seconds, $microseconds);
+        $tz = TimeZone::utc()->toNative();
+
+        return self::parseSimple($timestamp, 'U.u', $tz)->orFail();
+    }
+
     public function format(string $format = DateTime::ISO8601): Ok|Error
     {
         return Ok::withValue($this->value->format($format));
@@ -331,11 +347,6 @@ class DateTime implements Datelike, Timelike, Formattable, Summable, Parsable, S
     public function toNative(): NativeDateTime
     {
         return $this->value;
-    }
-
-    public function timestamp(): int
-    {
-        return $this->value->getTimestamp();
     }
 
     /**
@@ -445,6 +456,19 @@ class DateTime implements Datelike, Timelike, Formattable, Summable, Parsable, S
     public function inDaylightSavingTime(): bool
     {
         return ($this->value->format('I') === '1');
+    }
+
+    public function secondsSinceEpoch(): int
+    {
+        return $this->value->getTimestamp();
+    }
+
+    /**
+     * @return array{0: int, 1: int}
+     */
+    public function microsecondsSinceEpoch(): array
+    {
+        return [$this->value->getTimestamp(), $this->microsecond()];
     }
 
     public function compareTo(DateTime $that): int
