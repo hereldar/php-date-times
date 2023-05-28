@@ -14,38 +14,38 @@ final class CreationTest extends TestCase
 {
     public function testDefaults(): void
     {
-        $dateTime = LocalDate::of();
-        self::assertLocalDate($dateTime, 1970, 1, 1);
+        $date = LocalDate::of();
+        self::assertLocalDate($date, 1970, 1, 1);
     }
 
     public function testYear(): void
     {
-        $dateTime = LocalDate::of(1986);
-        self::assertSame(1986, $dateTime->year());
+        $date = LocalDate::of(1986);
+        self::assertSame(1986, $date->year());
     }
 
     public function testNegativeYear(): void
     {
-        $dateTime = LocalDate::of(-1, 10, 12);
-        self::assertLocalDate($dateTime, -1, 10, 12);
+        $date = LocalDate::of(-1, 10, 12);
+        self::assertLocalDate($date, -1, 10, 12);
     }
 
     public function testManyDigitsPositiveYear(): void
     {
-        $dateTime = LocalDate::of(999999999, 10, 12);
-        self::assertLocalDate($dateTime, 999999999, 10, 12);
+        $date = LocalDate::of(999999999, 10, 12);
+        self::assertLocalDate($date, 999999999, 10, 12);
     }
 
     public function testManyDigitsNegativeYear(): void
     {
-        $dateTime = LocalDate::of(-999999999, 10, 12);
-        self::assertLocalDate($dateTime, -999999999, 10, 12);
+        $date = LocalDate::of(-999999999, 10, 12);
+        self::assertLocalDate($date, -999999999, 10, 12);
     }
 
     public function testMonth(): void
     {
-        $dateTime = LocalDate::of(month: 3);
-        self::assertSame(3, $dateTime->month());
+        $date = LocalDate::of(month: 3);
+        self::assertSame(3, $date->month());
     }
 
     public function testInvalidMonths(): void
@@ -66,8 +66,8 @@ final class CreationTest extends TestCase
 
     public function testDay(): void
     {
-        $dateTime = LocalDate::of(day: 21);
-        self::assertSame(21, $dateTime->day());
+        $date = LocalDate::of(day: 21);
+        self::assertSame(21, $date->day());
     }
 
     public function testInvalidDays(): void

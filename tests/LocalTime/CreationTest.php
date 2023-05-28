@@ -14,16 +14,16 @@ final class CreationTest extends TestCase
 {
     public function testDefaults(): void
     {
-        $dateTime = LocalTime::of();
-        self::assertLocalTime($dateTime, 0, 0, 0, 0);
+        $time = LocalTime::of();
+        self::assertLocalTime($time, 0, 0, 0, 0);
     }
 
     public function testHourAndDefaultMinSecToZero(): void
     {
-        $dateTime = LocalTime::of(hour: 14);
-        self::assertSame(14, $dateTime->hour());
-        self::assertSame(0, $dateTime->minute());
-        self::assertSame(0, $dateTime->second());
+        $time = LocalTime::of(hour: 14);
+        self::assertSame(14, $time->hour());
+        self::assertSame(0, $time->minute());
+        self::assertSame(0, $time->second());
     }
 
     public function testInvalidHours(): void
@@ -40,8 +40,8 @@ final class CreationTest extends TestCase
 
     public function testMinute(): void
     {
-        $dateTime = LocalTime::of(minute: 58);
-        self::assertSame(58, $dateTime->minute());
+        $time = LocalTime::of(minute: 58);
+        self::assertSame(58, $time->minute());
     }
 
     public function testInvalidMinutes(): void
@@ -58,8 +58,8 @@ final class CreationTest extends TestCase
 
     public function testSecond(): void
     {
-        $dateTime = LocalTime::of(second: 59);
-        self::assertSame(59, $dateTime->second());
+        $time = LocalTime::of(second: 59);
+        self::assertSame(59, $time->second());
     }
 
     public function testInvalidSeconds(): void
