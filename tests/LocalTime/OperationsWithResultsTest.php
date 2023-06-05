@@ -8,6 +8,7 @@ use Hereldar\DateTimes\LocalTime;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 use InvalidArgumentException;
+use OutOfRangeException;
 
 final class OperationsWithResultsTest extends TestCase
 {
@@ -60,6 +61,31 @@ final class OperationsWithResultsTest extends TestCase
         self::assertException(
             InvalidArgumentException::class,
             fn () => $time->subtract(Period::of(1), 2)
+        );
+    }
+
+    public function testCopy(): void
+    {
+        $time = LocalTime::of(12)->copy(hour: 1)->orFail();
+        self::assertInstanceOf(LocalTime::class, $time);
+        self::assertSame(1, $time->hour());
+
+        $originalDate = LocalTime::parse('17:05:08')->orFail();
+        $time = $originalDate->copy()->orFail();
+        self::assertInstanceOf(LocalTime::class, $time);
+        self::assertSame('17:05:08', $time->format()->orFail());
+        self::assertNotSame($time, $originalDate);
+
+        $time = LocalTime
+            ::parse('08:05:45')->orFail()
+            ->copy(hour: 7)->orFail()
+        ;
+        self::assertInstanceOf(LocalTime::class, $time);
+        self::assertSame('07:05:45', $time->format()->orFail());
+
+        self::assertException(
+            OutOfRangeException::class,
+            fn () => $time->copy(second: 60)->orFail()
         );
     }
 }

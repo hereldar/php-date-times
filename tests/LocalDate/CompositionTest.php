@@ -25,7 +25,7 @@ final class CompositionTest extends TestCase
 
     public function testInvalidHours(): void
     {
-        $date = LocalDate::of(1, 2, 3);
+        $date = LocalDate::epoch();
 
         self::assertException(
             new OutOfRangeException('hour must be between 0 and 23, -1 given'),
@@ -39,29 +39,43 @@ final class CompositionTest extends TestCase
 
     public function testInvalidMinutes(): void
     {
-        $date = LocalDate::of(1, 2, 3);
+        $date = LocalDate::epoch();
 
         self::assertException(
-            new OutOfRangeException('minute must be between 0 and 59, -2 given'),
-            fn () => $date->atTime(0, -2)
+            new OutOfRangeException('minute must be between 0 and 59, -1 given'),
+            fn () => $date->atTime(0, -1)
         );
         self::assertException(
-            new OutOfRangeException('minute must be between 0 and 59, 62 given'),
-            fn () => $date->atTime(0, 62)
+            new OutOfRangeException('minute must be between 0 and 59, 60 given'),
+            fn () => $date->atTime(0, 60)
         );
     }
 
     public function testInvalidSeconds(): void
     {
-        $date = LocalDate::of(1, 2, 3);
+        $date = LocalDate::epoch();
 
         self::assertException(
             new OutOfRangeException('second must be between 0 and 59, -1 given'),
             fn () => $date->atTime(second: -1)
         );
         self::assertException(
-            new OutOfRangeException('second must be between 0 and 59, 61 given'),
-            fn () => $date->atTime(0, 0, 61)
+            new OutOfRangeException('second must be between 0 and 59, 60 given'),
+            fn () => $date->atTime(0, 0, 60)
+        );
+    }
+
+    public function testInvalidMicroseconds(): void
+    {
+        $date = LocalDate::epoch();
+
+        self::assertException(
+            new OutOfRangeException('microsecond must be between 0 and 999999, -1 given'),
+            fn () => $date->atTime(microsecond: -1)
+        );
+        self::assertException(
+            new OutOfRangeException('microsecond must be between 0 and 999999, 1000000 given'),
+            fn () => $date->atTime(0, 0, 0, 1_000_000)
         );
     }
 

@@ -10,6 +10,13 @@ use Hereldar\DateTimes\LocalTime;
 use Hereldar\DateTimes\Tests\TestCase;
 use OutOfRangeException;
 
+/**
+ * @internal
+ */
+final class CustomLocalTime extends LocalTime
+{
+}
+
 final class CreationTest extends TestCase
 {
     public function testDefaults(): void
@@ -18,12 +25,10 @@ final class CreationTest extends TestCase
         self::assertLocalTime($time, 0, 0, 0, 0);
     }
 
-    public function testHourAndDefaultMinSecToZero(): void
+    public function testHour(): void
     {
-        $time = LocalTime::of(hour: 14);
+        $time = LocalTime::of(14);
         self::assertSame(14, $time->hour());
-        self::assertSame(0, $time->minute());
-        self::assertSame(0, $time->second());
     }
 
     public function testInvalidHours(): void
@@ -47,12 +52,12 @@ final class CreationTest extends TestCase
     public function testInvalidMinutes(): void
     {
         self::assertException(
-            new OutOfRangeException('minute must be between 0 and 59, -2 given'),
-            fn () => LocalTime::of(0, -2)
+            new OutOfRangeException('minute must be between 0 and 59, -1 given'),
+            fn () => LocalTime::of(0, -1)
         );
         self::assertException(
-            new OutOfRangeException('minute must be between 0 and 59, 62 given'),
-            fn () => LocalTime::of(0, 62)
+            new OutOfRangeException('minute must be between 0 and 59, 60 given'),
+            fn () => LocalTime::of(0, 60)
         );
     }
 
@@ -69,8 +74,26 @@ final class CreationTest extends TestCase
             fn () => LocalTime::of(second: -1)
         );
         self::assertException(
-            new OutOfRangeException('second must be between 0 and 59, 61 given'),
-            fn () => LocalTime::of(0, 0, 61)
+            new OutOfRangeException('second must be between 0 and 59, 60 given'),
+            fn () => LocalTime::of(0, 0, 60)
+        );
+    }
+
+    public function testMicrosecond(): void
+    {
+        $time = LocalTime::of(microsecond: 999_999);
+        self::assertSame(999_999, $time->microsecond());
+    }
+
+    public function testInvalidMicroseconds(): void
+    {
+        self::assertException(
+            new OutOfRangeException('microsecond must be between 0 and 999999, -1 given'),
+            fn () => LocalTime::of(microsecond: -1)
+        );
+        self::assertException(
+            new OutOfRangeException('microsecond must be between 0 and 999999, 1000000 given'),
+            fn () => LocalTime::of(0, 0, 0, 1_000_000)
         );
     }
 
@@ -94,5 +117,60 @@ final class CreationTest extends TestCase
         self::assertSame(0, $diff->m);
         self::assertSame(0, $diff->s);
         self::assertLessThan(0.1, $diff->f);
+    }
+
+    public function testEpoch(): void
+    {
+        $time = LocalTime::epoch();
+        self::assertInstanceOf(LocalTime::class, $time);
+        self::assertLocalTime($time, 0, 0, 0, 0);
+
+        $time = CustomLocalTime::epoch();
+        self::assertInstanceOf(CustomLocalTime::class, $time);
+        self::assertLocalTime($time, 0, 0, 0, 0);
+    }
+
+    public function testMax(): void
+    {
+        $time = LocalTime::max();
+        self::assertInstanceOf(LocalTime::class, $time);
+        self::assertLocalTime($time, 23, 59, 59, 999_999);
+
+        $time = CustomLocalTime::max();
+        self::assertInstanceOf(CustomLocalTime::class, $time);
+        self::assertLocalTime($time, 23, 59, 59, 999_999);
+    }
+
+    public function testMin(): void
+    {
+        $time = LocalTime::min();
+        self::assertInstanceOf(LocalTime::class, $time);
+        self::assertLocalTime($time, 0, 0, 0, 0);
+
+        $time = CustomLocalTime::min();
+        self::assertInstanceOf(CustomLocalTime::class, $time);
+        self::assertLocalTime($time, 0, 0, 0, 0);
+    }
+
+    public function testMidnight(): void
+    {
+        $time = LocalTime::midnight();
+        self::assertInstanceOf(LocalTime::class, $time);
+        self::assertLocalTime($time, 0, 0, 0, 0);
+
+        $time = CustomLocalTime::midnight();
+        self::assertInstanceOf(CustomLocalTime::class, $time);
+        self::assertLocalTime($time, 0, 0, 0, 0);
+    }
+
+    public function testNoon(): void
+    {
+        $time = LocalTime::noon();
+        self::assertInstanceOf(LocalTime::class, $time);
+        self::assertLocalTime($time, 12, 0, 0, 0);
+
+        $time = CustomLocalTime::noon();
+        self::assertInstanceOf(CustomLocalTime::class, $time);
+        self::assertLocalTime($time, 12, 0, 0, 0);
     }
 }

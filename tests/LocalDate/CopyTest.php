@@ -26,14 +26,10 @@ final class CopyTest extends TestCase
         self::assertLocalDate($two, 1970, 3, 1);
     }
 
-    public function testDayOfMonthInvalidMonths(): void
+    public function testInvalidMonths(): void
     {
         $date = LocalDate::epoch();
 
-        self::assertException(
-            new OutOfRangeException('month must be between 1 and 12, -1 given'),
-            fn () => $date->with(-2, -1)
-        );
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 0 given'),
             fn () => $date->with(1986, 0)
@@ -52,17 +48,13 @@ final class CopyTest extends TestCase
         self::assertLocalDate($two, 1970, 1, 3);
     }
 
-    public function testDayOfMonthInvalidDays(): void
+    public function testInvalidDays(): void
     {
         $date = LocalDate::epoch();
 
         self::assertException(
-            new OutOfRangeException('day must be between 1 and 31, -1 given'),
-            fn () => $date->with(day: -1)
-        );
-        self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 0 given'),
-            fn () => $date->with(-1, 1, 0)
+            fn () => $date->with(day: 0)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 32 given'),

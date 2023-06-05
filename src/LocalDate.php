@@ -131,13 +131,13 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
             $day,
         );
 
-        $dateTime = static::parse($string, 'Y-n-j')->orFail();
+        $date = static::parse($string, 'Y-n-j')->orFail();
 
         if ($extraYears !== 0) {
-            return $dateTime->plus($extraYears);
+            return $date->plus($extraYears);
         }
 
-        return $dateTime;
+        return $date;
     }
 
     /**
@@ -188,7 +188,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
      * format. It also accepts a list of formats.
      *
      * If the format is not specified, the ISO 8601 date format will
-     * be used (Y-m-d).
+     * be used (`Y-m-d`).
      *
      * The `LocalDate` is not returned directly, but a result that
      * will contain the date if no error was found, or an exception if
@@ -341,7 +341,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
      * Formats this date using the specified format.
      *
      * If the format is not specified, the ISO 8601 date format will
-     * be used (Y-m-d).
+     * be used (`Y-m-d`).
      *
      * The text is not returned directly, but a result that will
      * contain the text if no error was found, or an exception if
@@ -660,6 +660,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
                 0, 0, 0, 0,
                 $millennia, $centuries, $decades,
                 $quarters, $weeks,
+                0,
             );
         } elseif (
             !$months && !$days
@@ -722,6 +723,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
                 0, 0, 0, 0,
                 $millennia, $centuries, $decades,
                 $quarters, $weeks,
+                0,
             );
         } elseif (
             !$months && !$days
@@ -743,7 +745,8 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
     }
 
     /**
-     * Returns a copy of this date with the specified year, month and day.
+     * Returns a copy of this date with the specified year, month and
+     * day.
      *
      * @param int<1, 12>|null $month
      * @param int<1, 31>|null $day
@@ -802,7 +805,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
         int $weeks = 0,
     ): Ok|Error {
         try {
-            $dateTime = $this->plus(
+            $date = $this->plus(
                 $years, $months, $days,
                 $overflow,
                 $millennia, $centuries, $decades,
@@ -813,7 +816,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
         }
 
         /** @var Ok<static> */
-        return Ok::withValue($dateTime);
+        return Ok::withValue($date);
     }
 
     /**
@@ -845,7 +848,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
         int $weeks = 0,
     ): Ok|Error {
         try {
-            $dateTime = $this->minus(
+            $date = $this->minus(
                 $years, $months, $days,
                 $overflow,
                 $millennia, $centuries, $decades,
@@ -856,7 +859,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
         }
 
         /** @var Ok<static> */
-        return Ok::withValue($dateTime);
+        return Ok::withValue($date);
     }
 
     /**
@@ -878,7 +881,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
         ?int $day = null,
     ): Ok|Error {
         try {
-            $dateTime = $this->with(
+            $date = $this->with(
                 $year, $month, $day,
             );
         } catch (OutOfRangeException $e) {
@@ -886,6 +889,6 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
         }
 
         /** @var Ok<static> */
-        return Ok::withValue($dateTime);
+        return Ok::withValue($date);
     }
 }

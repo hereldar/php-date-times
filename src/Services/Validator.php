@@ -39,10 +39,22 @@ final class Validator
 
     public static function day(int $day, int $month, int $year): void
     {
-        $max = self::MONTH_LAST_DAY[$month] ?? 31;
-
         if ($month === 2 && self::yearIsLeap($year)) {
             $max = 29;
+        } else {
+            $max = self::MONTH_LAST_DAY[$month] ?? 31;
+        }
+
+        self::range('day', $day, 1, $max);
+    }
+
+    public static function dayOfYear(int $day, int $year): void
+    {
+
+        if (self::yearIsLeap($year)) {
+            $max = 366;
+        } else {
+            $max = 365;
         }
 
         self::range('day', $day, 1, $max);

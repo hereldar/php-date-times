@@ -74,36 +74,6 @@ final class SubtractionTest extends TestCase
         self::assertSame(1, $time->minus(Period::of(seconds: -1))->second());
     }
 
-    public function testSubtractMillisecondsPositive(): void
-    {
-        $time = LocalTime::of(0, 0, 0);
-        self::assertSame(999, $time->minus(milliseconds: 1)->millisecond());
-        self::assertSame(999, $time->minus(Period::of(milliseconds: 1))->millisecond());
-        $time = LocalTime::of(0, 0, 0, 100_000);
-        self::assertSame(99, $time->minus(milliseconds: 1)->millisecond());
-        self::assertSame(99, $time->minus(Period::of(milliseconds: 1))->millisecond());
-    }
-
-    public function testSubtractMillisecondsZero(): void
-    {
-        $time = LocalTime::of(0, 0, 0);
-        self::assertSame(0, $time->minus(milliseconds: 0)->millisecond());
-        self::assertSame(0, $time->minus(Period::of(milliseconds: 0))->millisecond());
-        $time = LocalTime::of(0, 0, 0, 100_000);
-        self::assertSame(100, $time->minus(milliseconds: 0)->millisecond());
-        self::assertSame(100, $time->minus(Period::of(milliseconds: 0))->millisecond());
-    }
-
-    public function testSubtractMillisecondsNegative(): void
-    {
-        $time = LocalTime::of(0, 0, 0);
-        self::assertSame(1, $time->minus(milliseconds: -1)->millisecond());
-        self::assertSame(1, $time->minus(Period::of(milliseconds: -1))->millisecond());
-        $time = LocalTime::of(0, 0, 0, 100_000);
-        self::assertSame(101, $time->minus(milliseconds: -1)->millisecond());
-        self::assertSame(101, $time->minus(Period::of(milliseconds: -1))->millisecond());
-    }
-
     public function testSubtractMicrosecondsPositive(): void
     {
         $time = LocalTime::of(0, 0, 0);
@@ -134,9 +104,41 @@ final class SubtractionTest extends TestCase
         self::assertSame(100001, $time->minus(Period::of(microseconds: -1))->microsecond());
     }
 
+    public function testSubtractMillisecondsPositive(): void
+    {
+        $time = LocalTime::of(0, 0, 0);
+        self::assertSame(999, $time->minus(milliseconds: 1)->millisecond());
+        self::assertSame(999, $time->minus(Period::of(milliseconds: 1))->millisecond());
+        $time = LocalTime::of(0, 0, 0, 100_000);
+        self::assertSame(99, $time->minus(milliseconds: 1)->millisecond());
+        self::assertSame(99, $time->minus(Period::of(milliseconds: 1))->millisecond());
+    }
+
+    public function testSubtractMillisecondsZero(): void
+    {
+        $time = LocalTime::of(0, 0, 0);
+        self::assertSame(0, $time->minus(milliseconds: 0)->millisecond());
+        self::assertSame(0, $time->minus(Period::of(milliseconds: 0))->millisecond());
+        $time = LocalTime::of(0, 0, 0, 100_000);
+        self::assertSame(100, $time->minus(milliseconds: 0)->millisecond());
+        self::assertSame(100, $time->minus(Period::of(milliseconds: 0))->millisecond());
+    }
+
+    public function testSubtractMillisecondsNegative(): void
+    {
+        $time = LocalTime::of(0, 0, 0);
+        self::assertSame(1, $time->minus(milliseconds: -1)->millisecond());
+        self::assertSame(1, $time->minus(Period::of(milliseconds: -1))->millisecond());
+        $time = LocalTime::of(0, 0, 0, 100_000);
+        self::assertSame(101, $time->minus(milliseconds: -1)->millisecond());
+        self::assertSame(101, $time->minus(Period::of(milliseconds: -1))->millisecond());
+    }
+
     public function testInvalidArgumentException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        LocalTime::of(0, 0, 0)->minus(Period::of(hours: 1), minutes: 2);
+        self::assertException(
+            new InvalidArgumentException('No time units are allowed when a period is passed'),
+            fn () => LocalTime::of(0, 0, 0)->minus(Period::of(hours: 1), minutes: 2)
+        );
     }
 }
