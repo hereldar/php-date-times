@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests;
 
+use DateTimeImmutable as NativeDateTime;
 use Exception;
 use Generator;
 use Hereldar\DateTimes\DateTime;
@@ -57,6 +58,59 @@ abstract class TestCase extends PHPUnitTestCase
                 new ExceptionCode($expectedException->getCode())
             );
         }
+    }
+
+    public static function assertNativeDateTime(
+        NativeDateTime $dateTime,
+        int $year,
+        ?int $month = null,
+        ?int $day = null,
+        ?int $hour = null,
+        ?int $minute = null,
+        ?int $second = null,
+        ?int $microsecond = null,
+        ?string $timeZone = null,
+    ): void {
+        $actual = ['year' => (int) $dateTime->format('Y')];
+
+        $expected = ['year' => $year];
+
+        if ($month !== null) {
+            $actual['month'] = (int) $dateTime->format('n');
+            $expected['month'] = $month;
+        }
+
+        if ($day !== null) {
+            $actual['day'] = (int) $dateTime->format('j');
+            $expected['day'] = $day;
+        }
+
+        if ($hour !== null) {
+            $actual['hour'] = (int) $dateTime->format('G');
+            $expected['hour'] = $hour;
+        }
+
+        if ($minute !== null) {
+            $actual['minute'] = (int) $dateTime->format('i');
+            $expected['minute'] = $minute;
+        }
+
+        if ($second !== null) {
+            $actual['second'] = (int) $dateTime->format('s');
+            $expected['second'] = $second;
+        }
+
+        if ($microsecond !== null) {
+            $actual['microsecond'] = (int) $dateTime->format('u');
+            $expected['microsecond'] = $microsecond;
+        }
+
+        if ($timeZone !== null) {
+            $actual['timeZone'] = $dateTime->getTimezone()->getName();
+            $expected['timeZone'] = $timeZone;
+        }
+
+        static::assertSame($expected, $actual);
     }
 
     public static function assertDateTime(

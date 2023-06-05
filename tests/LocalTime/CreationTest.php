@@ -53,7 +53,7 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, -1 given'),
-            fn () => LocalTime::of(0, -1)
+            fn () => LocalTime::of(minute: -1)
         );
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, 60 given'),

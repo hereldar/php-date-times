@@ -10,6 +10,13 @@ use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Tests\TestCase;
 use OutOfRangeException;
 
+/**
+ * @internal
+ */
+final class CustomLocalDateTime extends LocalDateTime
+{
+}
+
 final class CreationTest extends TestCase
 {
     public function testDefaults(): void
@@ -51,8 +58,8 @@ final class CreationTest extends TestCase
     public function testInvalidMonths(): void
     {
         self::assertException(
-            new OutOfRangeException('month must be between 1 and 12, -5 given'),
-            fn () => LocalDateTime::of(-2, -5)
+            new OutOfRangeException('month must be between 1 and 12, -1 given'),
+            fn () => LocalDateTime::of(-2, -1)
         );
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 0 given'),
@@ -73,8 +80,8 @@ final class CreationTest extends TestCase
     public function testInvalidDays(): void
     {
         self::assertException(
-            new OutOfRangeException('day must be between 1 and 31, -2 given'),
-            fn () => LocalDateTime::of(day: -2)
+            new OutOfRangeException('day must be between 1 and 31, -1 given'),
+            fn () => LocalDateTime::of(day: -1)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 0 given'),
@@ -106,12 +113,10 @@ final class CreationTest extends TestCase
         );
     }
 
-    public function testHourAndDefaultMinSecToZero(): void
+    public function testHour(): void
     {
         $dateTime = LocalDateTime::of(hour:  14);
         self::assertSame(14, $dateTime->hour());
-        self::assertSame(0, $dateTime->minute());
-        self::assertSame(0, $dateTime->second());
     }
 
     public function testInvalidHours(): void
@@ -135,12 +140,12 @@ final class CreationTest extends TestCase
     public function testInvalidMinutes(): void
     {
         self::assertException(
-            new OutOfRangeException('minute must be between 0 and 59, -2 given'),
-            fn () => LocalDateTime::of(1986, 1, 1, 0, -2)
+            new OutOfRangeException('minute must be between 0 and 59, -1 given'),
+            fn () => LocalDateTime::of(1986, 1, 1, 0, -1)
         );
         self::assertException(
-            new OutOfRangeException('minute must be between 0 and 59, 62 given'),
-            fn () => LocalDateTime::of(1986, 1, 1, 0, 62)
+            new OutOfRangeException('minute must be between 0 and 59, 60 given'),
+            fn () => LocalDateTime::of(1986, 1, 1, 0, 60)
         );
     }
 
@@ -157,8 +162,26 @@ final class CreationTest extends TestCase
             fn () => LocalDateTime::of(second: -1)
         );
         self::assertException(
-            new OutOfRangeException('second must be between 0 and 59, 61 given'),
-            fn () => LocalDateTime::of(1986, 1, 1, 0, 0, 61)
+            new OutOfRangeException('second must be between 0 and 59, 60 given'),
+            fn () => LocalDateTime::of(1986, 1, 1, 0, 0, 60)
+        );
+    }
+
+    public function testMicrosecond(): void
+    {
+        $dateTime = LocalDateTime::of(microsecond: 999_999);
+        self::assertSame(999_999, $dateTime->microsecond());
+    }
+
+    public function testInvalidMicroseconds(): void
+    {
+        self::assertException(
+            new OutOfRangeException('microsecond must be between 0 and 999999, -1 given'),
+            fn () => LocalDateTime::of(microsecond: -1)
+        );
+        self::assertException(
+            new OutOfRangeException('microsecond must be between 0 and 999999, 1000000 given'),
+            fn () => LocalDateTime::of(1986, 1, 1, 0, 0, 0, 1_000_000)
         );
     }
 
@@ -182,5 +205,16 @@ final class CreationTest extends TestCase
         self::assertSame(0, $diff->m);
         self::assertSame(0, $diff->s);
         self::assertLessThan(0.1, $diff->f);
+    }
+
+    public function testEpoch(): void
+    {
+        $dateTime = LocalDateTime::epoch();
+        self::assertInstanceOf(LocalDateTime::class, $dateTime);
+        self::assertLocalDateTime($dateTime, 1970, 1, 1, 0, 0, 0, 0);
+
+        $dateTime = CustomLocalDateTime::epoch();
+        self::assertInstanceOf(CustomLocalDateTime::class, $dateTime);
+        self::assertLocalDateTime($dateTime, 1970, 1, 1, 0, 0, 0, 0);
     }
 }

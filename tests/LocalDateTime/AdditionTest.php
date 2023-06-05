@@ -13,239 +13,323 @@ final class AdditionTest extends TestCase
 {
     public function testAddYearsPositive(): void
     {
-        $date = LocalDateTime::of(1986);
-        self::assertSame(1988, $date->plus(years: 2)->year());
-        self::assertSame(1988, $date->plus(Period::of(years: 2))->year());
+        $dateTime = LocalDateTime::of(1986);
+        self::assertSame(1988, $dateTime->plus(years: 2)->year());
+        self::assertSame(1988, $dateTime->plus(Period::of(years: 2))->year());
     }
 
     public function testAddYearsZero(): void
     {
-        $date = LocalDateTime::of(1986);
-        self::assertSame(1986, $date->plus(years: 0)->year());
-        self::assertSame(1986, $date->plus(Period::of(years: 0))->year());
+        $dateTime = LocalDateTime::of(1986);
+        self::assertSame(1986, $dateTime->plus(years: 0)->year());
+        self::assertSame(1986, $dateTime->plus(Period::of(years: 0))->year());
     }
 
     public function testAddYearsNegative(): void
     {
-        $date = LocalDateTime::of(1986);
-        self::assertSame(1984, $date->plus(years: -2)->year());
-        self::assertSame(1984, $date->plus(Period::of(years: -2))->year());
+        $dateTime = LocalDateTime::of(1986);
+        self::assertSame(1984, $dateTime->plus(years: -2)->year());
+        self::assertSame(1984, $dateTime->plus(Period::of(years: -2))->year());
     }
 
     public function testAddYearsOverflow(): void
     {
-        $date = LocalDateTime::fromIso8601('2016-02-29T00:00:00');
-        self::assertLocalDateTime($date->plus(years: 2), 2018, 2, 28);
-        self::assertLocalDateTime($date->plus(Period::of(years: 2)), 2018, 2, 28);
-        self::assertLocalDateTime($date->plus(years: 2, overflow: true), 2018, 3, 1);
-        self::assertLocalDateTime($date->plus(Period::of(years: 2), overflow: true), 2018, 3, 1);
+        $dateTime = LocalDateTime::fromIso8601('2016-02-29T00:00:00');
+        self::assertLocalDateTime($dateTime->plus(years: 2), 2018, 2, 28);
+        self::assertLocalDateTime($dateTime->plus(Period::of(years: 2)), 2018, 2, 28);
+        self::assertLocalDateTime($dateTime->plus(years: 2, overflow: true), 2018, 3, 1);
+        self::assertLocalDateTime($dateTime->plus(Period::of(years: 2), overflow: true), 2018, 3, 1);
 
-        $date = LocalDateTime::fromIso8601('2008-02-29T00:00:00');
-        self::assertLocalDateTime($date->plus(years: 1, days: 1), 2009, 3, 1);
-        self::assertLocalDateTime($date->plus(Period::of(years: 1, days: 1)), 2009, 3, 1);
-        self::assertLocalDateTime($date->plus(years: 1, days: 1, overflow: true), 2009, 3, 2);
-        self::assertLocalDateTime($date->plus(Period::of(years: 1, days: 1), overflow: true), 2009, 3, 2);
+        $dateTime = LocalDateTime::fromIso8601('2008-02-29T00:00:00');
+        self::assertLocalDateTime($dateTime->plus(years: 1, days: 1), 2009, 3, 1);
+        self::assertLocalDateTime($dateTime->plus(Period::of(years: 1, days: 1)), 2009, 3, 1);
+        self::assertLocalDateTime($dateTime->plus(years: 1, days: 1, overflow: true), 2009, 3, 2);
+        self::assertLocalDateTime($dateTime->plus(Period::of(years: 1, days: 1), overflow: true), 2009, 3, 2);
     }
 
     public function testAddMonthsPositive(): void
     {
-        $date = LocalDateTime::of(1986, 9);
-        self::assertSame(11, $date->plus(months: 2)->month());
-        self::assertSame(11, $date->plus(Period::of(months: 2))->month());
+        $dateTime = LocalDateTime::of(1986, 9);
+        self::assertSame(11, $dateTime->plus(months: 2)->month());
+        self::assertSame(11, $dateTime->plus(Period::of(months: 2))->month());
     }
 
     public function testAddMonthsZero(): void
     {
-        $date = LocalDateTime::of(1986, 9);
-        self::assertSame(9, $date->plus(months: 0)->month());
-        self::assertSame(9, $date->plus(Period::of(months: 0))->month());
+        $dateTime = LocalDateTime::of(1986, 9);
+        self::assertSame(9, $dateTime->plus(months: 0)->month());
+        self::assertSame(9, $dateTime->plus(Period::of(months: 0))->month());
     }
 
     public function testAddMonthsNegative(): void
     {
-        $date = LocalDateTime::of(1986, 9);
-        self::assertSame(7, $date->plus(months: -2)->month());
-        self::assertSame(7, $date->plus(Period::of(months: -2))->month());
+        $dateTime = LocalDateTime::of(1986, 9);
+        self::assertSame(7, $dateTime->plus(months: -2)->month());
+        self::assertSame(7, $dateTime->plus(Period::of(months: -2))->month());
     }
 
     public function testAddMonthsOverflow(): void
     {
-        $date = LocalDateTime::fromIso8601('2021-01-31T00:00:00');
-        self::assertLocalDateTime($date->plus(months: 1), 2021, 2, 28);
-        self::assertLocalDateTime($date->plus(Period::of(months: 1)), 2021, 2, 28);
-        self::assertLocalDateTime($date->plus(months: 1, overflow: true), 2021, 3, 3);
-        self::assertLocalDateTime($date->plus(Period::of(months: 1), overflow: true), 2021, 3, 3);
+        $dateTime = LocalDateTime::fromIso8601('2021-01-31T00:00:00');
+        self::assertLocalDateTime($dateTime->plus(months: 1), 2021, 2, 28);
+        self::assertLocalDateTime($dateTime->plus(Period::of(months: 1)), 2021, 2, 28);
+        self::assertLocalDateTime($dateTime->plus(months: 1, overflow: true), 2021, 3, 3);
+        self::assertLocalDateTime($dateTime->plus(Period::of(months: 1), overflow: true), 2021, 3, 3);
 
-        $date = LocalDateTime::fromIso8601('2007-03-31T00:00:00');
-        self::assertLocalDateTime($date->plus(months: 3, days: 1), 2007, 7, 1);
-        self::assertLocalDateTime($date->plus(Period::of(months: 3, days: 1)), 2007, 7, 1);
-        self::assertLocalDateTime($date->plus(months: 3, days: 1, overflow: true), 2007, 7, 2);
-        self::assertLocalDateTime($date->plus(Period::of(months: 3, days: 1), overflow: true), 2007, 7, 2);
-    }
-
-    public function testAddWeeksPositive(): void
-    {
-        $date = LocalDateTime::of(1986, 9, 21);
-        self::assertSame(28, $date->plus(weeks: 1)->day());
-        self::assertSame(28, $date->plus(Period::of(weeks: 1))->day());
-    }
-
-    public function testAddWeeksZero(): void
-    {
-        $date = LocalDateTime::of(1986, 9, 21);
-        self::assertSame(21, $date->plus(weeks: 0)->day());
-        self::assertSame(21, $date->plus(Period::of(weeks: 0))->day());
-    }
-
-    public function testAddWeeksNegative(): void
-    {
-        $date = LocalDateTime::of(1986, 9, 21);
-        self::assertSame(14, $date->plus(weeks: -1)->day());
-        self::assertSame(14, $date->plus(Period::of(weeks: -1))->day());
+        $dateTime = LocalDateTime::fromIso8601('2007-03-31T00:00:00');
+        self::assertLocalDateTime($dateTime->plus(months: 3, days: 1), 2007, 7, 1);
+        self::assertLocalDateTime($dateTime->plus(Period::of(months: 3, days: 1)), 2007, 7, 1);
+        self::assertLocalDateTime($dateTime->plus(months: 3, days: 1, overflow: true), 2007, 7, 2);
+        self::assertLocalDateTime($dateTime->plus(Period::of(months: 3, days: 1), overflow: true), 2007, 7, 2);
     }
 
     public function testAddDaysPositive(): void
     {
-        $date = LocalDateTime::of(1986, 9, 30);
-        self::assertSame(2, $date->plus(days: 2)->day());
-        self::assertSame(2, $date->plus(Period::of(days: 2))->day());
+        $dateTime = LocalDateTime::of(1986, 9, 30);
+        self::assertSame(2, $dateTime->plus(days: 2)->day());
+        self::assertSame(2, $dateTime->plus(Period::of(days: 2))->day());
     }
 
     public function testAddDaysZero(): void
     {
-        $date = LocalDateTime::of(1986, 9, 30);
-        self::assertSame(30, $date->plus(days: 0)->day());
-        self::assertSame(30, $date->plus(Period::of(days: 0))->day());
+        $dateTime = LocalDateTime::of(1986, 9, 30);
+        self::assertSame(30, $dateTime->plus(days: 0)->day());
+        self::assertSame(30, $dateTime->plus(Period::of(days: 0))->day());
     }
 
     public function testAddDaysNegative(): void
     {
-        $date = LocalDateTime::of(1986, 9, 30);
-        self::assertSame(28, $date->plus(days: -2)->day());
-        self::assertSame(28, $date->plus(Period::of(days: -2))->day());
+        $dateTime = LocalDateTime::of(1986, 9, 30);
+        self::assertSame(28, $dateTime->plus(days: -2)->day());
+        self::assertSame(28, $dateTime->plus(Period::of(days: -2))->day());
     }
 
     public function testAddHoursPositive(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0);
-        self::assertSame(1, $time->plus(hours: 1)->hour());
-        self::assertSame(1, $time->plus(Period::of(hours: 1))->hour());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0);
+        self::assertSame(1, $dateTime->plus(hours: 1)->hour());
+        self::assertSame(1, $dateTime->plus(Period::of(hours: 1))->hour());
     }
 
     public function testAddHoursZero(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0);
-        self::assertSame(0, $time->plus(hours: 0)->hour());
-        self::assertSame(0, $time->plus(Period::of(hours: 0))->hour());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0);
+        self::assertSame(0, $dateTime->plus(hours: 0)->hour());
+        self::assertSame(0, $dateTime->plus(Period::of(hours: 0))->hour());
     }
 
     public function testAddHoursNegative(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0);
-        self::assertSame(23, $time->plus(hours: -1)->hour());
-        self::assertSame(23, $time->plus(Period::of(hours: -1))->hour());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0);
+        self::assertSame(23, $dateTime->plus(hours: -1)->hour());
+        self::assertSame(23, $dateTime->plus(Period::of(hours: -1))->hour());
     }
 
     public function testAddMinutesPositive(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0);
-        self::assertSame(1, $time->plus(minutes: 1)->minute());
-        self::assertSame(1, $time->plus(Period::of(minutes: 1))->minute());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0);
+        self::assertSame(1, $dateTime->plus(minutes: 1)->minute());
+        self::assertSame(1, $dateTime->plus(Period::of(minutes: 1))->minute());
     }
 
     public function testAddMinutesZero(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0);
-        self::assertSame(0, $time->plus(minutes: 0)->minute());
-        self::assertSame(0, $time->plus(Period::of(minutes: 0))->minute());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0);
+        self::assertSame(0, $dateTime->plus(minutes: 0)->minute());
+        self::assertSame(0, $dateTime->plus(Period::of(minutes: 0))->minute());
     }
 
     public function testAddMinutesNegative(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0);
-        self::assertSame(59, $time->plus(minutes: -1)->minute());
-        self::assertSame(59, $time->plus(Period::of(minutes: -1))->minute());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0);
+        self::assertSame(59, $dateTime->plus(minutes: -1)->minute());
+        self::assertSame(59, $dateTime->plus(Period::of(minutes: -1))->minute());
     }
 
     public function testAddSecondsPositive(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
-        self::assertSame(1, $time->plus(seconds: 1)->second());
-        self::assertSame(1, $time->plus(Period::of(seconds: 1))->second());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
+        self::assertSame(1, $dateTime->plus(seconds: 1)->second());
+        self::assertSame(1, $dateTime->plus(Period::of(seconds: 1))->second());
     }
 
     public function testAddSecondsZero(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
-        self::assertSame(0, $time->plus(seconds: 0)->second());
-        self::assertSame(0, $time->plus(Period::of(seconds: 0))->second());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
+        self::assertSame(0, $dateTime->plus(seconds: 0)->second());
+        self::assertSame(0, $dateTime->plus(Period::of(seconds: 0))->second());
     }
 
     public function testAddSecondsNegative(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
-        self::assertSame(59, $time->plus(seconds: -1)->second());
-        self::assertSame(59, $time->plus(Period::of(seconds: -1))->second());
-    }
-
-    public function testAddMillisecondsPositive(): void
-    {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
-        self::assertSame(1, $time->plus(milliseconds: 1)->millisecond());
-        self::assertSame(1, $time->plus(Period::of(milliseconds: 1))->millisecond());
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
-        self::assertSame(101, $time->plus(milliseconds: 1)->millisecond());
-        self::assertSame(101, $time->plus(Period::of(milliseconds: 1))->millisecond());
-    }
-
-    public function testAddMillisecondsZero(): void
-    {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
-        self::assertSame(0, $time->plus(milliseconds: 0)->millisecond());
-        self::assertSame(0, $time->plus(Period::of(milliseconds: 0))->millisecond());
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
-        self::assertSame(100, $time->plus(milliseconds: 0)->millisecond());
-        self::assertSame(100, $time->plus(Period::of(milliseconds: 0))->millisecond());
-    }
-
-    public function testAddMillisecondsNegative(): void
-    {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
-        self::assertSame(999, $time->plus(milliseconds: -1)->millisecond());
-        self::assertSame(999, $time->plus(Period::of(milliseconds: -1))->millisecond());
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
-        self::assertSame(99, $time->plus(milliseconds: -1)->millisecond());
-        self::assertSame(99, $time->plus(Period::of(milliseconds: -1))->millisecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
+        self::assertSame(59, $dateTime->plus(seconds: -1)->second());
+        self::assertSame(59, $dateTime->plus(Period::of(seconds: -1))->second());
     }
 
     public function testAddMicrosecondsPositive(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
-        self::assertSame(1, $time->plus(microseconds: 1)->microsecond());
-        self::assertSame(1, $time->plus(Period::of(microseconds: 1))->microsecond());
-        $time = LocalDateTime::of(1986, 9, 21,  0, 0, 0, 100_000);
-        self::assertSame(100001, $time->plus(microseconds: 1)->microsecond());
-        self::assertSame(100001, $time->plus(Period::of(microseconds: 1))->microsecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
+        self::assertSame(1, $dateTime->plus(microseconds: 1)->microsecond());
+        self::assertSame(1, $dateTime->plus(Period::of(microseconds: 1))->microsecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21,  0, 0, 0, 100_000);
+        self::assertSame(100001, $dateTime->plus(microseconds: 1)->microsecond());
+        self::assertSame(100001, $dateTime->plus(Period::of(microseconds: 1))->microsecond());
     }
 
     public function testAddMicrosecondsZero(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
-        self::assertSame(0, $time->plus(microseconds: 0)->microsecond());
-        self::assertSame(0, $time->plus(Period::of(microseconds: 0))->microsecond());
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
-        self::assertSame(100000, $time->plus(microseconds: 0)->microsecond());
-        self::assertSame(100000, $time->plus(Period::of(microseconds: 0))->microsecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
+        self::assertSame(0, $dateTime->plus(microseconds: 0)->microsecond());
+        self::assertSame(0, $dateTime->plus(Period::of(microseconds: 0))->microsecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
+        self::assertSame(100000, $dateTime->plus(microseconds: 0)->microsecond());
+        self::assertSame(100000, $dateTime->plus(Period::of(microseconds: 0))->microsecond());
     }
 
     public function testAddMicrosecondsNegative(): void
     {
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
-        self::assertSame(999999, $time->plus(microseconds: -1)->microsecond());
-        self::assertSame(999999, $time->plus(Period::of(microseconds: -1))->microsecond());
-        $time = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
-        self::assertSame(99999, $time->plus(microseconds: -1)->microsecond());
-        self::assertSame(99999, $time->plus(Period::of(microseconds: -1))->microsecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
+        self::assertSame(999999, $dateTime->plus(microseconds: -1)->microsecond());
+        self::assertSame(999999, $dateTime->plus(Period::of(microseconds: -1))->microsecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
+        self::assertSame(99999, $dateTime->plus(microseconds: -1)->microsecond());
+        self::assertSame(99999, $dateTime->plus(Period::of(microseconds: -1))->microsecond());
+    }
+
+    public function testAddMillenniaPositive(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(2986, $dateTime->plus(millennia: 1)->year());
+        self::assertSame(2986, $dateTime->plus(Period::of(millennia: 1))->year());
+    }
+
+    public function testAddMillenniaZero(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(1986, $dateTime->plus(millennia: 0)->year());
+        self::assertSame(1986, $dateTime->plus(Period::of(millennia: 0))->year());
+    }
+
+    public function testAddMillenniaNegative(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(986, $dateTime->plus(millennia: -1)->year());
+        self::assertSame(986, $dateTime->plus(Period::of(millennia: -1))->year());
+    }
+
+    public function testAddCenturiesPositive(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(2086, $dateTime->plus(centuries: 1)->year());
+        self::assertSame(2086, $dateTime->plus(Period::of(centuries: 1))->year());
+    }
+
+    public function testAddCenturiesZero(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(1986, $dateTime->plus(centuries: 0)->year());
+        self::assertSame(1986, $dateTime->plus(Period::of(centuries: 0))->year());
+    }
+
+    public function testAddCenturiesNegative(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(1886, $dateTime->plus(centuries: -1)->year());
+        self::assertSame(1886, $dateTime->plus(Period::of(centuries: -1))->year());
+    }
+
+    public function testAddDecadesPositive(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(1996, $dateTime->plus(decades: 1)->year());
+        self::assertSame(1996, $dateTime->plus(Period::of(decades: 1))->year());
+    }
+
+    public function testAddDecadesZero(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(1986, $dateTime->plus(decades: 0)->year());
+        self::assertSame(1986, $dateTime->plus(Period::of(decades: 0))->year());
+    }
+
+    public function testAddDecadesNegative(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(1976, $dateTime->plus(decades: -1)->year());
+        self::assertSame(1976, $dateTime->plus(Period::of(decades: -1))->year());
+    }
+
+    public function testAddQuartersPositive(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(12, $dateTime->plus(quarters: 1)->month());
+        self::assertSame(12, $dateTime->plus(Period::of(quarters: 1))->month());
+    }
+
+    public function testAddQuartersZero(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(9, $dateTime->plus(quarters: 0)->month());
+        self::assertSame(9, $dateTime->plus(Period::of(quarters: 0))->month());
+    }
+
+    public function testAddQuartersNegative(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(6, $dateTime->plus(quarters: -1)->month());
+        self::assertSame(6, $dateTime->plus(Period::of(quarters: -1))->month());
+    }
+
+    public function testAddWeeksPositive(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(28, $dateTime->plus(weeks: 1)->day());
+        self::assertSame(28, $dateTime->plus(Period::of(weeks: 1))->day());
+    }
+
+    public function testAddWeeksZero(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(21, $dateTime->plus(weeks: 0)->day());
+        self::assertSame(21, $dateTime->plus(Period::of(weeks: 0))->day());
+    }
+
+    public function testAddWeeksNegative(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21);
+        self::assertSame(14, $dateTime->plus(weeks: -1)->day());
+        self::assertSame(14, $dateTime->plus(Period::of(weeks: -1))->day());
+    }
+
+    public function testAddMillisecondsPositive(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
+        self::assertSame(1, $dateTime->plus(milliseconds: 1)->millisecond());
+        self::assertSame(1, $dateTime->plus(Period::of(milliseconds: 1))->millisecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
+        self::assertSame(101, $dateTime->plus(milliseconds: 1)->millisecond());
+        self::assertSame(101, $dateTime->plus(Period::of(milliseconds: 1))->millisecond());
+    }
+
+    public function testAddMillisecondsZero(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
+        self::assertSame(0, $dateTime->plus(milliseconds: 0)->millisecond());
+        self::assertSame(0, $dateTime->plus(Period::of(milliseconds: 0))->millisecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
+        self::assertSame(100, $dateTime->plus(milliseconds: 0)->millisecond());
+        self::assertSame(100, $dateTime->plus(Period::of(milliseconds: 0))->millisecond());
+    }
+
+    public function testAddMillisecondsNegative(): void
+    {
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0);
+        self::assertSame(999, $dateTime->plus(milliseconds: -1)->millisecond());
+        self::assertSame(999, $dateTime->plus(Period::of(milliseconds: -1))->millisecond());
+        $dateTime = LocalDateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
+        self::assertSame(99, $dateTime->plus(milliseconds: -1)->millisecond());
+        self::assertSame(99, $dateTime->plus(Period::of(milliseconds: -1))->millisecond());
     }
 
     public function testInvalidArgumentException(): void

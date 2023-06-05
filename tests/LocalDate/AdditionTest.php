@@ -104,67 +104,25 @@ final class AdditionTest extends TestCase
         self::assertSame(28, $date->plus(Period::of(days: -2))->day());
     }
 
-    public function testAddWeeksPositive(): void
+    public function testAddMillenniaPositive(): void
     {
         $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(28, $date->plus(weeks: 1)->day());
-        self::assertSame(28, $date->plus(Period::of(weeks: 1))->day());
+        self::assertSame(2986, $date->plus(millennia: 1)->year());
+        self::assertSame(2986, $date->plus(Period::of(millennia: 1))->year());
     }
 
-    public function testAddWeeksZero(): void
+    public function testAddMillenniaZero(): void
     {
         $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(21, $date->plus(weeks: 0)->day());
-        self::assertSame(21, $date->plus(Period::of(weeks: 0))->day());
+        self::assertSame(1986, $date->plus(millennia: 0)->year());
+        self::assertSame(1986, $date->plus(Period::of(millennia: 0))->year());
     }
 
-    public function testAddWeeksNegative(): void
+    public function testAddMillenniaNegative(): void
     {
         $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(14, $date->plus(weeks: -1)->day());
-        self::assertSame(14, $date->plus(Period::of(weeks: -1))->day());
-    }
-
-    public function testAddQuartersPositive(): void
-    {
-        $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(12, $date->plus(quarters: 1)->month());
-        self::assertSame(12, $date->plus(Period::of(quarters: 1))->month());
-    }
-
-    public function testAddQuartersZero(): void
-    {
-        $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(9, $date->plus(quarters: 0)->month());
-        self::assertSame(9, $date->plus(Period::of(quarters: 0))->month());
-    }
-
-    public function testAddQuartersNegative(): void
-    {
-        $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(6, $date->plus(quarters: -1)->month());
-        self::assertSame(6, $date->plus(Period::of(quarters: -1))->month());
-    }
-
-    public function testAddDecadesPositive(): void
-    {
-        $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(1996, $date->plus(decades: 1)->year());
-        self::assertSame(1996, $date->plus(Period::of(decades: 1))->year());
-    }
-
-    public function testAddDecadesZero(): void
-    {
-        $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(1986, $date->plus(decades: 0)->year());
-        self::assertSame(1986, $date->plus(Period::of(decades: 0))->year());
-    }
-
-    public function testAddDecadesNegative(): void
-    {
-        $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(1976, $date->plus(decades: -1)->year());
-        self::assertSame(1976, $date->plus(Period::of(decades: -1))->year());
+        self::assertSame(986, $date->plus(millennia: -1)->year());
+        self::assertSame(986, $date->plus(Period::of(millennia: -1))->year());
     }
 
     public function testAddCenturiesPositive(): void
@@ -188,25 +146,67 @@ final class AdditionTest extends TestCase
         self::assertSame(1886, $date->plus(Period::of(centuries: -1))->year());
     }
 
-    public function testAddMillenniaPositive(): void
+    public function testAddDecadesPositive(): void
     {
         $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(2986, $date->plus(millennia: 1)->year());
-        self::assertSame(2986, $date->plus(Period::of(millennia: 1))->year());
+        self::assertSame(1996, $date->plus(decades: 1)->year());
+        self::assertSame(1996, $date->plus(Period::of(decades: 1))->year());
     }
 
-    public function testAddMillenniaZero(): void
+    public function testAddDecadesZero(): void
     {
         $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(1986, $date->plus(millennia: 0)->year());
-        self::assertSame(1986, $date->plus(Period::of(millennia: 0))->year());
+        self::assertSame(1986, $date->plus(decades: 0)->year());
+        self::assertSame(1986, $date->plus(Period::of(decades: 0))->year());
     }
 
-    public function testAddMillenniaNegative(): void
+    public function testAddDecadesNegative(): void
     {
         $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(986, $date->plus(millennia: -1)->year());
-        self::assertSame(986, $date->plus(Period::of(millennia: -1))->year());
+        self::assertSame(1976, $date->plus(decades: -1)->year());
+        self::assertSame(1976, $date->plus(Period::of(decades: -1))->year());
+    }
+
+    public function testAddQuartersPositive(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(12, $date->plus(quarters: 1)->month());
+        self::assertSame(12, $date->plus(Period::of(quarters: 1))->month());
+    }
+
+    public function testAddQuartersZero(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(9, $date->plus(quarters: 0)->month());
+        self::assertSame(9, $date->plus(Period::of(quarters: 0))->month());
+    }
+
+    public function testAddQuartersNegative(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(6, $date->plus(quarters: -1)->month());
+        self::assertSame(6, $date->plus(Period::of(quarters: -1))->month());
+    }
+
+    public function testAddWeeksPositive(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(28, $date->plus(weeks: 1)->day());
+        self::assertSame(28, $date->plus(Period::of(weeks: 1))->day());
+    }
+
+    public function testAddWeeksZero(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(21, $date->plus(weeks: 0)->day());
+        self::assertSame(21, $date->plus(Period::of(weeks: 0))->day());
+    }
+
+    public function testAddWeeksNegative(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(14, $date->plus(weeks: -1)->day());
+        self::assertSame(14, $date->plus(Period::of(weeks: -1))->day());
     }
 
     public function testInvalidArgumentException(): void

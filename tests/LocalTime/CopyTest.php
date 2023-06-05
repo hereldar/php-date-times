@@ -46,7 +46,7 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, -1 given'),
-            fn () => $time->with(0, -1)
+            fn () => $time->with(minute: -1)
         );
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, 60 given'),
