@@ -38,6 +38,9 @@ class TimeZone implements Stringable
         return static::of(date_default_timezone_get());
     }
 
+    /**
+     * @throws TimeZoneException if the time-zone name cannot be found
+     */
     public static function of(
         string $name,
     ): static {

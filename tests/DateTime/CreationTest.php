@@ -7,10 +7,18 @@ namespace Hereldar\DateTimes\Tests\DateTime;
 use DateTimeImmutable as NativeDateTime;
 use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\DateTime;
+use Hereldar\DateTimes\Exceptions\TimeZoneException;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
 use Hereldar\DateTimes\TimeZone;
 use OutOfRangeException;
+
+/**
+ * @internal
+ */
+final class CustomDateTime extends DateTime
+{
+}
 
 final class CreationTest extends TestCase
 {
@@ -75,8 +83,8 @@ final class CreationTest extends TestCase
     public function testInvalidDays(): void
     {
         self::assertException(
-            new OutOfRangeException('day must be between 1 and 31, -2 given'),
-            fn () => DateTime::of(day: -2)
+            new OutOfRangeException('day must be between 1 and 31, -1 given'),
+            fn () => DateTime::of(day: -1)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 0 given'),
@@ -108,12 +116,10 @@ final class CreationTest extends TestCase
         );
     }
 
-    public function testHourAndDefaultMinSecToZero(): void
+    public function testHour(): void
     {
         $dateTime = DateTime::of(hour:  14);
         self::assertSame(14, $dateTime->hour());
-        self::assertSame(0, $dateTime->minute());
-        self::assertSame(0, $dateTime->second());
     }
 
     public function testInvalidHours(): void
@@ -137,12 +143,12 @@ final class CreationTest extends TestCase
     public function testInvalidMinutes(): void
     {
         self::assertException(
-            new OutOfRangeException('minute must be between 0 and 59, -2 given'),
-            fn () => DateTime::of(1986, 1, 1, 0, -2)
+            new OutOfRangeException('minute must be between 0 and 59, -1 given'),
+            fn () => DateTime::of(1986, 1, 1, 0, -1)
         );
         self::assertException(
-            new OutOfRangeException('minute must be between 0 and 59, 62 given'),
-            fn () => DateTime::of(1986, 1, 1, 0, 62)
+            new OutOfRangeException('minute must be between 0 and 59, 60 given'),
+            fn () => DateTime::of(1986, 1, 1, 0, 60)
         );
     }
 
@@ -159,8 +165,26 @@ final class CreationTest extends TestCase
             fn () => DateTime::of(second: -1)
         );
         self::assertException(
-            new OutOfRangeException('second must be between 0 and 59, 61 given'),
-            fn () => DateTime::of(1986, 1, 1, 0, 0, 61)
+            new OutOfRangeException('second must be between 0 and 59, 60 given'),
+            fn () => DateTime::of(1986, 1, 1, 0, 0, 60)
+        );
+    }
+
+    public function testMicrosecond(): void
+    {
+        $dateTime = DateTime::of(microsecond: 999_999);
+        self::assertSame(999_999, $dateTime->microsecond());
+    }
+
+    public function testInvalidMicroseconds(): void
+    {
+        self::assertException(
+            new OutOfRangeException('microsecond must be between 0 and 999999, -1 given'),
+            fn () => DateTime::of(microsecond: -1)
+        );
+        self::assertException(
+            new OutOfRangeException('microsecond must be between 0 and 999999, 1000000 given'),
+            fn () => DateTime::of(1986, 1, 1, 0, 0, 0, 1_000_000)
         );
     }
 
@@ -185,6 +209,18 @@ final class CreationTest extends TestCase
         self::assertSame('Europe/London', $dateTime->timeZone()->name());
     }
 
+    public function testInvalidTimeZones(): void
+    {
+        self::assertException(
+            new TimeZoneException('Mars/Phobos'),
+            fn () => DateTime::of(timeZone: 'Mars/Phobos')
+        );
+        self::assertException(
+            new TimeZoneException('CET+04:45'),
+            fn () => DateTime::of(1970, 1, 1, 0, 0, 0, 0, 'CET+04:45')
+        );
+    }
+
     /**
      * @dataProvider timeZoneNames
      */
@@ -200,5 +236,16 @@ final class CreationTest extends TestCase
         self::assertSame(0, $diff->m);
         self::assertSame(0, $diff->s);
         self::assertLessThan(0.1, $diff->f);
+    }
+
+    public function testEpoch(): void
+    {
+        $dateTime = DateTime::epoch();
+        self::assertInstanceOf(DateTime::class, $dateTime);
+        self::assertDateTime($dateTime, 1970, 1, 1, 0, 0, 0, 0, 'UTC');
+
+        $dateTime = CustomDateTime::epoch();
+        self::assertInstanceOf(CustomDateTime::class, $dateTime);
+        self::assertDateTime($dateTime, 1970, 1, 1, 0, 0, 0, 0, 'UTC');
     }
 }

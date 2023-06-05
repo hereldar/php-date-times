@@ -10,6 +10,7 @@ use DateTimeInterface as NativeDateTimeInterface;
 use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
+use Hereldar\DateTimes\Exceptions\TimeZoneException;
 use Hereldar\DateTimes\Interfaces\Datelike;
 use Hereldar\DateTimes\Interfaces\Formattable;
 use Hereldar\DateTimes\Interfaces\Summable;
@@ -25,7 +26,7 @@ use Stringable;
 
 /**
  * A date-time without a time-zone in the ISO-8601 calendar system,
- * such as 3 December 2007 17:30:09.
+ * such as 17:30:09 on 3 December 2007.
  *
  * This class does not store a time-zone. Instead, it is a description
  * of the date, as used for birthdays, combined with the local time as
@@ -72,7 +73,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
     }
 
     /**
-     * The Unix epoch (1 January 1970 00:00:00).
+     * The Unix epoch (00:00:00 on 1 January 1970).
      */
     public static function epoch(): static
     {
@@ -83,6 +84,8 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
      * Obtains the current date-time from the system clock in the
      * specified time-zone. If no time-zone is specified, the `UTC`
      * time-zone will be used.
+     *
+     * @throws TimeZoneException if the time-zone name cannot be found
      */
     public static function now(
         TimeZone|Offset|string $timeZone = 'UTC',
@@ -519,6 +522,10 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
         )->orFail();
     }
 
+    /**
+     * Returns a `LocalDate` with the same year, month and day as this
+     * date-time.
+     */
     public function date(): LocalDate
     {
         return LocalDate::fromNative($this->value);
@@ -602,6 +609,10 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
         return ($this->value->format('L') === '1');
     }
 
+    /**
+     * Returns a `LocalTime` with the same hour, minute, second and
+     * microsecond as this date-time.
+     */
     public function time(): LocalTime
     {
         return LocalTime::fromNative($this->value);

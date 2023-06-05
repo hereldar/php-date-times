@@ -10,6 +10,7 @@ use DateTimeInterface as NativeDateTimeInterface;
 use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
+use Hereldar\DateTimes\Exceptions\TimeZoneException;
 use Hereldar\DateTimes\Interfaces\Formattable;
 use Hereldar\DateTimes\Interfaces\Summable;
 use Hereldar\DateTimes\Interfaces\Parsable;
@@ -118,6 +119,8 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
      * Obtains the current time from the system clock in the specified
      * time-zone. If no time-zone is specified, the `UTC` time-zone
      * will be used.
+     *
+     * @throws TimeZoneException if the time-zone name cannot be found
      */
     public static function now(
         TimeZone|Offset|string $timeZone = 'UTC',
