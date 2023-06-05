@@ -64,52 +64,52 @@ final class Iso8601Test extends TestCase
             'P1M',
         ];
         yield [
-            Period::of(0, 0, 1),
+            Period::of(weeks: 1),
             'P7D',
         ];
         yield [
-            Period::of(0, 0, 0, 1),
+            Period::of(0, 0, 1),
             'P1D',
         ];
         yield [
-            Period::of(1, 2, 0, 3),
+            Period::of(1, 2, 3),
             'P1Y2M3D',
         ];
         yield [
-            Period::of(0, 0, 0, 0, 1),
+            Period::of(0, 0, 0, 1),
             'PT1H',
         ];
         yield [
-            Period::of(0, 0, 0, 0, 0, 1),
+            Period::of(0, 0, 0, 0, 1),
             'PT1M',
         ];
         yield [
-            Period::of(0, 0, 0, 0, 0, 0, 1),
+            Period::of(0, 0, 0, 0, 0, 1),
             'PT1S',
         ];
         yield [
-            Period::of(0, 0, 0, 0, 0, 0, 0, 12),
+            Period::of(milliseconds: 12),
             'PT0.012S',
         ];
         yield [
-            Period::of(0, 0, 0, 0, 0, 0, 0, 0, 12340),
+            Period::of(0, 0, 0, 0, 0, 0, 12340),
             'PT0.01234S',
         ];
         yield [
-            Period::of(0, 0, 0, 0, 1, 2, 3, 0, 4),
+            Period::of(0, 0, 0, 1, 2, 3, 4),
             'PT1H2M3.000004S',
         ];
         yield [
-            Period::of(1, 2, 0, 3, 4, 5, 6, 0, 7),
+            Period::of(1, 2, 3, 4, 5, 6, 7),
             'P1Y2M3DT4H5M6.000007S',
         ];
         yield [
-            Period::of(-1, -2, 0, -3, -4, -5, -6, 0, -7),
+            Period::of(-1, -2, -3, -4, -5, -6, -7),
             'P-1Y-2M-3DT-4H-5M-6.000007S',
             false,
         ];
         yield [
-            Period::of(-1, -2, 0, -3, -4, -5, -6, 0, -7),
+            Period::of(-1, -2, -3, -4, -5, -6, -7),
             '-P1Y2M3DT4H5M6.000007S',
         ];
     }

@@ -74,14 +74,14 @@ final class OperationsWithResultsTest extends TestCase
 
     public function testMultiplication(): void
     {
-        $period = Period::of(4, 3, 2, 5, 5, 10, 11)->multiplyBy(4)->orFail();
-        self::assertPeriod($period, 16, 12, 76, 20, 40, 44);
+        $period = Period::of(4, 3, 2, 5, 10, 11)->multiplyBy(4)->orFail();
+        self::assertPeriod($period, 16, 12, 8, 20, 40, 44);
 
-        $period = Period::of(4, 3, 2, 5, 5, 10, 11)->multiplyBy(0)->orFail();
+        $period = Period::of(4, 3, 2, 5, 10, 11)->multiplyBy(0)->orFail();
         self::assertPeriod($period, 0, 0, 0, 0, 0, 0);
 
-        $period = Period::of(-4, -3, -2, -5, -5, -10, -11)->multiplyBy(-1)->orFail();
-        self::assertPeriod($period, 4, 3, 19, 5, 10, 11);
+        $period = Period::of(-4, -3, -2, -5, -10, -11)->multiplyBy(-1)->orFail();
+        self::assertPeriod($period, 4, 3, 2, 5, 10, 11);
 
         self::assertException(
             ArithmeticError::class,
@@ -91,16 +91,16 @@ final class OperationsWithResultsTest extends TestCase
 
     public function testDivision(): void
     {
-        $period = Period::of(4, 3, 2, 5, 5, 10, 11)->divideBy(3)->orFail();
-        self::assertPeriod($period, 1, 5, 6, 9, 43, 23);
+        $period = Period::of(4, 3, 2, 5, 10, 11)->divideBy(3)->orFail();
+        self::assertPeriod($period, 1, 5, 0, 17, 43, 23);
 
         self::assertException(
             DivisionByZeroError::class,
-            fn () => Period::of(4, 3, 2, 5, 5, 10, 11)->divideBy(0)->orFail()
+            fn () => Period::of(4, 3, 2, 5, 10, 11)->divideBy(0)->orFail()
         );
 
-        $period = Period::of(-4, -3, -2, -5, -5, -10, -11)->divideBy(-1)->orFail();
-        self::assertPeriod($period, 4, 3, 19, 5, 10, 11);
+        $period = Period::of(-4, -3, -2, -5, -10, -11)->divideBy(-1)->orFail();
+        self::assertPeriod($period, 4, 3, 2, 5, 10, 11);
 
         self::assertException(
             ArithmeticError::class,

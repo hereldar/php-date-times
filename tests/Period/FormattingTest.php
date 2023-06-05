@@ -19,7 +19,7 @@ final class FormattingTest extends TestCase
     {
         parent::setUp();
 
-        $this->period = Period::of(1, 2, 0, 3, 4, 5, 6, 0, 7_000);
+        $this->period = Period::of(1, 2, 3, 4, 5, 6, 7_000);
         $this->emptyPeriod = Period::zero();
     }
 

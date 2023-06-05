@@ -13,32 +13,32 @@ final class DivisionTest extends TestCase
 {
     public function testDividedByMoreThanOne(): void
     {
-        $period = Period::of(4, 3, 2, 5, 5, 10, 11)->dividedBy(3);
-        self::assertPeriod($period, 1, 5, 6, 9, 43, 23);
+        $period = Period::of(4, 3, 2, 5, 10, 11)->dividedBy(3);
+        self::assertPeriod($period, 1, 5, 0, 17, 43, 23);
     }
 
     public function testDividedByOne(): void
     {
-        $period = Period::of(4, 3, 2, 5, 5, 10, 11)->dividedBy(1);
-        self::assertPeriod($period, 4, 3, 19, 5, 10, 11);
+        $period = Period::of(4, 3, 2, 5, 10, 11)->dividedBy(1);
+        self::assertPeriod($period, 4, 3, 2, 5, 10, 11);
     }
 
     public function testDividedByZero(): void
     {
         $this->expectException(DivisionByZeroError::class);
-        Period::of(4, 3, 2, 5, 5, 10, 11)->dividedBy(0);
+        Period::of(4, 3, 2, 5, 10, 11)->dividedBy(0);
     }
 
     public function testDividedByLessThanZero(): void
     {
-        $period = Period::of(4, 3, 2, 5, 5, 10, 11)->dividedBy(-1);
-        self::assertPeriod($period, -4, -3, -19, -5, -10, -11);
+        $period = Period::of(4, 3, 2, 5, 10, 11)->dividedBy(-1);
+        self::assertPeriod($period, -4, -3, -2, -5, -10, -11);
     }
 
     public function testDividedByLessThanZeroWithNegativePeriod(): void
     {
-        $period = Period::of(-4, -3, -2, -5, -5, -10, -11)->dividedBy(-1);
-        self::assertPeriod($period, 4, 3, 19, 5, 10, 11);
+        $period = Period::of(-4, -3, -2, -5, -10, -11)->dividedBy(-1);
+        self::assertPeriod($period, 4, 3, 2, 5, 10, 11);
     }
 
     public function testArithmeticError(): void

@@ -60,7 +60,7 @@ class DateTime implements Datelike, Timelike, Formattable, Summable, Parsable, S
     final public const SQL_MICROSECONDS = 'Y-m-d H:i:s.uP';
 
     /** @var array<class-string, static> */
-    private static array $cache = [];
+    private static array $epochs = [];
 
     private function __construct(
         private readonly NativeDateTime $value
@@ -74,9 +74,7 @@ class DateTime implements Datelike, Timelike, Formattable, Summable, Parsable, S
 
     public static function epoch(): static
     {
-        $class = static::class;
-
-        return self::$cache[$class] ??= static::of(1970, 1, 1, 0, 0, 0, 0, 'UTC');
+        return self::$epochs[static::class] ??= static::of(1970, 1, 1, 0, 0, 0, 0, 'UTC');
     }
 
     public static function now(

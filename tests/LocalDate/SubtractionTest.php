@@ -83,27 +83,6 @@ final class SubtractionTest extends TestCase
         self::assertLocalDate($date->minus(Period::of(months: 1, weeks: 1), overflow: true), 2007, 2, 24);
     }
 
-    public function testSubtractWeeksPositive(): void
-    {
-        $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(14, $date->minus(weeks: 1)->day());
-        self::assertSame(14, $date->minus(Period::of(weeks: 1))->day());
-    }
-
-    public function testSubtractWeeksZero(): void
-    {
-        $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(21, $date->minus(weeks: 0)->day());
-        self::assertSame(21, $date->minus(Period::of(weeks: 0))->day());
-    }
-
-    public function testSubtractWeeksNegative(): void
-    {
-        $date = LocalDate::of(1986, 9, 21);
-        self::assertSame(28, $date->minus(weeks: -1)->day());
-        self::assertSame(28, $date->minus(Period::of(weeks: -1))->day());
-    }
-
     public function testSubtractDaysPositive(): void
     {
         $date = LocalDate::of(1986, 9, 30);
@@ -125,9 +104,116 @@ final class SubtractionTest extends TestCase
         self::assertSame(2, $date->minus(Period::of(days: -2))->day());
     }
 
+    public function testSubtractWeeksPositive(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(14, $date->minus(weeks: 1)->day());
+        self::assertSame(14, $date->minus(Period::of(weeks: 1))->day());
+    }
+
+    public function testSubtractWeeksZero(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(21, $date->minus(weeks: 0)->day());
+        self::assertSame(21, $date->minus(Period::of(weeks: 0))->day());
+    }
+
+    public function testSubtractWeeksNegative(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(28, $date->minus(weeks: -1)->day());
+        self::assertSame(28, $date->minus(Period::of(weeks: -1))->day());
+    }
+
+    public function testSubtractQuartersPositive(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(6, $date->minus(quarters: 1)->month());
+        self::assertSame(6, $date->minus(Period::of(quarters: 1))->month());
+    }
+
+    public function testSubtractQuartersZero(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(9, $date->minus(quarters: 0)->month());
+        self::assertSame(9, $date->minus(Period::of(quarters: 0))->month());
+    }
+
+    public function testSubtractQuartersNegative(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(12, $date->minus(quarters: -1)->month());
+        self::assertSame(12, $date->minus(Period::of(quarters: -1))->month());
+    }
+
+    public function testSubtractDecadesPositive(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(1976, $date->minus(decades: 1)->year());
+        self::assertSame(1976, $date->minus(Period::of(decades: 1))->year());
+    }
+
+    public function testSubtractDecadesZero(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(1986, $date->minus(decades: 0)->year());
+        self::assertSame(1986, $date->minus(Period::of(decades: 0))->year());
+    }
+
+    public function testSubtractDecadesNegative(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(1996, $date->minus(decades: -1)->year());
+        self::assertSame(1996, $date->minus(Period::of(decades: -1))->year());
+    }
+
+    public function testSubtractCenturiesPositive(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(1886, $date->minus(centuries: 1)->year());
+        self::assertSame(1886, $date->minus(Period::of(centuries: 1))->year());
+    }
+
+    public function testSubtractCenturiesZero(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(1986, $date->minus(centuries: 0)->year());
+        self::assertSame(1986, $date->minus(Period::of(centuries: 0))->year());
+    }
+
+    public function testSubtractCenturiesNegative(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(2086, $date->minus(centuries: -1)->year());
+        self::assertSame(2086, $date->minus(Period::of(centuries: -1))->year());
+    }
+
+    public function testSubtractMillenniaPositive(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(986, $date->minus(millennia: 1)->year());
+        self::assertSame(986, $date->minus(Period::of(millennia: 1))->year());
+    }
+
+    public function testSubtractMillenniaZero(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(1986, $date->minus(millennia: 0)->year());
+        self::assertSame(1986, $date->minus(Period::of(millennia: 0))->year());
+    }
+
+    public function testSubtractMillenniaNegative(): void
+    {
+        $date = LocalDate::of(1986, 9, 21);
+        self::assertSame(2986, $date->minus(millennia: -1)->year());
+        self::assertSame(2986, $date->minus(Period::of(millennia: -1))->year());
+    }
+
     public function testInvalidArgumentException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        LocalDate::of(1986, 9, 25)->minus(Period::of(1), 2);
+        self::assertException(
+            new InvalidArgumentException('No time units are allowed when a period is passed'),
+            fn () => LocalDate::of(1986, 9, 25)->minus(Period::of(1), 2)
+        );
     }
 }

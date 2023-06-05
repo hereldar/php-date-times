@@ -20,45 +20,33 @@ final class ComparisonTest extends TestCase
     {
         self::assertSame(0, Period::of(years: 1)->compareTo(Period::of(years: 1)));
         self::assertSame(0, Period::of(months: 2)->compareTo(Period::of(months: 2)));
-        self::assertSame(0, Period::of(weeks: 3)->compareTo(Period::of(weeks: 3)));
-        self::assertSame(0, Period::of(weeks: 3)->compareTo(Period::of(days: 21)));
-        self::assertSame(0, Period::of(days: 4)->compareTo(Period::of(days: 4)));
-        self::assertSame(0, Period::of(hours: 5)->compareTo(Period::of(hours: 5)));
-        self::assertSame(0, Period::of(minutes: 6)->compareTo(Period::of(minutes: 6)));
-        self::assertSame(0, Period::of(seconds: 7)->compareTo(Period::of(seconds: 7)));
-        self::assertSame(0, Period::of(milliseconds: 8)->compareTo(Period::of(milliseconds: 8)));
-        self::assertSame(0, Period::of(milliseconds: 8)->compareTo(Period::of(microseconds: 8_000)));
-        self::assertSame(0, Period::of(microseconds: 9)->compareTo(Period::of(microseconds: 9)));
+        self::assertSame(0, Period::of(days: 3)->compareTo(Period::of(days: 3)));
+        self::assertSame(0, Period::of(hours: 4)->compareTo(Period::of(hours: 4)));
+        self::assertSame(0, Period::of(minutes: 5)->compareTo(Period::of(minutes: 5)));
+        self::assertSame(0, Period::of(seconds: 6)->compareTo(Period::of(seconds: 6)));
+        self::assertSame(0, Period::of(microseconds: 7)->compareTo(Period::of(microseconds: 7)));
     }
 
     public function testCompareToPositive(): void
     {
         self::assertSame(1, Period::of(years: 1)->compareTo(Period::of(years: 0)));
         self::assertSame(1, Period::of(months: 2)->compareTo(Period::of(months: 1)));
-        self::assertSame(1, Period::of(weeks: 3)->compareTo(Period::of(weeks: 2)));
-        self::assertSame(1, Period::of(weeks: 3)->compareTo(Period::of(days: 14)));
-        self::assertSame(1, Period::of(days: 4)->compareTo(Period::of(days: 3)));
-        self::assertSame(1, Period::of(hours: 5)->compareTo(Period::of(hours: 4)));
-        self::assertSame(1, Period::of(minutes: 6)->compareTo(Period::of(minutes: 5)));
-        self::assertSame(1, Period::of(seconds: 7)->compareTo(Period::of(seconds: 6)));
-        self::assertSame(1, Period::of(milliseconds: 8)->compareTo(Period::of(milliseconds: 7)));
-        self::assertSame(1, Period::of(milliseconds: 8)->compareTo(Period::of(microseconds: 7_999)));
-        self::assertSame(1, Period::of(microseconds: 9)->compareTo(Period::of(microseconds: 8)));
+        self::assertSame(1, Period::of(days: 3)->compareTo(Period::of(days: 2)));
+        self::assertSame(1, Period::of(hours: 4)->compareTo(Period::of(hours: 3)));
+        self::assertSame(1, Period::of(minutes: 5)->compareTo(Period::of(minutes: 4)));
+        self::assertSame(1, Period::of(seconds: 6)->compareTo(Period::of(seconds: 5)));
+        self::assertSame(1, Period::of(microseconds: 7)->compareTo(Period::of(microseconds: 6)));
     }
 
     public function testCompareToNegative(): void
     {
         self::assertSame(-1, Period::of(years: 1)->compareTo(Period::of(years: 2)));
         self::assertSame(-1, Period::of(months: 2)->compareTo(Period::of(months: 3)));
-        self::assertSame(-1, Period::of(weeks: 3)->compareTo(Period::of(weeks: 4)));
-        self::assertSame(-1, Period::of(weeks: 3)->compareTo(Period::of(days: 28)));
-        self::assertSame(-1, Period::of(days: 4)->compareTo(Period::of(days: 5)));
-        self::assertSame(-1, Period::of(hours: 5)->compareTo(Period::of(hours: 6)));
-        self::assertSame(-1, Period::of(minutes: 6)->compareTo(Period::of(minutes: 7)));
-        self::assertSame(-1, Period::of(seconds: 7)->compareTo(Period::of(seconds: 8)));
-        self::assertSame(-1, Period::of(milliseconds: 8)->compareTo(Period::of(milliseconds: 9)));
-        self::assertSame(-1, Period::of(milliseconds: 8)->compareTo(Period::of(microseconds: 8_001)));
-        self::assertSame(-1, Period::of(microseconds: 9)->compareTo(Period::of(microseconds: 10)));
+        self::assertSame(-1, Period::of(days: 3)->compareTo(Period::of(days: 4)));
+        self::assertSame(-1, Period::of(hours: 4)->compareTo(Period::of(hours: 5)));
+        self::assertSame(-1, Period::of(minutes: 5)->compareTo(Period::of(minutes: 6)));
+        self::assertSame(-1, Period::of(seconds: 6)->compareTo(Period::of(seconds: 7)));
+        self::assertSame(-1, Period::of(microseconds: 7)->compareTo(Period::of(microseconds: 8)));
     }
 
     public function testIdenticalToTrue(): void
@@ -201,7 +189,7 @@ final class ComparisonTest extends TestCase
         self::assertFalse($oneDay->isGreater(Period::of(days: 1)));
         self::assertFalse($oneDay->isGreater(Period::of(hours: 23, minutes: 60)));
         self::assertFalse($oneDay->isGreater(Period::of(days: 1)->plus(microseconds: 1)));
-        self::assertFalse($oneDay->isGreater(Period::of(hours: 23, minutes: 59, seconds: 59, milliseconds: 1001)));
+        self::assertFalse($oneDay->isGreater(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 1000001)));
     }
 
     public function testGreaterThanOrEqualToTrue(): void
@@ -219,14 +207,14 @@ final class ComparisonTest extends TestCase
     {
         $oneDay = Period::of(days: 1);
         self::assertFalse($oneDay->isGreaterOrEqual(Period::of(days: 1)->plus(microseconds: 1)));
-        self::assertFalse($oneDay->isGreaterOrEqual(Period::of(hours: 23, minutes: 59, seconds: 59, milliseconds: 1001)));
+        self::assertFalse($oneDay->isGreaterOrEqual(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 1000001)));
     }
 
     public function testLessThanToTrue(): void
     {
         $oneDay = Period::of(days: 1);
         self::assertTrue($oneDay->isLess(Period::of(days: 1)->plus(microseconds: 1)));
-        self::assertTrue($oneDay->isLess(Period::of(hours: 23, minutes: 59, seconds: 59, milliseconds: 1001)));
+        self::assertTrue($oneDay->isLess(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 1000001)));
     }
 
     public function testLessThanToFalse(): void
@@ -248,7 +236,7 @@ final class ComparisonTest extends TestCase
         self::assertTrue($oneDay->isLessOrEqual(Period::of(hours: 23, minutes: 60)));
 
         self::assertTrue($oneDay->isLessOrEqual(Period::of(days: 1)->plus(microseconds: 1)));
-        self::assertTrue($oneDay->isLessOrEqual(Period::of(hours: 23, minutes: 59, seconds: 59, milliseconds: 1001)));
+        self::assertTrue($oneDay->isLessOrEqual(Period::of(hours: 23, minutes: 59, seconds: 59, microseconds: 1000001)));
     }
 
     public function testLessThanOrEqualToFalse(): void

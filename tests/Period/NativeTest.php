@@ -45,45 +45,45 @@ final class NativeTest extends TestCase
             new NativeDateInterval('P1M'),
         ];
         yield [
-            Period::of(0, 0, 1),
+            Period::of(weeks: 1),
             new NativeDateInterval('P7D'),
         ];
         yield [
-            Period::of(0, 0, 0, 1),
+            Period::of(0, 0, 1),
             new NativeDateInterval('P1D'),
         ];
         yield [
-            Period::of(1, 2, 0, 3),
+            Period::of(1, 2, 3),
             new NativeDateInterval('P1Y2M3D'),
         ];
         yield [
-            Period::of(0, 0, 0, 0, 1),
+            Period::of(0, 0, 0, 1),
             new NativeDateInterval('PT1H'),
         ];
         yield [
-            Period::of(0, 0, 0, 0, 0, 1),
+            Period::of(0, 0, 0, 0, 1),
             new NativeDateInterval('PT1M'),
         ];
         yield [
-            Period::of(0, 0, 0, 0, 0, 0, 1),
+            Period::of(0, 0, 0, 0, 0, 1),
             new NativeDateInterval('PT1S'),
         ];
-        $period = Period::of(0, 0, 0, 0, 0, 0, 0, 12);
+        $period = Period::of(milliseconds: 12);
         $interval = new NativeDateInterval('PT0S');
         $interval->f = .012;
         yield [$period, $interval];
 
-        $period = Period::of(0, 0, 0, 0, 0, 0, 0, 0, 12340);
+        $period = Period::of(0, 0, 0, 0, 0, 0, 12340);
         $interval = new NativeDateInterval('PT0S');
         $interval->f = .01234;
         yield [$period, $interval];
 
-        $period = Period::of(0, 0, 0, 0, 1, 2, 3, 0, 4);
+        $period = Period::of(0, 0, 0, 1, 2, 3, 4);
         $interval = new NativeDateInterval('PT1H2M3S');
         $interval->f = .000004;
         yield [$period, $interval];
 
-        $period = Period::of(1, 2, 0, 3, 4, 5, 6, 0, 7);
+        $period = Period::of(1, 2, 3, 4, 5, 6, 7);
         $interval = new NativeDateInterval('P1Y2M3DT4H5M6S');
         $interval->f = .000007;
         yield [$period, $interval];

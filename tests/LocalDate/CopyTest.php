@@ -6,6 +6,7 @@ namespace Hereldar\DateTimes\Tests\LocalDate;
 
 use Hereldar\DateTimes\LocalDate;
 use Hereldar\DateTimes\Tests\TestCase;
+use OutOfRangeException;
 
 final class CopyTest extends TestCase
 {
@@ -25,12 +26,68 @@ final class CopyTest extends TestCase
         self::assertLocalDate($two, 1970, 3, 1);
     }
 
+    public function testDayOfMonthInvalidMonths(): void
+    {
+        $date = LocalDate::epoch();
+
+        self::assertException(
+            new OutOfRangeException('month must be between 1 and 12, -1 given'),
+            fn () => $date->with(-2, -1)
+        );
+        self::assertException(
+            new OutOfRangeException('month must be between 1 and 12, 0 given'),
+            fn () => $date->with(1986, 0)
+        );
+        self::assertException(
+            new OutOfRangeException('month must be between 1 and 12, 13 given'),
+            fn () => $date->with(month: 13)
+        );
+    }
+
     public function testDay(): void
     {
         $one = LocalDate::of(day: 10);
         $two = $one->with(day: 3);
         self::assertLocalDate($one, 1970, 1, 10);
         self::assertLocalDate($two, 1970, 1, 3);
+    }
+
+    public function testDayOfMonthInvalidDays(): void
+    {
+        $date = LocalDate::epoch();
+
+        self::assertException(
+            new OutOfRangeException('day must be between 1 and 31, -1 given'),
+            fn () => $date->with(day: -1)
+        );
+        self::assertException(
+            new OutOfRangeException('day must be between 1 and 31, 0 given'),
+            fn () => $date->with(-1, 1, 0)
+        );
+        self::assertException(
+            new OutOfRangeException('day must be between 1 and 31, 32 given'),
+            fn () => $date->with(1986, 1, 32)
+        );
+        self::assertException(
+            new OutOfRangeException('day must be between 1 and 30, 31 given'),
+            fn () => $date->with(1986, 4, 31)
+        );
+        self::assertException(
+            new OutOfRangeException('day must be between 1 and 28, 29 given'),
+            fn () => $date->with(1986, 2, 29)
+        );
+        self::assertException(
+            new OutOfRangeException('day must be between 1 and 29, 30 given'),
+            fn () => $date->with(1960, 2, 30)
+        );
+        self::assertException(
+            new OutOfRangeException('day must be between 1 and 28, 29 given'),
+            fn () => $date->with(1900, 2, 29)
+        );
+        self::assertException(
+            new OutOfRangeException('day must be between 1 and 29, 30 given'),
+            fn () => $date->with(2000, 2, 30)
+        );
     }
 
     public function testAll(): void

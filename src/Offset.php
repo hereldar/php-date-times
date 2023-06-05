@@ -41,7 +41,7 @@ class Offset implements Formattable, Summable, Parsable, Stringable
     private const TOTAL_SECONDS_LIMIT = (self::HOURS_LIMIT * 3600) + (self::MINUTES_LIMIT * 60) + self::SECONDS_LIMIT;
 
     /** @var array<class-string, array<int, static>> */
-    private static array $cache = [];
+    private static array $offsets = [];
 
     private const ISO8601_PATTERN = <<<'REGEX'
         /
@@ -91,9 +91,7 @@ class Offset implements Formattable, Summable, Parsable, Stringable
     {
         Validator::range('seconds', $seconds, self::TOTAL_SECONDS_MIN, self::TOTAL_SECONDS_MAX);
 
-        $class = static::class;
-
-        return self::$cache[$class][$seconds] ??= new static($seconds);
+        return self::$offsets[static::class][$seconds] ??= new static($seconds);
     }
 
     public static function zero(): static

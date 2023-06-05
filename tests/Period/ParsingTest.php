@@ -183,11 +183,11 @@ final class ParsingTest extends TestCase
             fn ()  => Period::parse('01:02:03', [])
         );
         self::assertEquals(
-            Period::of(1, 2, 0, 3),
+            Period::of(1, 2, 3),
             Period::parse('0001/02/03', ['%Y/%M/%D'])->orFail()
         );
         self::assertEquals(
-            Period::of(1, 2, 0, 3),
+            Period::of(1, 2, 3),
             Period::parse('0001/02/03', ['%Y%M%D', '%Y/%M/%D'])->orFail()
         );
     }

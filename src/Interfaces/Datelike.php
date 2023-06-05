@@ -21,7 +21,7 @@ interface Datelike
     public function weekYear(): int;
 
     /**
-     * Returns the day of month.
+     * Returns the day of the month.
      *
      * @return int<1, 31>
      */

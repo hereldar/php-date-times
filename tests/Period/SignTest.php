@@ -11,7 +11,7 @@ final class SignTest extends TestCase
 {
     public function testPositiveValues(): void
     {
-        $period = Period::of(1, 2, 0, 3, 4, 5, 6, 0, 7);
+        $period = Period::of(1, 2, 3, 4, 5, 6, 7);
 
         self::assertTrue($period->hasPositiveValues());
         self::assertFalse($period->hasNegativeValues());
@@ -25,7 +25,7 @@ final class SignTest extends TestCase
 
     public function testMixedSigns(): void
     {
-        $period = Period::of(1, -2, 0, 3, -4, 5, -6, 0, 7);
+        $period = Period::of(1, -2, 3, -4, 5, -6, 7);
 
         self::assertTrue($period->hasPositiveValues());
         self::assertTrue($period->hasNegativeValues());
@@ -39,7 +39,7 @@ final class SignTest extends TestCase
 
     public function testNegativeValues(): void
     {
-        $period = Period::of(-1, -2, 0, -3, -4, -5, -6, 0, -7);
+        $period = Period::of(-1, -2, -3, -4, -5, -6, -7);
 
         self::assertFalse($period->hasPositiveValues());
         self::assertTrue($period->hasNegativeValues());
@@ -53,7 +53,7 @@ final class SignTest extends TestCase
 
     public function testZeroValues(): void
     {
-        $period = Period::of(0, 0, 0, 0, 0, 0, 0, 0, 0);
+        $period = Period::of(0, 0, 0, 0, 0, 0, 0);
 
         self::assertFalse($period->hasPositiveValues());
         self::assertFalse($period->hasNegativeValues());

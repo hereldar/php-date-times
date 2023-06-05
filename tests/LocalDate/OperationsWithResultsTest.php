@@ -8,6 +8,7 @@ use Hereldar\DateTimes\LocalDate;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 use InvalidArgumentException;
+use OutOfRangeException;
 
 final class OperationsWithResultsTest extends TestCase
 {
@@ -60,6 +61,31 @@ final class OperationsWithResultsTest extends TestCase
         self::assertException(
             InvalidArgumentException::class,
             fn () => $date->subtract(Period::of(1), 2)
+        );
+    }
+
+    public function testCopy(): void
+    {
+        $date = LocalDate::of(1986)->copy(year: 2000)->orFail();
+        self::assertInstanceOf(LocalDate::class, $date);
+        self::assertSame(2000, $date->year());
+
+        $originalDate = LocalDate::parse('2020-06-04')->orFail();
+        $date = $originalDate->copy()->orFail();
+        self::assertInstanceOf(LocalDate::class, $date);
+        self::assertSame('2020-06-04', $date->format()->orFail());
+        self::assertNotSame($date, $originalDate);
+
+        $date = LocalDate
+            ::parse('2020-06-23')->orFail()
+            ->copy(day: 30)->orFail()
+        ;
+        self::assertInstanceOf(LocalDate::class, $date);
+        self::assertSame('2020-06-30', $date->format()->orFail());
+
+        self::assertException(
+            OutOfRangeException::class,
+            fn () => $date->copy(day: 31)->orFail()
         );
     }
 }

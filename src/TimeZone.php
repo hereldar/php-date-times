@@ -16,7 +16,7 @@ use Throwable;
 class TimeZone implements Stringable
 {
     /** @var array<class-string, array<string, static>> */
-    private static array $cache = [];
+    private static array $timeZones = [];
 
     private function __construct(
         private readonly NativeTimeZone $value,
@@ -43,8 +43,8 @@ class TimeZone implements Stringable
     ): static {
         $class = static::class;
 
-        if (isset(self::$cache[$class][$name])) {
-            return self::$cache[$class][$name];
+        if (isset(self::$timeZones[$class][$name])) {
+            return self::$timeZones[$class][$name];
         }
 
         try {
@@ -53,8 +53,8 @@ class TimeZone implements Stringable
             throw new TimeZoneException($name, $e);
         }
 
-        self::$cache[$class][$name] = $timeZone;
-        self::$cache[$class][$timeZone->name()] = $timeZone;
+        self::$timeZones[$class][$name] = $timeZone;
+        self::$timeZones[$class][$timeZone->name()] = $timeZone;
 
         return $timeZone;
     }
@@ -65,7 +65,7 @@ class TimeZone implements Stringable
         $class = static::class;
         $name = $value->getName();
 
-        return self::$cache[$class][$name] ??= new static($value);
+        return self::$timeZones[$class][$name] ??= new static($value);
     }
 
     public static function fromOffset(

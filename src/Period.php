@@ -68,7 +68,7 @@ class Period implements Formattable, Parsable, Stringable, Summable, Multiplicab
     private const FORMAT_PATTERN = '/%([%a-zA-Z])/';
 
     private function __construct(
-        private readonly int $years,
+        private readonly int $years = 0,
         private readonly int $months = 0,
         private readonly int $days = 0,
         private readonly int $hours = 0,
@@ -83,19 +83,28 @@ class Period implements Formattable, Parsable, Stringable, Summable, Multiplicab
         return $this->format()->orFail();
     }
 
+    public static function zero(): static
+    {
+        return new static(0);
+    }
+
     public static function of(
         int $years = 0,
         int $months = 0,
-        int $weeks = 0,
         int $days = 0,
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
-        int $milliseconds = 0,
         int $microseconds = 0,
+        int $millennia = 0,
+        int $centuries = 0,
+        int $decades = 0,
+        int $quarters = 0,
+        int $weeks = 0,
+        int $milliseconds = 0,
     ): static {
-        $y = $years;
-        $m = $months;
+        $y = $years + ($decades * 10) + ($centuries * 100) + ($millennia * 1_000);
+        $m = $months + ($quarters * 3);
         $d = $days + ($weeks * 7);
         $h = $hours;
         $i = $minutes;
@@ -103,11 +112,6 @@ class Period implements Formattable, Parsable, Stringable, Summable, Multiplicab
         $f = $microseconds + ($milliseconds * 1_000);
 
         return new static($y, $m, $d, $h, $i, $s, $f);
-    }
-
-    public static function zero(): static
-    {
-        return new static(0);
     }
 
     public static function parse(
@@ -577,23 +581,31 @@ class Period implements Formattable, Parsable, Stringable, Summable, Multiplicab
     public function plus(
         int|Period $years = 0,
         int $months = 0,
-        int $weeks = 0,
         int $days = 0,
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
-        int $milliseconds = 0,
         int $microseconds = 0,
+        int $millennia = 0,
+        int $centuries = 0,
+        int $decades = 0,
+        int $quarters = 0,
+        int $weeks = 0,
+        int $milliseconds = 0,
     ): static {
         if (is_int($years)) {
             $period = static::of(
-                $years, $months, $weeks, $days,
-                $hours, $minutes, $seconds,
-                $milliseconds, $microseconds,
+                $years, $months, $days,
+                $hours, $minutes, $seconds, $microseconds,
+                $millennia, $centuries, $decades,
+                $quarters, $weeks, $milliseconds,
             );
-        } elseif (!$months && !$weeks && !$days
-            && !$hours && !$minutes && !$seconds
-            && !$milliseconds && !$microseconds) {
+        } elseif (
+            !$months && !$days
+            && !$hours && !$minutes && !$seconds && !$microseconds
+            && !$millennia && !$centuries && !$decades
+            && !$quarters && !$weeks && !$milliseconds
+        ) {
             $period = $years;
         } else {
             throw new InvalidArgumentException(
@@ -615,23 +627,31 @@ class Period implements Formattable, Parsable, Stringable, Summable, Multiplicab
     public function minus(
         int|Period $years = 0,
         int $months = 0,
-        int $weeks = 0,
         int $days = 0,
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
-        int $milliseconds = 0,
         int $microseconds = 0,
+        int $millennia = 0,
+        int $centuries = 0,
+        int $decades = 0,
+        int $quarters = 0,
+        int $weeks = 0,
+        int $milliseconds = 0,
     ): static {
         if (is_int($years)) {
             $period = static::of(
-                $years, $months, $weeks, $days,
-                $hours, $minutes, $seconds,
-                $milliseconds, $microseconds,
+                $years, $months, $days,
+                $hours, $minutes, $seconds, $microseconds,
+                $millennia, $centuries, $decades,
+                $quarters, $weeks, $milliseconds,
             );
-        } elseif (!$months && !$weeks && !$days
-            && !$hours && !$minutes && !$seconds
-            && !$milliseconds && !$microseconds) {
+        } elseif (
+            !$months && !$days
+            && !$hours && !$minutes && !$seconds && !$microseconds
+            && !$millennia && !$centuries && !$decades
+            && !$quarters && !$weeks && !$milliseconds
+        ) {
             $period = $years;
         } else {
             throw new InvalidArgumentException(
@@ -859,19 +879,24 @@ class Period implements Formattable, Parsable, Stringable, Summable, Multiplicab
     public function add(
         int|Period $years = 0,
         int $months = 0,
-        int $weeks = 0,
         int $days = 0,
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
-        int $milliseconds = 0,
         int $microseconds = 0,
+        int $millennia = 0,
+        int $centuries = 0,
+        int $decades = 0,
+        int $quarters = 0,
+        int $weeks = 0,
+        int $milliseconds = 0,
     ): Ok|Error {
         try {
             $period = $this->plus(
-                $years, $months, $weeks, $days,
-                $hours, $minutes, $seconds,
-                $milliseconds, $microseconds,
+                $years, $months, $days,
+                $hours, $minutes, $seconds, $microseconds,
+                $millennia, $centuries, $decades,
+                $quarters, $weeks, $milliseconds,
             );
         } catch (ArithmeticError $e) {
             return Error::withException($e);
@@ -884,19 +909,24 @@ class Period implements Formattable, Parsable, Stringable, Summable, Multiplicab
     public function subtract(
         int|Period $years = 0,
         int $months = 0,
-        int $weeks = 0,
         int $days = 0,
         int $hours = 0,
         int $minutes = 0,
         int $seconds = 0,
-        int $milliseconds = 0,
         int $microseconds = 0,
+        int $millennia = 0,
+        int $centuries = 0,
+        int $decades = 0,
+        int $quarters = 0,
+        int $weeks = 0,
+        int $milliseconds = 0,
     ): Ok|Error {
         try {
             $period = $this->minus(
-                $years, $months, $weeks, $days,
-                $hours, $minutes, $seconds,
-                $milliseconds, $microseconds,
+                $years, $months, $days,
+                $hours, $minutes, $seconds, $microseconds,
+                $millennia, $centuries, $decades,
+                $quarters, $weeks, $milliseconds,
             );
         } catch (ArithmeticError $e) {
             return Error::withException($e);
