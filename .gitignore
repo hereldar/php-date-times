@@ -14,6 +14,10 @@ composer.phar
 coverage
 phpunit.xml
 
+# Docs
+/docs/.vitepress/dist
+/docs/.vitepress/cache
+
 # Others
 *.cache
 *.env
