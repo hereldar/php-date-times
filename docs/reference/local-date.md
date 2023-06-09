@@ -78,8 +78,8 @@ will be used.
 ```php
 public static function of(
    int $year = 1970,
-   int<1, 12> $month = 1,
-   int<1, 31> $day = 1,
+   int $month = 1,
+   int $day = 1,
 ): static;
 ```
 
@@ -89,6 +89,14 @@ month, otherwise an exception will be thrown.
 
 All parameters are optional and, if not specified, will take
 their Unix epoch value (1 January 1970).
+
+**Parameters:**
+
+`$year` the year
+
+`$month` the month of the year, from 1 to 12
+
+`$day` the day of the month, from 1 to 31
 
 **Throws:**
 
@@ -100,7 +108,7 @@ their Unix epoch value (1 January 1970).
 ```php
 public static function fromDayOfYear(
    int $year = 1970,
-   int<1, 366> $day = 1,
+   int $day = 1,
 ): static;
 ```
 
@@ -110,6 +118,12 @@ be thrown.
 
 Both parameters are optional and, if not specified, will take
 their Unix epoch value (1st of 1970).
+
+**Parameters:**
+
+`$year` the year
+
+`$day` the day of the year, from 1 to 366
 
 **Throws:**
 
@@ -121,8 +135,8 @@ their Unix epoch value (1st of 1970).
 ```php
 public static function parse(
    string $string,
-   string|list<string> $format = LocalDate::ISO8601,
-): Ok<static>|Error<ParseException>;
+   string|array $format = LocalDate::ISO8601,
+): Ok|Error;
 ```
 
 Makes a new `LocalDate` from a text string using a specific
@@ -134,6 +148,18 @@ be used (`Y-m-d`).
 The `LocalDate` is not returned directly, but a [result][php-results-doc]
 that will contain the date if no error was found, or an exception if
 something went wrong.
+
+**Parameters:**
+
+`$string` the text to parse
+
+`$format` the expected format, or a list of accepted formats
+
+**Returns:**
+
+`Ok<string>` if no error was found
+
+`Error<ParseException>` if something went wrong
 
 **Throws:**
 
@@ -239,7 +265,7 @@ the class.
 ### format
 
 ```php
-public function format(string $format = LocalDate::ISO8601): Ok<string>|Error<FormatException>;
+public function format(string $format = LocalDate::ISO8601): Ok|Error;
 ```
 
 Formats this date using the specified format.
@@ -250,6 +276,12 @@ be used (`Y-m-d`).
 The text is not returned directly, but a [result][php-results-doc]
 that will contain the text if no error was found, or an exception if
 something went wrong.
+
+**Returns:**
+
+`Ok<string>` if no error was found
+
+`Error<FormatException>` if something went wrong
 
 
 ### toIso8601
@@ -357,7 +389,7 @@ Returns the year.
 ### month
 
 ```php
-public function month(): int<1, 12>;
+public function month(): int;
 ```
 
 Returns the month as an `int` from 1 to 12.
@@ -388,16 +420,16 @@ instead.
 ### day
 
 ```php
-public function day(): int<1, 31>;
+public function day(): int;
 ```
 
-Returns the day of the month.
+Returns the day of the month, from 1 to 31.
 
 
 ### dayOfWeek
 
 ```php
-public function dayOfWeek(): int<1, 7>;
+public function dayOfWeek(): int;
 ```
 
 Returns the day of the week as an `int` from 1 to 7.
@@ -406,7 +438,7 @@ Returns the day of the week as an `int` from 1 to 7.
 ### dayOfYear
 
 ```php
-public function dayOfYear(): int<1, 366>;
+public function dayOfYear(): int;
 ```
 
 Returns the day of the year as an `int` from 1 to 366.
@@ -598,13 +630,21 @@ guaranteed.
 ```php
 public function with(
    ?int $year = null,
-   ?int<1, 12> $month = null,
-   ?int<1, 31> $day = null,
+   ?int $month = null,
+   ?int $day = null,
 ): static;
 ```
 
 Returns a copy of this date with the specified year, month and
 day.
+
+**Parameters:**
+
+`$year` the year
+
+`$month` the month of the year, from 1 to 12
+
+`$day` the day of the month, from 1 to 31
 
 **Throws:**
 
@@ -624,7 +664,7 @@ public function add(
    int $decades = 0,
    int $quarters = 0,
    int $weeks = 0,
-): Ok<static>|Error<ArithmeticError|OutOfRangeException>;
+): Ok|Error;
 ```
 
 Makes a copy of this date with the specified amount of years,
@@ -638,6 +678,12 @@ an exception if something went wrong.
 However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
+
+**Returns:**
+
+`Ok<static>` if no error was found
+
+`Error<ArithmeticError|OutOfRangeException>` if something went wrong
 
 **Throws:**
 
@@ -657,7 +703,7 @@ public function subtract(
    int $decades = 0,
    int $quarters = 0,
    int $weeks = 0,
-):  Ok<static>|Error<ArithmeticError|OutOfRangeException>;
+):  Ok|Error;
 ```
 
 Makes a copy of this date with the specified amount of years,
@@ -672,6 +718,12 @@ However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
 
+**Returns:**
+
+`Ok<static>` if no error was found
+
+`Error<ArithmeticError|OutOfRangeException>` if something went wrong
+
 **Throws:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
@@ -682,9 +734,9 @@ normally.
 ```php
 public function copy(
    ?int $year = null,
-   ?int<1, 12> $month = null,
-   ?int<1, 31> $day = null,
-): Ok<static>|Error<OutOfRangeException>;
+   ?int $month = null,
+   ?int $day = null,
+): Ok|Error;
 ```
 
 Makes a copy of this date with the specified year, month and
@@ -693,6 +745,20 @@ a [result][php-results-doc] instead of the new date.
 
 The result will contain the new date if no error was found, or
 an exception if something went wrong.
+
+**Parameters:**
+
+`$year` the year
+
+`$month` the month of the year, from 1 to 12
+
+`$day` the day of the month, from 1 to 31
+
+**Returns:**
+
+`Ok<static>` if no error was found
+
+`Error<OutOfRangeException>` if something went wrong
 
 
 [php-results-doc]: https://hereldar.github.io/php-results/

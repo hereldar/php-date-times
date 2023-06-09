@@ -144,26 +144,10 @@ Obtains the current date-time from the system clock in the
 specified time-zone. If no time-zone is specified, the `UTC`
 time-zone will be used.
 
-@throws TimeZoneException if the time-zone name cannot be found
+**Throws:**
 
+`TimeZoneException` if the time-zone name cannot be found
 
-Makes a new `DateTime` with the specified year, month, day,
-hour, minute, second, microsecond and time-zon. The time units
-must be within their valid range, otherwise an exception will
-be thrown.
-
-All parameters are optional and, if not specified, will take
-their Unix epoch value (00:00:00 UTC on 1 January 1970).
-
-@param int<1, 12> $month
-@param int<1, 31> $day
-@param int<0, 23> $hour
-@param int<0, 59> $minute
-@param int<0, 59> $second
-@param int<0, 999999> $microsecond
-
-@throws OutOfRangeException if the value of any unit is out of range
-@throws TimeZoneException if the time-zone name cannot be found
 
 ### of
 
@@ -179,6 +163,38 @@ public static function of(
    TimeZone|Offset|string $timeZone = 'UTC',
 ): static;
 ```
+
+Makes a new `DateTime` with the specified year, month, day,
+hour, minute, second, microsecond and time-zon. The time units
+must be within their valid range, otherwise an exception will
+be thrown.
+
+All parameters are optional and, if not specified, will take
+their Unix epoch value (00:00:00 UTC on 1 January 1970).
+
+**Parameters:**
+
+`$year` the year
+
+`$month` the month of the year, from 1 to 12
+
+`$day` the day of the month, from 1 to 31
+
+`$hour` the hour of the day, from 0 to 23
+
+`$minute` the minute of the hour, from 0 to 59
+
+`$second` the second of the minute, from 0 to 59
+
+`$microsecond` the microsecond of the second, from 0 to 999,999
+
+`$timeZone` the time-zone name or the offset from UTC/Greenwich
+
+**Throws:**
+
+`OutOfRangeException` if the value of any unit is out of range
+
+`TimeZoneException` if the time-zone name cannot be found
 
 
 ### parse
@@ -201,12 +217,25 @@ The `DateTime` is not returned directly, but a [result][php-results-doc]
 that will contain the date-time if no error was found, or an exception
 if something went wrong.
 
-@param string|array<int, string> $format
+**Parameters:**
 
-@throws InvalidArgumentException if an empty list of formats is passed
-@throws TimeZoneException if the time-zone name cannot be found
+`$string` the text to parse
 
-@return Ok<static>|Error<ParseException>
+`$format` the expected format, or a list of accepted formats
+
+`$timeZone` the time-zone name or the offset from UTC/Greenwich
+
+**Returns:**
+
+`Ok<string>` if no error was found
+
+`Error<ParseException>` if something went wrong
+
+**Throws:**
+
+`InvalidArgumentException` if an empty list of formats is passed
+
+`TimeZoneException` if the time-zone name cannot be found
 
 
 ### fromCookie
@@ -221,7 +250,9 @@ date-time formats (e.g. `'Fri, 17 Feb 2023 17:30:09 UTC'`).
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromHttp
@@ -236,7 +267,9 @@ date-time formats (e.g. `'Fri, 17 Feb 2023 17:30:09 GMT'`).
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromIso8601
@@ -260,7 +293,9 @@ It is possible to parse texts with milliseconds (e.g.
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromRfc2822
@@ -275,7 +310,9 @@ format (e.g. `'Fri, 17 Feb 2023 17:30:09 +0000'`).
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromRfc3339
@@ -299,7 +336,9 @@ It is possible to parse texts with milliseconds (e.g.
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromSql
@@ -323,7 +362,9 @@ It is possible to parse texts with milliseconds (e.g.
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromNative
@@ -385,7 +426,11 @@ The text is not returned directly, but a [result][php-results-doc]
 that will contain the text if no error was found, or an exception if
 something went wrong.
 
-@return Ok<string>|Error<FormatException>
+**Returns:**
+
+`Ok<string>` if no error was found
+
+`Error<FormatException>` if something went wrong
 
 
 ### toCookie
@@ -558,9 +603,7 @@ instead.
 public function day(): int;
 ```
 
-Returns the day of the month.
-
-@return int<1, 31>
+Returns the day of the month, from 1 to 31.
 
 
 ### dayOfWeek
@@ -571,8 +614,6 @@ public function dayOfWeek(): int;
 
 Returns the day of the week as an `int` from 1 to 7.
 
-@return int<1, 7>
-
 
 ### dayOfYear
 
@@ -581,8 +622,6 @@ public function dayOfYear(): int;
 ```
 
 Returns the day of the year as an `int` from 1 to 366.
-
-@return int<1, 366>
 
 
 ### inLeapYear
@@ -610,9 +649,7 @@ microsecond as this date-time.
 public function hour(): int;
 ```
 
-Returns the hour of the day.
-
-@return int<0, 23>
+Returns the hour of the day, from 0 to 23.
 
 
 ### minute
@@ -621,9 +658,7 @@ Returns the hour of the day.
 public function minute(): int;
 ```
 
-Returns the minute of the hour.
-
-@return int<0, 59>
+Returns the minute of the hour, from 0 to 59.
 
 
 ### second
@@ -632,9 +667,7 @@ Returns the minute of the hour.
 public function second(): int;
 ```
 
-Returns the second of the minute.
-
-@return int<0, 59>
+Returns the second of the minute, from 0 to 59.
 
 
 ### millisecond
@@ -643,9 +676,7 @@ Returns the second of the minute.
 public function millisecond(): int;
 ```
 
-Returns the millisecond of the second.
-
-@return int<0, 999>
+Returns the millisecond of the second, from 0 to 999.
 
 
 ### microsecond
@@ -654,9 +685,7 @@ Returns the millisecond of the second.
 public function microsecond(): int;
 ```
 
-Returns the microsecond of the second.
-
-@return int<0, 999999>
+Returns the microsecond of the second, from 0 to 999,999.
 
 
 ### offset
@@ -705,7 +734,9 @@ public function microsecondsSinceEpoch(): array;
 Returns the number of seconds and microseconds after the  Unix
 epoch (00:00:00 UTC on 1 January 1970).
 
-@return array{0: int, 1: int}
+**Returns:**
+
+`array{0: int, 1: int}` the number of seconds and microseconds
 
 
 ### compareTo
@@ -841,7 +872,9 @@ specify overflow and units other than years, months, days,
 hours, minutes, seconds and microseconds, since only the order
 of the seven first parameters is guaranteed.
 
-@throws InvalidArgumentException if a `Period` is combined with some time units
+**Throws:**
+
+`InvalidArgumentException` if a `Period` is combined with some time units
 
 
 ### minus
@@ -887,7 +920,9 @@ specify overflow and units other than years, months, days,
 hours, minutes, seconds and microseconds, since only the order
 of the seven first parameters is guaranteed.
 
-@throws InvalidArgumentException if a `Period` is combined with some time units
+**Throws:**
+
+`InvalidArgumentException` if a `Period` is combined with some time units
 
 
 ### with
@@ -908,15 +943,29 @@ public function with(
 Returns a copy of this date-time with the specified year, month,
 day, hour, minute, second, microsecond and time-zone.
 
-@param ?int<1, 12> $month
-@param ?int<1, 31> $day
-@param ?int<0, 23> $hour
-@param ?int<0, 59> $minute
-@param ?int<0, 59> $second
-@param ?int<0, 999999> $microsecond
+**Parameters:**
 
-@throws OutOfRangeException if the value of any unit is out of range
-@throws TimeZoneException if the time-zone name cannot be found
+`$year` the year
+
+`$month` the month of the year, from 1 to 12
+
+`$day` the day of the month, from 1 to 31
+
+`$hour` the hour of the day, from 0 to 23
+
+`$minute` the minute of the hour, from 0 to 59
+
+`$second` the second of the minute, from 0 to 59
+
+`$microsecond` the microsecond of the second, from 0 to 999,999
+
+`$timeZone` the time-zone name or the offset from UTC/Greenwich
+
+**Throws:**
+
+`OutOfRangeException` if the value of any unit is out of range
+
+`TimeZoneException` if the time-zone name cannot be found
 
 
 ### add
@@ -952,9 +1001,15 @@ However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
 
-@throws InvalidArgumentException if a `Period` is combined with some time units
+**Returns:**
 
-@return Ok<static>|Error<ArithmeticError|OutOfRangeException>
+`Ok<static>` if no error was found
+
+`Error<ArithmeticError|OutOfRangeException>` if something went wrong
+
+**Throws:**
+
+`InvalidArgumentException` if a `Period` is combined with some time units
 
 
 ### subtract
@@ -990,9 +1045,15 @@ However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
 
-@throws InvalidArgumentException if a `Period` is combined with some time units
+**Returns:**
 
-@return Ok<static>|Error<ArithmeticError|OutOfRangeException>
+`Ok<static>` if no error was found
+
+`Error<ArithmeticError|OutOfRangeException>` if something went wrong
+
+**Throws:**
+
+`InvalidArgumentException` if a `Period` is combined with some time units
 
 
 ### copy
@@ -1018,14 +1079,29 @@ instead of the new date-time.
 The result will contain the new date-time if no error was found,
 or an exception if something went wrong.
 
-@param ?int<1, 12> $month
-@param ?int<1, 31> $day
-@param ?int<0, 23> $hour
-@param ?int<0, 59> $minute
-@param ?int<0, 59> $second
-@param ?int<0, 999999> $microsecond
+**Parameters:**
 
-@return Ok<static>|Error<OutOfRangeException|TimeZoneException>
+`$year` the year
+
+`$month` the month of the year, from 1 to 12
+
+`$day` the day of the month, from 1 to 31
+
+`$hour` the hour of the day, from 0 to 23
+
+`$minute` the minute of the hour, from 0 to 59
+
+`$second` the second of the minute, from 0 to 59
+
+`$microsecond` the microsecond of the second, from 0 to 999,999
+
+`$timeZone` the time-zone name or the offset from UTC/Greenwich
+
+**Returns:**
+
+`Ok<static>` if no error was found
+
+`Error<OutOfRangeException|TimeZoneException>` if something went wrong
 
 
 [php-results-doc]: https://hereldar.github.io/php-results/

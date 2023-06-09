@@ -136,7 +136,9 @@ Obtains the current time from the system clock in the specified
 time-zone. If no time-zone is specified, the `UTC` time-zone
 will be used.
 
-@throws TimeZoneException if the time-zone name cannot be found
+**Throws:**
+
+`TimeZoneException` if the time-zone name cannot be found
 
 
 ### of
@@ -157,12 +159,19 @@ range, otherwise an exception will be thrown.
 All parameters are optional and, if not specified, will take
 their Unix epoch value (00:00:00).
 
-@param int<0, 23> $hour
-@param int<0, 59> $minute
-@param int<0, 59> $second
-@param int<0, 999999> $microsecond
+**Parameters:**
 
-@throws OutOfRangeException if the value of any unit is out of range
+`$hour` the hour of the day, from 0 to 23
+
+`$minute` the minute of the hour, from 0 to 59
+
+`$second` the second of the minute, from 0 to 59
+
+`$microsecond` the microsecond of the second, from 0 to 999,999
+
+**Throws:**
+
+`OutOfRangeException` if the value of any unit is out of range
 
 
 ### parse
@@ -184,11 +193,21 @@ The `LocalTime` is not returned directly, but a [result][php-results-doc]
 that will contain the time if no error was found, or an exception if
 something went wrong.
 
-@param string|array<int, string> $format
+**Parameters:**
 
-@throws InvalidArgumentException if an empty list of formats is passed
+`$string` the text to parse
 
-@return Ok<static>|Error<ParseException>
+`$format` the expected format, or a list of accepted formats
+
+**Returns:**
+
+`Ok<string>` if no error was found
+
+`Error<ParseException>` if something went wrong
+
+**Throws:**
+
+`InvalidArgumentException` if an empty list of formats is passed
 
 
 ### fromIso8601
@@ -211,7 +230,9 @@ setting respectively `$milliseconds` or `$microseconds` to true.
 The time is returned directly if no error is found, otherwise
 an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromRfc2822
@@ -226,7 +247,9 @@ format (e.g. `'17:30:09'`).
 The time is returned directly if no error is found, otherwise
 an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromRfc3339
@@ -249,7 +272,9 @@ setting respectively `$milliseconds` or `$microseconds` to true.
 The time is returned directly if no error is found, otherwise
 an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromSql
@@ -272,7 +297,9 @@ setting respectively `$milliseconds` or `$microseconds` to true.
 The time is returned directly if no error is found, otherwise
 an exception is thrown.
 
-@throws ParseException if the text cannot be parsed
+**Throws:**
+
+`ParseException` if the text cannot be parsed
 
 
 ### fromNative
@@ -318,7 +345,11 @@ The text is not returned directly, but a [result][php-results-doc]
 that will contain the text if no error was found, or an exception if
 something went wrong.
 
-@return Ok<string>|Error<FormatException>
+**Returns:**
+
+`Ok<string>` if no error was found
+
+`Error<FormatException>` if something went wrong
 
 
 ### toIso8601
@@ -426,8 +457,19 @@ If individual time units are passed, they must be within their
 valid range. Missing units will be taken from the Unix epoch
 (1 January 1970).
 
-@throws InvalidArgumentException if a `LocalDate` is combined with some time units
-@throws OutOfRangeException if the value of any unit is out of range
+**Parameters:**
+
+`$year` the year
+
+`$month` the month of the year, from 1 to 12
+
+`$day` the day of the month, from 1 to 31
+
+**Throws:**
+
+`InvalidArgumentException` if a `LocalDate` is combined with some time units
+
+`OutOfRangeException` if the value of any unit is out of range
 
 
 ### hour
@@ -436,9 +478,7 @@ valid range. Missing units will be taken from the Unix epoch
 public function hour(): int;
 ```
 
-Returns the hour of the day.
-
-@return int<0, 23>
+Returns the hour of the day, from 0 to 23.
 
 
 ### minute
@@ -447,9 +487,7 @@ Returns the hour of the day.
 public function minute(): int;
 ```
 
-Returns the minute of the hour.
-
-@return int<0, 59>
+Returns the minute of the hour, from 0 to 59.
 
 
 ### second
@@ -458,9 +496,7 @@ Returns the minute of the hour.
 public function second(): int;
 ```
 
-Returns the second of the minute.
-
-@return int<0, 59>
+Returns the second of the minute, from 0 to 59.
 
 
 ### millisecond
@@ -469,9 +505,7 @@ Returns the second of the minute.
 public function millisecond(): int;
 ```
 
-Returns the millisecond of the second.
-
-@return int<0, 999>
+Returns the millisecond of the second, from 0 to 999.
 
 
 ### microsecond
@@ -480,9 +514,7 @@ Returns the millisecond of the second.
 public function microsecond(): int;
 ```
 
-Returns the microsecond of the second.
-
-@return int<0, 999999>
+Returns the microsecond of the second, from 0 to 999,999.
 
 
 ### compareTo
@@ -595,7 +627,9 @@ specify units other than hours, minutes, seconds and
 microseconds, since only the order of the four first parameters
 is guaranteed.
 
-@throws InvalidArgumentException if a `Period` is combined with some time units
+**Throws:**
+
+`InvalidArgumentException` if a `Period` is combined with some time units
 
 
 ### minus
@@ -622,7 +656,9 @@ specify units other than hours, minutes, seconds and
 microseconds, since only the order of the four first parameters
 is guaranteed.
 
-@throws InvalidArgumentException if a `Period` is combined with some time units
+**Throws:**
+
+`InvalidArgumentException` if a `Period` is combined with some time units
 
 
 ### with
@@ -639,12 +675,19 @@ public function with(
 Returns a copy of this time with the specified hour, minute,
 second and microsecond.
 
-@param ?int<0, 23> $hour
-@param ?int<0, 59> $minute
-@param ?int<0, 59> $second
-@param ?int<0, 999999> $microsecond
+**Parameters:**
 
-@throws OutOfRangeException if the value of any unit is out of range
+`$hour` the hour of the day, from 0 to 23
+
+`$minute` the minute of the hour, from 0 to 59
+
+`$second` the second of the minute, from 0 to 59
+
+`$microsecond` the microsecond of the second, from 0 to 999,999
+
+**Throws:**
+
+`OutOfRangeException` if the value of any unit is out of range
 
 
 ### add
@@ -671,10 +714,15 @@ However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
 
-@throws InvalidArgumentException if a `Period` is combined with some
-time units
+**Returns:**
 
-@return Ok<static>|Error<ArithmeticError|OutOfRangeException>
+`Ok<static>` if no error was found
+
+`Error<ArithmeticError|OutOfRangeException>` if something went wrong
+
+**Throws:**
+
+`InvalidArgumentException` if a `Period` is combined with some time units
 
 
 ### subtract
@@ -701,9 +749,15 @@ However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
 
-@throws InvalidArgumentException if a `Period` is combined with some time units
+**Returns:**
 
-@return Ok<static>|Error<ArithmeticError|OutOfRangeException>
+`Ok<static>` if no error was found
+
+`Error<ArithmeticError|OutOfRangeException>` if something went wrong
+
+**Throws:**
+
+`InvalidArgumentException` if a `Period` is combined with some time units
 
 
 ### copy
@@ -725,12 +779,21 @@ time.
 The result will contain the new time if no error was found, or
 an exception if something went wrong.
 
-@param ?int<0, 23> $hour
-@param ?int<0, 59> $minute
-@param ?int<0, 59> $second
-@param ?int<0, 999999> $microsecond
+**Parameters:**
 
-@return Ok<static>|Error<OutOfRangeException>
+`$hour` the hour of the day, from 0 to 23
+
+`$minute` the minute of the hour, from 0 to 59
+
+`$second` the second of the minute, from 0 to 59
+
+`$microsecond` the microsecond of the second, from 0 to 999,999
+
+**Returns:**
+
+`Ok<static>` if no error was found
+
+`Error<OutOfRangeException>` if something went wrong
 
 
 [php-results-doc]: https://hereldar.github.io/php-results/

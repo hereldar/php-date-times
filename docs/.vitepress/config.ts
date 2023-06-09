@@ -12,6 +12,7 @@ export default defineConfig({
       '/': sidebarGuide(),
       '/reference/': sidebarReference()
     },
+    outline: [2, 3],
     search: {
       provider: 'local'
     },
