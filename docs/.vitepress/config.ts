@@ -29,7 +29,10 @@ function nav() {
       text: 'Reference',
       activeMatch: '/reference/',
       items: [
-        { text: 'LocalDate', link: '/reference/local-date' }
+        { text: 'DateTime', link: '/reference/date-time' },
+        { text: 'LocalDate', link: '/reference/local-date' },
+        { text: 'LocalDateTime', link: '/reference/local-date-time' },
+        { text: 'LocalTime', link: '/reference/local-time' }
       ]
     }
   ]
@@ -46,7 +49,10 @@ function sidebarReference() {
     {
       text: 'Reference',
       items: [
-        { text: 'LocalDate', link: '/reference/local-date' }
+        { text: 'DateTime', link: '/reference/date-time' },
+        { text: 'LocalDate', link: '/reference/local-date' },
+        { text: 'LocalDateTime', link: '/reference/local-date-time' },
+        { text: 'LocalTime', link: '/reference/local-time' }
       ]
     }
   ]
