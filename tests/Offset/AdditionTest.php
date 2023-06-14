@@ -7,7 +7,6 @@ namespace Hereldar\DateTimes\Tests\Offset;
 use OutOfRangeException;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
-use InvalidArgumentException;
 
 final class AdditionTest extends TestCase
 {
@@ -26,21 +25,6 @@ final class AdditionTest extends TestCase
         self::assertOffset($offset, 10, 13, 16);
     }
 
-    public function testPlusOffsets(): void
-    {
-        $offset = Offset::of(hours: 3)->plus(Offset::of(hours: 4));
-        self::assertOffset($offset, 7);
-
-        $offset = Offset::of(minutes: 3)->plus(Offset::of(minutes: 4));
-        self::assertOffset($offset, 0, 7);
-
-        $offset = Offset::of(seconds: 3)->plus(Offset::of(seconds: 4));
-        self::assertOffset($offset, 0, 0, 7);
-
-        $offset = Offset::of(8, 10, 12)->plus(Offset::of(2, 3, 4));
-        self::assertOffset($offset, 10, 13, 16);
-    }
-
     public function testPlusNegativeUnits(): void
     {
         $offset = Offset::of(hours: 3)->plus(hours: -4);
@@ -53,21 +37,6 @@ final class AdditionTest extends TestCase
         self::assertOffset($offset, 0, 0, -1);
 
         $offset = Offset::of(8, 10, 12)->plus(-2, -3, -4);
-        self::assertOffset($offset, 6, 7, 8);
-    }
-
-    public function testPlusNegativeOffsets(): void
-    {
-        $offset = Offset::of(hours: 3)->plus(Offset::of(hours: -4));
-        self::assertOffset($offset, -1);
-
-        $offset = Offset::of(minutes: 3)->plus(Offset::of(minutes: -4));
-        self::assertOffset($offset, 0, -1);
-
-        $offset = Offset::of(seconds: 3)->plus(Offset::of(seconds: -4));
-        self::assertOffset($offset, 0, 0, -1);
-
-        $offset = Offset::of(8, 10, 12)->plus(Offset::of(-2, -3, -4));
         self::assertOffset($offset, 6, 7, 8);
     }
 
@@ -92,18 +61,6 @@ final class AdditionTest extends TestCase
         self::assertException(
             OutOfRangeException::class,
             fn () => Offset::fromTotalSeconds(Offset::TOTAL_SECONDS_MAX)->plus(seconds: 1)
-        );
-    }
-
-    public function testInvalidArgumentException(): void
-    {
-        self::assertException(
-            InvalidArgumentException::class,
-            fn () => Offset::zero()->plus(Offset::of(1), 2)
-        );
-        self::assertException(
-            InvalidArgumentException::class,
-            fn () => Offset::zero()->plus(Offset::of(1), 0, 3)
         );
     }
 }

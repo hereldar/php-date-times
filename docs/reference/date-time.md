@@ -10,6 +10,7 @@ method calls.
 
 ## Constants
 
+
 ### COOKIE_VARIANTS
 
 ```php
@@ -767,8 +768,8 @@ the same value as this date-time.
 public function isNot(DateTime $that): bool;
 ```
 
-Checks if the given date-time belongs to another class and has
-a different value than this date-time.
+Checks if the given date-time belongs to another class or has a
+different value than this date-time.
 
 
 ### isEqual
@@ -986,7 +987,7 @@ public function add(
    int $quarters = 0,
    int $weeks = 0,
    int $milliseconds = 0,
-): Ok|Error;
+): Ok;
 ```
 
 Makes a copy of this date-time with the specified amount of
@@ -1004,8 +1005,6 @@ normally.
 **Returns:**
 
 `Ok<static>` if no error was found
-
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
 
 **Throws:**
 
@@ -1030,7 +1029,7 @@ public function subtract(
    int $quarters = 0,
    int $weeks = 0,
    int $milliseconds = 0,
-): Ok|Error;
+): Ok;
 ```
 
 Makes a copy of this date-time with the specified amount of
@@ -1048,8 +1047,6 @@ normally.
 **Returns:**
 
 `Ok<static>` if no error was found
-
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
 
 **Throws:**
 

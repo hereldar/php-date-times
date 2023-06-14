@@ -6,12 +6,12 @@ namespace Hereldar\DateTimes\Enums;
 
 enum TimeZoneType: int
 {
-    /** UTC offset (-06:00) */
+    /** Fixed offset (-06:00) */
     case Offset = 1;
-
-    /** Time-zone abbreviation (BST) */
-    case Abbreviation = 2;
 
     /** Time-zone identifier (Australia/Hobart) */
     case Identifier = 3;
+
+    /** Time-zone abbreviation (BST) */
+    case Abbreviation = 2;
 }

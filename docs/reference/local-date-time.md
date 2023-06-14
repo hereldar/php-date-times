@@ -16,6 +16,7 @@ method calls.
 
 ## Constants
 
+
 ### ISO8601
 
 ```php
@@ -455,7 +456,7 @@ valid range. Missing units will be zero (00:00:00).
 
 **Parameters:**
 
-`$hours` the amount of hours, from -15 to -15
+`$hours` the amount of hours, from -15 to 15
 
 `$minutes` the amount of minutes, from -59 to 59
 
@@ -637,8 +638,8 @@ the same value as this date-time.
 public function isNot(LocalDateTime $that): bool;
 ```
 
-Checks if the given date-time belongs to another class and has
-a different value than this date-time.
+Checks if the given date-time belongs to another class or has a
+different value than this date-time.
 
 
 ### isEqual
@@ -851,7 +852,7 @@ public function add(
    int $quarters = 0,
    int $weeks = 0,
    int $milliseconds = 0,
-): Ok|Error;
+): Ok;
 ```
 
 Makes a copy of this date-time with the specified amount of
@@ -869,8 +870,6 @@ normally.
 **Returns:**
 
 `Ok<static>` if no error was found
-
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
 
 **Throws:**
 
@@ -895,7 +894,7 @@ public function subtract(
    int $quarters = 0,
    int $weeks = 0,
    int $milliseconds = 0,
-): Ok|Error;
+): Ok;
 ```
 
 Makes a copy of this date-time with the specified amount of
@@ -913,8 +912,6 @@ normally.
 **Returns:**
 
 `Ok<static>` if no error was found
-
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
 
 **Throws:**
 

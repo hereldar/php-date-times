@@ -26,7 +26,7 @@ use Stringable;
  * A time without a time-zone in the ISO-8601 calendar system, such as
  * 17:30:09.
  *
- * This class does not store a date or time-zone.  Instead, it is a
+ * This class does not store a date or time-zone. Instead, it is a
  * description of the local time as seen on a wall clock. It cannot
  * represent an instant on the time-line without additional
  * information such as an offset or time-zone.
@@ -36,7 +36,7 @@ use Stringable;
  *
  * @psalm-consistent-constructor
  */
-class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
+class LocalTime implements Timelike, Formattable, Parsable, Stringable, Summable
 {
     final public const ISO8601 = 'H:i:s';
     final public const ISO8601_MILLISECONDS = 'H:i:s.v';
@@ -80,22 +80,7 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
      */
     public static function epoch(): static
     {
-        return self::$minimums[static::class] ??= static::of(0, 0, 0, 0);
-    }
-
-    /**
-     * The maximum supported time (23:59:59.999999).
-     */
-    public static function max(): static
-    {
-        return self::$maximums[static::class] ??= static::of(23, 59, 59, 999_999);
-    }
-
-    /**
-     * The minimum supported time (00:00:00).
-     */
-    public static function min(): static
-    {
+        /** @psalm-suppress PropertyTypeCoercion */
         return self::$minimums[static::class] ??= static::of(0, 0, 0, 0);
     }
 
@@ -104,6 +89,7 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
      */
     public static function midnight(): static
     {
+        /** @psalm-suppress PropertyTypeCoercion */
         return self::$minimums[static::class] ??= static::of(0, 0, 0, 0);
     }
 
@@ -112,7 +98,26 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
      */
     public static function noon(): static
     {
+        /** @psalm-suppress PropertyTypeCoercion */
         return self::$noons[static::class] ??= static::of(12, 0, 0, 0);
+    }
+
+    /**
+     * The maximum supported time (23:59:59.999999).
+     */
+    public static function max(): static
+    {
+        /** @psalm-suppress PropertyTypeCoercion */
+        return self::$maximums[static::class] ??= static::of(23, 59, 59, 999_999);
+    }
+
+    /**
+     * The minimum supported time (00:00:00).
+     */
+    public static function min(): static
+    {
+        /** @psalm-suppress PropertyTypeCoercion */
+        return self::$minimums[static::class] ??= static::of(0, 0, 0, 0);
     }
 
     /**
@@ -150,10 +155,10 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
      * All parameters are optional and, if not specified, will take
      * their Unix epoch value (00:00:00).
      *
-     * @param int<0, 23> $hour
-     * @param int<0, 59> $minute
-     * @param int<0, 59> $second
-     * @param int<0, 999999> $microsecond
+     * @param int $hour the hour of the day, from 0 to 23
+     * @param int $minute the minute of the hour, from 0 to 59
+     * @param int $second the second of the minute, from 0 to 59
+     * @param int $microsecond the microsecond of the second, from 0 to 999,999
      *
      * @throws OutOfRangeException if the value of any unit is out of range
      */
@@ -597,7 +602,7 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
     }
 
     /**
-     * Checks if the given time belongs to another class and has a
+     * Checks if the given time belongs to another class or has a
      * different value than this time.
      */
     public function isNot(LocalTime $that): bool
@@ -697,7 +702,7 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
 
         $value = $this->value->add($period->toNative());
 
-        return new static($value);
+        return new static($value->setDate(1970, 1, 1));
     }
 
     /**
@@ -743,17 +748,17 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
 
         $value = $this->value->sub($period->toNative());
 
-        return new static($value);
+        return new static($value->setDate(1970, 1, 1));
     }
 
     /**
      * Returns a copy of this time with the specified hour, minute,
      * second and microsecond.
      *
-     * @param int<0, 23>|null $hour
-     * @param int<0, 59>|null $minute
-     * @param int<0, 59>|null $second
-     * @param int<0, 999999>|null $microsecond
+     * @param ?int $hour the hour of the day, from 0 to 23
+     * @param ?int $minute the minute of the hour, from 0 to 59
+     * @param ?int $second the second of the minute, from 0 to 59
+     * @param ?int $microsecond the microsecond of the second, from 0 to 999,999
      *
      * @throws OutOfRangeException if the value of any unit is out of range
      */
@@ -805,7 +810,7 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>
      */
     public function add(
         int|Period $hours = 0,
@@ -813,18 +818,12 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
         int $seconds = 0,
         int $microseconds = 0,
         int $milliseconds = 0,
-    ): Ok|Error {
-        try {
-            $time = $this->plus(
-                $hours, $minutes, $seconds, $microseconds,
-                $milliseconds,
-            );
-        } catch (ArithmeticError $e) {
-            return Error::withException($e);
-        }
-
+    ): Ok {
         /** @var Ok<static> */
-        return Ok::withValue($time);
+        return Ok::withValue($this->plus(
+            $hours, $minutes, $seconds, $microseconds,
+            $milliseconds,
+        ));
     }
 
     /**
@@ -842,7 +841,7 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>
      */
     public function subtract(
         int|Period $hours = 0,
@@ -850,18 +849,12 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
         int $seconds = 0,
         int $microseconds = 0,
         int $milliseconds = 0,
-    ): Ok|Error {
-        try {
-            $time = $this->minus(
-                $hours, $minutes, $seconds, $microseconds,
-                $milliseconds,
-            );
-        } catch (ArithmeticError $e) {
-            return Error::withException($e);
-        }
-
+    ): Ok {
         /** @var Ok<static> */
-        return Ok::withValue($time);
+        return Ok::withValue($this->minus(
+            $hours, $minutes, $seconds, $microseconds,
+            $milliseconds,
+        ));
     }
 
     /**
@@ -872,10 +865,10 @@ class LocalTime implements Timelike, Formattable, Summable, Parsable, Stringable
      * The result will contain the new time if no error was found, or
      * an exception if something went wrong.
      *
-     * @param int<0, 23>|null $hour
-     * @param int<0, 59>|null $minute
-     * @param int<0, 59>|null $second
-     * @param int<0, 999999>|null $microsecond
+     * @param ?int $hour the hour of the day, from 0 to 23
+     * @param ?int $minute the minute of the hour, from 0 to 59
+     * @param ?int $second the second of the minute, from 0 to 59
+     * @param ?int $microsecond the microsecond of the second, from 0 to 999,999
      *
      * @return Ok<static>|Error<OutOfRangeException>
      */

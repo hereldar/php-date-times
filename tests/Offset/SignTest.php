@@ -16,9 +16,6 @@ final class SignTest extends TestCase
         self::assertTrue($offset->isPositive());
         self::assertFalse($offset->isNegative());
         self::assertFalse($offset->isZero());
-
-        self::assertOffset($offset->abs(), 1, 2, 3);
-        self::assertOffset($offset->negated(), -1, -2, -3);
     }
 
     public function testMixedSigns(): void
@@ -28,9 +25,6 @@ final class SignTest extends TestCase
         self::assertTrue($offset->isPositive());
         self::assertFalse($offset->isNegative());
         self::assertFalse($offset->isZero());
-
-        self::assertOffset($offset->abs(), 0, 58, 3);
-        self::assertOffset($offset->negated(), 0, -58, -3);
     }
 
     public function testNegativeValues(): void
@@ -40,9 +34,6 @@ final class SignTest extends TestCase
         self::assertFalse($offset->isPositive());
         self::assertTrue($offset->isNegative());
         self::assertFalse($offset->isZero());
-
-        self::assertOffset($offset->abs(), 1, 2, 3);
-        self::assertOffset($offset->negated(), 1, 2, 3);
     }
 
     public function testZeroValues(): void
@@ -52,9 +43,6 @@ final class SignTest extends TestCase
         self::assertFalse($offset->isPositive());
         self::assertFalse($offset->isNegative());
         self::assertTrue($offset->isZero());
-
-        self::assertOffset($offset->abs(), 0, 0, 0);
-        self::assertOffset($offset->negated(), 0, 0, 0);
     }
 
     public function testZero(): void
@@ -64,8 +52,5 @@ final class SignTest extends TestCase
         self::assertFalse($offset->isPositive());
         self::assertFalse($offset->isNegative());
         self::assertTrue($offset->isZero());
-
-        self::assertOffset($offset->abs(), 0, 0, 0);
-        self::assertOffset($offset->negated(), 0, 0, 0);
     }
 }

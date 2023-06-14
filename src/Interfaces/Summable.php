@@ -19,12 +19,12 @@ interface Summable
     public function minus(): static;
 
     /**
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>|Error<ArithmeticError|OutOfRangeException>
      */
     public function add(): Ok|Error;
 
     /**
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>|Error<ArithmeticError|OutOfRangeException>
      */
     public function subtract(): Ok|Error;
 }

@@ -39,7 +39,7 @@ use Stringable;
  *
  * @psalm-consistent-constructor
  */
-class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsable, Stringable
+class LocalDateTime implements Datelike, Timelike, Formattable, Parsable, Stringable, Summable
 {
     final public const ISO8601 = 'Y-m-d\TH:i:s';
     final public const ISO8601_MILLISECONDS = 'Y-m-d\TH:i:s.v';
@@ -77,6 +77,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
      */
     public static function epoch(): static
     {
+        /** @psalm-suppress PropertyTypeCoercion */
         return self::$epochs[static::class] ??= static::of(1970, 1, 1, 0, 0, 0, 0);
     }
 
@@ -115,12 +116,13 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
      * All parameters are optional and, if not specified, will take
      * their Unix epoch value (00:00:00 on 1 January 1970).
      *
-     * @param int<1, 12> $month
-     * @param int<1, 31> $day
-     * @param int<0, 23> $hour
-     * @param int<0, 59> $minute
-     * @param int<0, 59> $second
-     * @param int<0, 999999> $microsecond
+     * @param int $year the year
+     * @param int $month the month of the year, from 1 to 12
+     * @param int $day the day of the month, from 1 to 31
+     * @param int $hour the hour of the day, from 0 to 23
+     * @param int $minute the minute of the hour, from 0 to 59
+     * @param int $second the second of the minute, from 0 to 59
+     * @param int $microsecond the microsecond of the second, from 0 to 999,999
      *
      * @throws OutOfRangeException if the value of any unit is out of range
      */
@@ -541,6 +543,8 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
 
     /**
      * Returns the month as an `int` from 1 to 12.
+     *
+     * @return int<1, 12>
      */
     public function month(): int
     {
@@ -695,7 +699,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
     }
 
     /**
-     * Checks if the given date-time belongs to another class and has
+     * Checks if the given date-time belongs to another class or has
      * a different value than this date-time.
      */
     public function isNot(LocalDateTime $that): bool
@@ -900,12 +904,13 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
      * Returns a copy of this date-time with the specified year, month,
      * day, hour, minute, second and microsecond.
      *
-     * @param int<1, 12>|null $month
-     * @param int<1, 31>|null $day
-     * @param int<0, 23>|null $hour
-     * @param int<0, 59>|null $minute
-     * @param int<0, 59>|null $second
-     * @param int<0, 999999>|null $microsecond
+     * @param ?int $year the year
+     * @param ?int $month the month of the year, from 1 to 12
+     * @param ?int $day the day of the month, from 1 to 31
+     * @param ?int $hour the hour of the day, from 0 to 23
+     * @param ?int $minute the minute of the hour, from 0 to 59
+     * @param ?int $second the second of the minute, from 0 to 59
+     * @param ?int $microsecond the microsecond of the second, from 0 to 999,999
      *
      * @throws OutOfRangeException if the value of any unit is out of range
      */
@@ -991,7 +996,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>
      */
     public function add(
         int|Period $years = 0,
@@ -1008,22 +1013,16 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
         int $quarters = 0,
         int $weeks = 0,
         int $milliseconds = 0,
-    ): Ok|Error {
-        try {
-            $dateTime = $this->plus(
-                $years, $months, $days,
-                $hours, $minutes, $seconds, $microseconds,
-                $overflow,
-                $millennia, $centuries, $decades,
-                $quarters, $weeks,
-                $milliseconds,
-            );
-        } catch (ArithmeticError $e) {
-            return Error::withException($e);
-        }
-
+    ): Ok {
         /** @var Ok<static> */
-        return Ok::withValue($dateTime);
+        return Ok::withValue($this->plus(
+            $years, $months, $days,
+            $hours, $minutes, $seconds, $microseconds,
+            $overflow,
+            $millennia, $centuries, $decades,
+            $quarters, $weeks,
+            $milliseconds,
+        ));
     }
 
     /**
@@ -1041,7 +1040,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>
      */
     public function subtract(
         int|Period $years = 0,
@@ -1058,22 +1057,16 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
         int $quarters = 0,
         int $weeks = 0,
         int $milliseconds = 0,
-    ): Ok|Error {
-        try {
-            $dateTime = $this->minus(
-                $years, $months, $days,
-                $hours, $minutes, $seconds, $microseconds,
-                $overflow,
-                $millennia, $centuries, $decades,
-                $quarters, $weeks,
-                $milliseconds,
-            );
-        } catch (ArithmeticError $e) {
-            return Error::withException($e);
-        }
-
+    ): Ok {
         /** @var Ok<static> */
-        return Ok::withValue($dateTime);
+        return Ok::withValue($this->minus(
+            $years, $months, $days,
+            $hours, $minutes, $seconds, $microseconds,
+            $overflow,
+            $millennia, $centuries, $decades,
+            $quarters, $weeks,
+            $milliseconds,
+        ));
     }
 
     /**
@@ -1085,12 +1078,13 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Summable, Parsab
      * The result will contain the new date-time if no error was found,
      * or an exception if something went wrong.
      *
-     * @param int<1, 12>|null $month
-     * @param int<1, 31>|null $day
-     * @param int<0, 23>|null $hour
-     * @param int<0, 59>|null $minute
-     * @param int<0, 59>|null $second
-     * @param int<0, 999999>|null $microsecond
+     * @param ?int $year the year
+     * @param ?int $month the month of the year, from 1 to 12
+     * @param ?int $day the day of the month, from 1 to 31
+     * @param ?int $hour the hour of the day, from 0 to 23
+     * @param ?int $minute the minute of the hour, from 0 to 59
+     * @param ?int $second the second of the minute, from 0 to 59
+     * @param ?int $microsecond the microsecond of the second, from 0 to 999,999
      *
      * @return Ok<static>|Error<OutOfRangeException>
      */

@@ -33,7 +33,9 @@ function nav() {
         { text: 'DateTime', link: '/reference/date-time' },
         { text: 'LocalDate', link: '/reference/local-date' },
         { text: 'LocalDateTime', link: '/reference/local-date-time' },
-        { text: 'LocalTime', link: '/reference/local-time' }
+        { text: 'LocalTime', link: '/reference/local-time' },
+        { text: 'TimeZone', link: '/reference/time-zone' },
+        { text: 'Offset', link: '/reference/offset' }
       ]
     }
   ]
@@ -53,7 +55,9 @@ function sidebarReference() {
         { text: 'DateTime', link: '/reference/date-time' },
         { text: 'LocalDate', link: '/reference/local-date' },
         { text: 'LocalDateTime', link: '/reference/local-date-time' },
-        { text: 'LocalTime', link: '/reference/local-time' }
+        { text: 'LocalTime', link: '/reference/local-time' },
+        { text: 'TimeZone', link: '/reference/time-zone' },
+        { text: 'Offset', link: '/reference/offset' }
       ]
     }
   ]

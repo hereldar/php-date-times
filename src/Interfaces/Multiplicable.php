@@ -19,12 +19,12 @@ interface Multiplicable
     public function dividedBy(int $divisor): static;
 
     /**
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>|Error<ArithmeticError|OutOfRangeException>
      */
     public function multiplyBy(int $multiplicand): Ok|Error;
 
     /**
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>|Error<ArithmeticError|OutOfRangeException>
      */
     public function divideBy(int $divisor): Ok|Error;
 }

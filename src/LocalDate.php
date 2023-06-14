@@ -37,7 +37,7 @@ use Stringable;
  *
  * @psalm-consistent-constructor
  */
-class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
+class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
 {
     final public const ISO8601 = 'Y-m-d';
     final public const RFC2822 = 'D, d M Y';
@@ -66,6 +66,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
      */
     public static function epoch(): static
     {
+        /** @psalm-suppress PropertyTypeCoercion */
         return self::$epochs[static::class] ??= static::of(1970, 1, 1);
     }
 
@@ -104,8 +105,9 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
      * All parameters are optional and, if not specified, will take
      * their Unix epoch value (1 January 1970).
      *
-     * @param int<1, 12> $month
-     * @param int<1, 31> $day
+     * @param int $year the year
+     * @param int $month the month of the year, from 1 to 12
+     * @param int $day the day of the month, from 1 to 31
      *
      * @throws OutOfRangeException if the value of any unit is out of range
      */
@@ -151,7 +153,8 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
      * Both parameters are optional and, if not specified, will take
      * their Unix epoch value (1st of 1970).
      *
-     * @param int<1, 366> $day
+     * @param int $year the year
+     * @param int $day the day of the year, from 1 to 366
      *
      * @throws OutOfRangeException if the value of any unit is out of range
      */
@@ -474,6 +477,8 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
 
     /**
      * Returns the month as an `int` from 1 to 12.
+     *
+     * @return int<1, 12>
      */
     public function month(): int
     {
@@ -564,7 +569,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
     }
 
     /**
-     * Checks if the given date belongs to another class and has a
+     * Checks if the given date belongs to another class or has a
      * different value than this date.
      */
     public function isNot(LocalDate $that): bool
@@ -751,8 +756,9 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
      * Returns a copy of this date with the specified year, month and
      * day.
      *
-     * @param int<1, 12>|null $month
-     * @param int<1, 31>|null $day
+     * @param ?int $year the year
+     * @param ?int $month the month of the year, from 1 to 12
+     * @param ?int $day the day of the month, from 1 to 31
      *
      * @throws OutOfRangeException if the value of any unit is out of range
      */
@@ -794,7 +800,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>
      */
     public function add(
         int|Period $years = 0,
@@ -806,20 +812,14 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
         int $decades = 0,
         int $quarters = 0,
         int $weeks = 0,
-    ): Ok|Error {
-        try {
-            $date = $this->plus(
-                $years, $months, $days,
-                $overflow,
-                $millennia, $centuries, $decades,
-                $quarters, $weeks,
-            );
-        } catch (ArithmeticError $e) {
-            return Error::withException($e);
-        }
-
+    ): Ok {
         /** @var Ok<static> */
-        return Ok::withValue($date);
+        return Ok::withValue($this->plus(
+            $years, $months, $days,
+            $overflow,
+            $millennia, $centuries, $decades,
+            $quarters, $weeks,
+        ));
     }
 
     /**
@@ -837,7 +837,7 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>|Error<ArithmeticError>|Error<OutOfRangeException>
+     * @return Ok<static>
      */
     public function subtract(
         int|Period $years = 0,
@@ -849,17 +849,13 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
         int $decades = 0,
         int $quarters = 0,
         int $weeks = 0,
-    ): Ok|Error {
-        try {
+    ): Ok {
             $date = $this->minus(
                 $years, $months, $days,
                 $overflow,
                 $millennia, $centuries, $decades,
                 $quarters, $weeks,
             );
-        } catch (ArithmeticError $e) {
-            return Error::withException($e);
-        }
 
         /** @var Ok<static> */
         return Ok::withValue($date);
@@ -873,8 +869,9 @@ class LocalDate implements Datelike, Formattable, Summable, Parsable, Stringable
      * The result will contain the new date if no error was found, or
      * an exception if something went wrong.
      *
-     * @param int<1, 12>|null $month
-     * @param int<1, 31>|null $day
+     * @param ?int $year the year
+     * @param ?int $month the month of the year, from 1 to 12
+     * @param ?int $day the day of the month, from 1 to 31
      *
      * @return Ok<static>|Error<OutOfRangeException>
      */

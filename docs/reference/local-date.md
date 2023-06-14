@@ -481,7 +481,7 @@ same value as this date.
 public function isNot(LocalDate $that): bool;
 ```
 
-Checks if the given date belongs to another class and has a
+Checks if the given date belongs to another class or has a
 different value than this date.
 
 
@@ -664,7 +664,7 @@ public function add(
    int $decades = 0,
    int $quarters = 0,
    int $weeks = 0,
-): Ok|Error;
+): Ok;
 ```
 
 Makes a copy of this date with the specified amount of years,
@@ -682,8 +682,6 @@ normally.
 **Returns:**
 
 `Ok<static>` if no error was found
-
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
 
 **Throws:**
 
@@ -703,7 +701,7 @@ public function subtract(
    int $decades = 0,
    int $quarters = 0,
    int $weeks = 0,
-):  Ok|Error;
+):  Ok;
 ```
 
 Makes a copy of this date with the specified amount of years,
@@ -721,8 +719,6 @@ normally.
 **Returns:**
 
 `Ok<static>` if no error was found
-
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
 
 **Throws:**
 

@@ -29,20 +29,6 @@ final class Iso8601Test extends TestCase
             self::assertEquals($expected, $offset->format()->orFail());
             self::assertEquals($expected, (string) $offset);
         }
-
-        $offset = $offset->negated();
-        $expected = Offset::fromIso8601($expected)->negated()->toIso8601();
-
-        self::assertEquals($offset, Offset::fromIso8601($expected));
-        self::assertEquals($offset, Offset::parse($expected, Offset::ISO8601)->orFail());
-        self::assertEquals($offset, Offset::parse($expected)->orFail());
-
-        if ($reversible) {
-            self::assertEquals($expected, $offset->toIso8601());
-            self::assertEquals($expected, $offset->format(Offset::ISO8601)->orFail());
-            self::assertEquals($expected, $offset->format()->orFail());
-            self::assertEquals($expected, (string) $offset);
-        }
     }
 
     public static function dataForIso8601(): Generator

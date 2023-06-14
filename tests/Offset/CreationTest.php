@@ -67,11 +67,11 @@ final class CreationTest extends TestCase
         self::assertOffset($offset, 1, 30, 0);
 
         self::assertException(
-            new OutOfRangeException('minutes must be between -959 and 959, 960 given'),
+            new OutOfRangeException('minutes must be between -900 and 900, 901 given'),
             fn () => Offset::fromTotalMinutes(Offset::TOTAL_MINUTES_MAX + 1)
         );
         self::assertException(
-            new OutOfRangeException('minutes must be between -959 and 959, -960 given'),
+            new OutOfRangeException('minutes must be between -900 and 900, -901 given'),
             fn () => Offset::fromTotalMinutes(Offset::TOTAL_MINUTES_MIN - 1)
         );
     }
@@ -82,11 +82,11 @@ final class CreationTest extends TestCase
         self::assertOffset($offset, 1, 30, 45);
 
         self::assertException(
-            new OutOfRangeException('seconds must be between -57599 and 57599, 57600 given'),
+            new OutOfRangeException('seconds must be between -54000 and 54000, 54001 given'),
             fn () => Offset::fromTotalSeconds(Offset::TOTAL_SECONDS_MAX + 1)
         );
         self::assertException(
-            new OutOfRangeException('seconds must be between -57599 and 57599, -57600 given'),
+            new OutOfRangeException('seconds must be between -54000 and 54000, -54001 given'),
             fn () => Offset::fromTotalSeconds(Offset::TOTAL_SECONDS_MIN - 1)
         );
     }

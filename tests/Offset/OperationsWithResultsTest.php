@@ -7,7 +7,6 @@ namespace Hereldar\DateTimes\Tests\Offset;
 use ArithmeticError;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
-use InvalidArgumentException;
 use OutOfRangeException;
 
 final class OperationsWithResultsTest extends TestCase
@@ -17,13 +16,7 @@ final class OperationsWithResultsTest extends TestCase
         $offset = Offset::of(hours: 3)->add(hours: 4)->orFail();
         self::assertOffset($offset, 7);
 
-        $offset = Offset::of(hours: 3)->add(Offset::of(hours: 4))->orFail();
-        self::assertOffset($offset, 7);
-
         $offset = Offset::of(hours: 3)->add(hours: -4)->orFail();
-        self::assertOffset($offset, -1);
-
-        $offset = Offset::of(hours: 3)->add(Offset::of(hours: -4))->orFail();
         self::assertOffset($offset, -1);
 
         self::assertException(
@@ -35,11 +28,6 @@ final class OperationsWithResultsTest extends TestCase
             ArithmeticError::class,
             fn () => Offset::of(seconds: 1)->add(seconds: PHP_INT_MAX)->orFail()
         );
-
-        self::assertException(
-            InvalidArgumentException::class,
-            fn () => Offset::zero()->add(Offset::of(1), 2)
-        );
     }
 
     public function testSubtraction(): void
@@ -47,13 +35,7 @@ final class OperationsWithResultsTest extends TestCase
         $offset = Offset::of(hours: 3)->subtract(hours: 4)->orFail();
         self::assertOffset($offset, -1);
 
-        $offset = Offset::of(hours: 3)->subtract(Offset::of(hours: 4))->orFail();
-        self::assertOffset($offset, -1);
-
         $offset = Offset::of(hours: 3)->subtract(hours: -4)->orFail();
-        self::assertOffset($offset, 7);
-
-        $offset = Offset::of(hours: 3)->subtract(Offset::of(hours: -4))->orFail();
         self::assertOffset($offset, 7);
 
         self::assertException(
@@ -64,11 +46,6 @@ final class OperationsWithResultsTest extends TestCase
         self::assertException(
             ArithmeticError::class,
             fn () => Offset::of(seconds: -2)->subtract(seconds: PHP_INT_MAX)->orFail()
-        );
-
-        self::assertException(
-            InvalidArgumentException::class,
-            fn () => Offset::zero()->subtract(Offset::of(1), 2)
         );
     }
 }

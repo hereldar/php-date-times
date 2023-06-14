@@ -15,6 +15,7 @@ method calls.
 
 ## Constants
 
+
 ### ISO8601
 
 ```php
@@ -128,7 +129,7 @@ The time of noon in the middle of the day (12:00:00).
 
 ```php
 public static function now(
-TimeZone|Offset|string $timeZone = 'UTC',
+    TimeZone|Offset|string $timeZone = 'UTC',
 ): static;
 ```
 
@@ -145,10 +146,10 @@ will be used.
 
 ```php
 public static function of(
-int $hour = 0,
-int $minute = 0,
-int $second = 0,
-int $microsecond = 0,
+    int $hour = 0,
+    int $minute = 0,
+    int $second = 0,
+    int $microsecond = 0,
 ): static;
 ```
 
@@ -178,8 +179,8 @@ their Unix epoch value (00:00:00).
 
 ```php
 public static function parse(
-string $string,
-string|array $format = LocalTime::ISO8601,
+    string $string,
+    string|array $format = LocalTime::ISO8601,
 ): Ok|Error;
 ```
 
@@ -214,9 +215,9 @@ something went wrong.
 
 ```php
 public static function fromIso8601(
-string $value,
-bool $milliseconds = false,
-bool $microseconds = false,
+    string $value,
+    bool $milliseconds = false,
+    bool $microseconds = false,
 ): static;
 ```
 
@@ -256,9 +257,9 @@ an exception is thrown.
 
 ```php
 public static function fromRfc3339(
-string $value,
-bool $milliseconds = false,
-bool $microseconds = false,
+    string $value,
+    bool $milliseconds = false,
+    bool $microseconds = false,
 ): static;
 ```
 
@@ -281,9 +282,9 @@ an exception is thrown.
 
 ```php
 public static function fromSql(
-string $value,
-bool $milliseconds = false,
-bool $microseconds = false,
+    string $value,
+    bool $milliseconds = false,
+    bool $microseconds = false,
 ): static;
 ```
 
@@ -306,7 +307,7 @@ an exception is thrown.
 
 ```php
 public static function fromNative(
-NativeDateTimeInterface $value
+    NativeDateTimeInterface $value
 ): static;
 ```
 
@@ -356,8 +357,8 @@ something went wrong.
 
 ```php
 public function toIso8601(
-bool $milliseconds = false,
-bool $microseconds = false,
+    bool $milliseconds = false,
+    bool $microseconds = false,
 ): string;
 ```
 
@@ -389,8 +390,8 @@ an exception is thrown.
 
 ```php
 public function toRfc3339(
-bool $milliseconds = false,
-bool $microseconds = false,
+    bool $milliseconds = false,
+    bool $microseconds = false,
 ): string;
 ```
 
@@ -409,8 +410,8 @@ an exception is thrown.
 
 ```php
 public function toSql(
-bool $milliseconds = false,
-bool $microseconds = false,
+    bool $milliseconds = false,
+    bool $microseconds = false,
 ): string;
 ```
 
@@ -441,9 +442,9 @@ The date and time-zone values will be taken from the Unix epoch
 
 ```php
 public function atDate(
-LocalDate|int $year = 1970,
-int $month = 1,
-int $day = 1,
+    LocalDate|int $year = 1970,
+    int $month = 1,
+    int $day = 1,
 ): LocalDateTime;
 ```
 
@@ -545,7 +546,7 @@ same value as this time.
 public function isNot(LocalTime $that): bool;
 ```
 
-Checks if the given time belongs to another class and has a
+Checks if the given time belongs to another class or has a
 different value than this time.
 
 
@@ -607,11 +608,11 @@ Checks if this time is before or equal to the specified time.
 
 ```php
 public function plus(
-int|Period $hours = 0,
-int $minutes = 0,
-int $seconds = 0,
-int $microseconds = 0,
-int $milliseconds = 0,
+    int|Period $hours = 0,
+    int $minutes = 0,
+    int $seconds = 0,
+    int $microseconds = 0,
+    int $milliseconds = 0,
 ): static;
 ```
 
@@ -636,11 +637,11 @@ is guaranteed.
 
 ```php
 public function minus(
-int|Period $hours = 0,
-int $minutes = 0,
-int $seconds = 0,
-int $microseconds = 0,
-int $milliseconds = 0,
+    int|Period $hours = 0,
+    int $minutes = 0,
+    int $seconds = 0,
+    int $microseconds = 0,
+    int $milliseconds = 0,
 ): static;
 ```
 
@@ -665,10 +666,10 @@ is guaranteed.
 
 ```php
 public function with(
-?int $hour = null,
-?int $minute = null,
-?int $second = null,
-?int $microsecond = null,
+    ?int $hour = null,
+    ?int $minute = null,
+    ?int $second = null,
+    ?int $microsecond = null,
 ): static;
 ```
 
@@ -694,12 +695,12 @@ second and microsecond.
 
 ```php
 public function add(
-int|Period $hours = 0,
-int $minutes = 0,
-int $seconds = 0,
-int $microseconds = 0,
-int $milliseconds = 0,
-): Ok|Error;
+    int|Period $hours = 0,
+    int $minutes = 0,
+    int $seconds = 0,
+    int $microseconds = 0,
+    int $milliseconds = 0,
+): Ok;
 ```
 
 Makes a copy of this time with the specified amount of hours,
@@ -718,8 +719,6 @@ normally.
 
 `Ok<static>` if no error was found
 
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
-
 **Throws:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
@@ -729,12 +728,12 @@ normally.
 
 ```php
 public function subtract(
-int|Period $hours = 0,
-int $minutes = 0,
-int $seconds = 0,
-int $microseconds = 0,
-int $milliseconds = 0,
-): Ok|Error;
+    int|Period $hours = 0,
+    int $minutes = 0,
+    int $seconds = 0,
+    int $microseconds = 0,
+    int $milliseconds = 0,
+): Ok;
 ```
 
 Makes a copy of this time with the specified amount of hours,
@@ -753,8 +752,6 @@ normally.
 
 `Ok<static>` if no error was found
 
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
-
 **Throws:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
@@ -764,10 +761,10 @@ normally.
 
 ```php
 public function copy(
-?int $hour = null,
-?int $minute = null,
-?int $second = null,
-?int $microsecond = null,
+    ?int $hour = null,
+    ?int $minute = null,
+    ?int $second = null,
+    ?int $microsecond = null,
 ): Ok|Error;
 ```
 
