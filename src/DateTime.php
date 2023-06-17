@@ -12,10 +12,10 @@ use DateTimeInterface as NativeDateTimeInterface;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
+use Hereldar\DateTimes\Interfaces\Copyable;
 use Hereldar\DateTimes\Interfaces\Datelike;
 use Hereldar\DateTimes\Interfaces\Formattable;
 use Hereldar\DateTimes\Interfaces\Summable;
-use Hereldar\DateTimes\Interfaces\Parsable;
 use Hereldar\DateTimes\Interfaces\Timelike;
 use Hereldar\DateTimes\Services\Adder;
 use Hereldar\DateTimes\Services\Validator;
@@ -34,7 +34,7 @@ use Stringable;
  *
  * @psalm-consistent-constructor
  */
-class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable, Summable
+class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable, Summable
 {
     final public const COOKIE_VARIANTS = [
         'D, d M Y H:i:s T',
@@ -441,7 +441,23 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
      */
     public function format(string $format = DateTime::ISO8601): Ok|Error
     {
-        return Ok::withValue($this->value->format($format));
+        return Ok::withValue($this->formatted($format));
+    }
+
+    /**
+     * Formats this date-time using the specified format.
+     *
+     * If the format is not specified, the ISO 8601 date-time format
+     * will be used (`Y-m-d\TH:i:sp`).
+     *
+     * The text is returned directly if no error is found, otherwise
+     * an exception is thrown.
+     *
+     * @throws FormatException
+     */
+    public function formatted(string $format = DateTime::ISO8601): string
+    {
+        return $this->value->format($format);
     }
 
     /**
@@ -453,7 +469,7 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
      */
     public function toCookie(): string
     {
-        return $this->value->format(self::COOKIE);
+        return $this->formatted(self::COOKIE);
     }
 
     /**
@@ -486,7 +502,7 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
         bool $milliseconds = false,
         bool $microseconds = false,
     ): string {
-        return $this->value->format(match (true) {
+        return $this->formatted(match (true) {
             $microseconds => self::ISO8601_MICROSECONDS,
             $milliseconds => self::ISO8601_MILLISECONDS,
             default => self::ISO8601,
@@ -502,7 +518,7 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
      */
     public function toRfc2822(): string
     {
-        return $this->value->format(self::RFC2822);
+        return $this->formatted(self::RFC2822);
     }
 
     /**
@@ -521,7 +537,7 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
         bool $milliseconds = false,
         bool $microseconds = false,
     ): string {
-        return $this->value->format(match (true) {
+        return $this->formatted(match (true) {
             $microseconds => self::RFC3339_MICROSECONDS,
             $milliseconds => self::RFC3339_MILLISECONDS,
             default => self::RFC3339,
@@ -544,7 +560,7 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
         bool $milliseconds = false,
         bool $microseconds = false,
     ): string {
-        return $this->value->format(match (true) {
+        return $this->formatted(match (true) {
             $microseconds => self::SQL_MICROSECONDS,
             $milliseconds => self::SQL_MILLISECONDS,
             default => self::SQL,
@@ -868,6 +884,7 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
      * of the seven first parameters is guaranteed.
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
+     * @throws ArithmeticError if any value exceeds the PHP limits for an integer
      */
     public function plus(
         int|Period $years = 0,
@@ -938,6 +955,7 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
      * of the seven first parameters is guaranteed.
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
+     * @throws ArithmeticError if any value exceeds the PHP limits for an integer
      */
     public function minus(
         int|Period $years = 0,
@@ -1085,8 +1103,10 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
     /**
      * Makes a copy of this date-time with the specified amount of
      * years, months, days, hours, minutes, seconds and microseconds
-     * added. It works the same as the {@see plus()} method, but
-     * returns a result instead of the new date-time.
+     * added.
+     *
+     * It works the same as the {@see plus()} method, but returns a
+     * result instead of the new date-time.
      *
      * The result will contain the new date-time if no error was found,
      * or an exception if something went wrong.
@@ -1097,7 +1117,7 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>
+     * @return Ok<static>|Error<ArithmeticError>
      */
     public function add(
         int|Period $years = 0,
@@ -1114,23 +1134,31 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
         int $quarters = 0,
         int $weeks = 0,
         int $milliseconds = 0,
-    ): Ok {
+    ): Ok|Error {
+        try {
+            $time = $this->plus(
+                $years, $months, $days,
+                $hours, $minutes, $seconds, $microseconds,
+                $overflow,
+                $millennia, $centuries, $decades,
+                $quarters, $weeks,
+                $milliseconds,
+            );
+        } catch (ArithmeticError $e) {
+            return Error::withException($e);
+        }
+
         /** @var Ok<static> */
-        return Ok::withValue($this->plus(
-            $years, $months, $days,
-            $hours, $minutes, $seconds, $microseconds,
-            $overflow,
-            $millennia, $centuries, $decades,
-            $quarters, $weeks,
-            $milliseconds,
-        ));
+        return Ok::withValue($time);
     }
 
     /**
      * Makes a copy of this date-time with the specified amount of
      * years, months, days, hours, minutes, seconds and microseconds
-     * subtracted. It works the same as the {@see minus()} method, but
-     * returns a result instead of the new date-time.
+     * subtracted.
+     *
+     * It works the same as the {@see minus()} method, but returns a
+     * result instead of the new date-time.
      *
      * The result will contain the new date-time if no error was found,
      * or an exception if something went wrong.
@@ -1141,7 +1169,7 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>
+     * @return Ok<static>|Error<ArithmeticError>
      */
     public function subtract(
         int|Period $years = 0,
@@ -1158,23 +1186,31 @@ class DateTime implements Datelike, Timelike, Formattable, Parsable, Stringable,
         int $quarters = 0,
         int $weeks = 0,
         int $milliseconds = 0,
-    ): Ok {
+    ): Ok|Error {
+        try {
+            $time = $this->minus(
+                $years, $months, $days,
+                $hours, $minutes, $seconds, $microseconds,
+                $overflow,
+                $millennia, $centuries, $decades,
+                $quarters, $weeks,
+                $milliseconds,
+            );
+        } catch (ArithmeticError $e) {
+            return Error::withException($e);
+        }
+
         /** @var Ok<static> */
-        return Ok::withValue($this->minus(
-            $years, $months, $days,
-            $hours, $minutes, $seconds, $microseconds,
-            $overflow,
-            $millennia, $centuries, $decades,
-            $quarters, $weeks,
-            $milliseconds,
-        ));
+        return Ok::withValue($time);
     }
 
     /**
-     * Makes a copy of this date with the specified year, month, day,
-     * hour, minute, second, microsecond and time-zone. It works the
-     * same as the {@see with()} method, but returns a result instead
-     * of the new date-time.
+     * Makes a copy of this date-time with the specified year, month,
+     * day, hour, minute, second, microsecond and time-zone.
+     *
+     * It works the same as the {@see with()} method, but returns a
+     * result instead of the new date-time.
+     *
      * The result will contain the new date-time if no error was found,
      * or an exception if something went wrong.
      *

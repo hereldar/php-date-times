@@ -7,9 +7,9 @@ namespace Hereldar\DateTimes;
 use ArithmeticError;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
+use Hereldar\DateTimes\Interfaces\Copyable;
 use Hereldar\DateTimes\Interfaces\Formattable;
 use Hereldar\DateTimes\Interfaces\Summable;
-use Hereldar\DateTimes\Interfaces\Parsable;
 use Hereldar\DateTimes\Services\Validator;
 use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
@@ -28,7 +28,7 @@ use Stringable;
  *
  * @psalm-consistent-constructor
  */
-class Offset implements Formattable, Parsable, Stringable, Summable
+class Offset implements Formattable, Stringable, Copyable, Summable
 {
     final public const ISO8601 = '%R%H:%I'; // +02:00
     final public const RFC2822 = '%R%H%I';  // +0200
@@ -117,9 +117,9 @@ class Offset implements Formattable, Parsable, Stringable, Summable
      * All parameters are optional and, if not specified, will take
      * their UTC value (00:00:00).
      *
-     * @param int $hours the hour of the day, from -15 to 15
-     * @param int $minutes the minute of the hour, from -59 to 59
-     * @param int $seconds the second of the minute, from -59 to 59
+     * @param int $hours the amount of hours, from -15 to 15
+     * @param int $minutes the amount of minutes, from -59 to 59
+     * @param int $seconds the amount of seconds, from -59 to 59
      *
      * @throws OutOfRangeException if the value of any unit is out of range
      */
@@ -154,7 +154,7 @@ class Offset implements Formattable, Parsable, Stringable, Summable
      * Makes a new `Offset` with the specified total number of seconds.
      * The resulting offset must be in the range -15:00 to +15:00.
      *
-     * @param int $seconds total number of seconds, from -54000 to 54000
+     * @param int $seconds total number of seconds, from -54,000 to 54,000
      *
      * @throws OutOfRangeException if the total is not in the required range
      */
@@ -181,7 +181,7 @@ class Offset implements Formattable, Parsable, Stringable, Summable
      *
      * @throws InvalidArgumentException if an empty list of formats is passed
      *
-     * @return Ok<static>|Error<ParseException>
+     * @return Ok<static>|Error<ParseException|OutOfRangeException>
      */
     public static function parse(
         string $string,
@@ -225,7 +225,7 @@ class Offset implements Formattable, Parsable, Stringable, Summable
     }
 
     /**
-     * @return Ok<static>|Error<ParseException>
+     * @return Ok<static>|Error<ParseException|OutOfRangeException>
      */
     private static function parseSimple(
         string $string,
@@ -258,12 +258,18 @@ class Offset implements Formattable, Parsable, Stringable, Summable
             default => 1,
         };
 
+        try {
+            $offset = static::of(
+                hours: $sign * (int) ($matches['hours'] ?? 0),
+                minutes: $sign * (int) ($matches['minutes'] ?? 0),
+                seconds: $sign * (int) ($matches['seconds'] ?? 0),
+            );
+        } catch (OutOfRangeException $e) {
+            return Error::withException($e);
+        }
+
         /** @var Ok<static> */
-        return Ok::withValue(static::of(
-            hours: $sign * (int) ($matches['hours'] ?? 0),
-            minutes: $sign * (int) ($matches['minutes'] ?? 0),
-            seconds: $sign * (int) ($matches['seconds'] ?? 0),
-        ));
+        return Ok::withValue($offset);
     }
 
     /**
@@ -274,6 +280,7 @@ class Offset implements Formattable, Parsable, Stringable, Summable
      * an exception is thrown.
      *
      * @throws ParseException if the text cannot be parsed
+     * @throws OutOfRangeException if the value of any unit is out of range
      */
     public static function fromIso8601(string $string): static
     {
@@ -335,6 +342,22 @@ class Offset implements Formattable, Parsable, Stringable, Summable
         }
 
         return Ok::withValue($string);
+    }
+
+    /**
+     * Formats this offset using the specified format.
+     *
+     * If the format is not specified, the ISO 8601 offset format will
+     * be used (`%R%H:%I`).
+     *
+     * The text is returned directly if no error is found, otherwise
+     * an exception is thrown.
+     *
+     * @throws FormatException
+     */
+    public function formatted(string $format = Offset::ISO8601): string
+    {
+        return $this->format($format)->orFail();
     }
 
     /**
@@ -576,19 +599,19 @@ class Offset implements Formattable, Parsable, Stringable, Summable
     }
 
     /**
-     * Checks if this offset is less than zero.
-     */
-    public function isNegative(): bool
-    {
-        return ($this->value < 0);
-    }
-
-    /**
      * Checks if this offset is greater than zero.
      */
     public function isPositive(): bool
     {
         return ($this->value > 0);
+    }
+
+    /**
+     * Checks if this offset is less than zero.
+     */
+    public function isNegative(): bool
+    {
+        return ($this->value < 0);
     }
 
     /**
@@ -611,7 +634,11 @@ class Offset implements Formattable, Parsable, Stringable, Summable
         int $minutes = 0,
         int $seconds = 0,
     ): static {
-        $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+        $totalSeconds = intadd(
+            intmul($hours, 3600),
+            intmul($minutes, 60),
+            $seconds,
+        );
 
         return static::fromTotalSeconds(intadd($this->value, $totalSeconds));
     }
@@ -628,7 +655,11 @@ class Offset implements Formattable, Parsable, Stringable, Summable
         int $minutes = 0,
         int $seconds = 0,
     ): static {
-        $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+        $totalSeconds = intadd(
+            intmul($hours, 3600),
+            intmul($minutes, 60),
+            $seconds,
+        );
 
         return static::fromTotalSeconds(intsub($this->value, $totalSeconds));
     }
@@ -637,9 +668,9 @@ class Offset implements Formattable, Parsable, Stringable, Summable
      * Returns a copy of this offset with the specified hours, minutes
      * and seconds.
      *
-     * @param ?int $hours the hour of the day, from -15 to 15
-     * @param ?int $minutes the minute of the hour, from -59 to 59
-     * @param ?int $seconds the second of the minute, from -59 to 59
+     * @param ?int $hours the amount of hours, from -15 to 15
+     * @param ?int $minutes the amount of minutes, from -59 to 59
+     * @param ?int $seconds the amount of seconds, from -59 to 59
      *
      * @throws OutOfRangeException if the value of any unit is out of range
      */
@@ -657,8 +688,10 @@ class Offset implements Formattable, Parsable, Stringable, Summable
 
     /**
      * Makes a copy of this offset with the specified amount of hours,
-     * minutes and seconds added. It works the same as the {@see plus()}
-     * method, but returns a result instead of the new offset.
+     * minutes and seconds added.
+     *
+     * It works the same as the {@see plus()} method, but returns a
+     * result instead of the new offset.
      *
      * The result will contain the new offset if no error was found,
      * or an exception if something went wrong.
@@ -682,9 +715,10 @@ class Offset implements Formattable, Parsable, Stringable, Summable
 
     /**
      * Makes a copy of this offset with the specified amount of hours,
-     * minutes and seconds subtracted. It works the same as the
-     * {@see minus()} method, but returns a result instead of the new
-     * offset.
+     * minutes and seconds subtracted.
+     *
+     * It works the same as the {@see minus()} method, but returns a
+     * result instead of the new offset.
      *
      * The result will contain the new offset if no error was found,
      * or an exception if something went wrong.
@@ -708,15 +742,17 @@ class Offset implements Formattable, Parsable, Stringable, Summable
 
     /**
      * Makes a copy of this offset with the specified hours, minutes
-     * and seconds. It works the same as the {@see with()} method, but
-     * returns a result instead of the new time.
+     * and seconds.
      *
-     * The result will contain the new offset if no error was found, or
-     * an exception if something went wrong.
+     * It works the same as the {@see with()} method, but returns a
+     * result instead of the new offset.
      *
-     * @param ?int $hours the hour of the day, from -15 to 15
-     * @param ?int $minutes the minute of the hour, from -59 to 59
-     * @param ?int $seconds the second of the minute, from -59 to 59
+     * The result will contain the new offset if no error was found,
+     * or an exception if something went wrong.
+     *
+     * @param ?int $hours the amount of hours, from -15 to 15
+     * @param ?int $minutes the amount of minutes, from -59 to 59
+     * @param ?int $seconds the amount of seconds, from -59 to 59
      *
      * @return Ok<static>|Error<OutOfRangeException>
      */

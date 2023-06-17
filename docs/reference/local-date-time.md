@@ -111,7 +111,7 @@ Obtains the current date-time from the system clock in the
 specified time-zone. If no time-zone is specified, the `UTC`
 time-zone will be used.
 
-**Throws:**
+**Exceptions:**
 
 `TimeZoneException` if the time-zone name cannot be found
 
@@ -153,7 +153,7 @@ their Unix epoch value (00:00:00 on 1 January 1970).
 
 `$microsecond` the microsecond of the second, from 0 to 999,999
 
-**Throws:**
+**Exceptions:**
 
 `OutOfRangeException` if the value of any unit is out of range
 
@@ -183,13 +183,13 @@ exception if something went wrong.
 
 `$format` the expected format, or a list of accepted formats
 
-**Returns:**
+**Return Values:**
 
-`Ok<string>` if no error was found
+`Ok<string>` if no error is found
 
-`Error<ParseException>` if something went wrong
+`Error<ParseException>` if the text cannot be parsed
 
-**Throws:**
+**Exceptions:**
 
 `InvalidArgumentException` if an empty list of formats is passed
 
@@ -215,7 +215,7 @@ It is possible to parse texts with milliseconds (e.g.
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-**Throws:**
+**Exceptions:**
 
 `ParseException` if the text cannot be parsed
 
@@ -232,7 +232,7 @@ date-time format (e.g. `'Fri, 17 Feb 2023 17:30:09'`).
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-**Throws:**
+**Exceptions:**
 
 `ParseException` if the text cannot be parsed
 
@@ -258,7 +258,7 @@ It is possible to parse texts with milliseconds (e.g.
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-**Throws:**
+**Exceptions:**
 
 `ParseException` if the text cannot be parsed
 
@@ -284,7 +284,7 @@ It is possible to parse texts with milliseconds (e.g.
 The date-time is returned directly if no error is found,
 otherwise an exception is thrown.
 
-**Throws:**
+**Exceptions:**
 
 `ParseException` if the text cannot be parsed
 
@@ -330,11 +330,30 @@ The text is not returned directly, but a [result][php-results-doc]
 that will contain the text if no error was found, or an exception if
 something went wrong.
 
-**Returns:**
+**Return Values:**
 
-`Ok<string>` if no error was found
+`Ok<string>` if no error is found
 
-`Error<FormatException>` if something went wrong
+`Error<FormatException>` if the format is incorrect
+
+
+### formatted
+
+```php
+public function formatted(string $format = LocalDateTime::ISO8601): string;
+```
+
+Formats this date-time using the specified format.
+
+If the format is not specified, the ISO 8601 date-time format
+will be used (`Y-m-d\TH:i:s`).
+
+The text is returned directly if no error is found, otherwise
+an exception is thrown.
+
+**Exceptions:**
+
+`FormatException` if the format is incorrect
 
 
 ### toIso8601
@@ -462,7 +481,7 @@ valid range. Missing units will be zero (00:00:00).
 
 `$seconds` the amount of seconds, from -59 to 59
 
-**Throws:**
+**Exceptions:**
 
 `InvalidArgumentException` if an `Offset` is combined with some time units
 
@@ -743,9 +762,11 @@ specify overflow and units other than years, months, days,
 hours, minutes, seconds and microseconds, since only the order
 of the seven first parameters is guaranteed.
 
-**Throws:**
+**Exceptions:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
+
+`ArithmeticError` if any value exceeds the PHP limits for an integer
 
 
 ### minus
@@ -791,9 +812,11 @@ specify overflow and units other than years, months, days,
 hours, minutes, seconds and microseconds, since only the order
 of the seven first parameters is guaranteed.
 
-**Throws:**
+**Exceptions:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
+
+`ArithmeticError` if any value exceeds the PHP limits for an integer
 
 
 ### with
@@ -829,7 +852,7 @@ day, hour, minute, second and microsecond.
 
 `$microsecond` the microsecond of the second, from 0 to 999,999
 
-**Throws:**
+**Exceptions:**
 
 `OutOfRangeException` if the value of any unit is out of range
 
@@ -852,13 +875,15 @@ public function add(
    int $quarters = 0,
    int $weeks = 0,
    int $milliseconds = 0,
-): Ok;
+): Ok|Error;
 ```
 
 Makes a copy of this date-time with the specified amount of
 years, months, days, hours, minutes, seconds and microseconds
-added. It works the same as the [plus()](#plus) method, but
-returns a [result][php-results-doc] instead of the new date-time.
+added.
+
+It works the same as the [plus()](#plus) method, but returns a
+[result][php-results-doc] instead of the new date-time.
 
 The result will contain the new date-time if no error was found,
 or an exception if something went wrong.
@@ -867,11 +892,13 @@ However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
 
-**Returns:**
+**Return Values:**
 
-`Ok<static>` if no error was found
+`Ok<static>` if no error is found
 
-**Throws:**
+`Error<ArithmeticError>` if any value exceeds the PHP limits for an integer
+
+**Exceptions:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
 
@@ -894,13 +921,15 @@ public function subtract(
    int $quarters = 0,
    int $weeks = 0,
    int $milliseconds = 0,
-): Ok;
+): Ok|Error;
 ```
 
 Makes a copy of this date-time with the specified amount of
 years, months, days, hours, minutes, seconds and microseconds
-subtracted. It works the same as the [minus()](#minus) method, but
-returns a [result][php-results-doc] instead of the new date-time.
+subtracted.
+
+It works the same as the [minus()](#minus) method, but returns
+a [result][php-results-doc] instead of the new date-time.
 
 The result will contain the new date-time if no error was found,
 or an exception if something went wrong.
@@ -909,11 +938,13 @@ However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
 
-**Returns:**
+**Return Values:**
 
-`Ok<static>` if no error was found
+`Ok<static>` if no error is found
 
-**Throws:**
+`Error<ArithmeticError>` if any value exceeds the PHP limits for an integer
+
+**Exceptions:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
 
@@ -932,10 +963,11 @@ public function copy(
 ): Ok|Error;
 ```
 
-Makes a copy of this date with the specified year, month, day,
-hour, minute, second and microsecond. It works the same as the
-[with()](#with) method, but returns a [result][php-results-doc]
-instead of the new date-time.
+Makes a copy of this date-time with the specified year, month, day,
+hour, minute, second and microsecond.
+
+It works the same as the [with()](#with) method, but returns a
+[result][php-results-doc] instead of the new date-time.
 
 The result will contain the new date-time if no error was found,
 or an exception if something went wrong.
@@ -956,11 +988,11 @@ or an exception if something went wrong.
 
 `$microsecond` the microsecond of the second, from 0 to 999,999
 
-**Returns:**
+**Return Values:**
 
-`Ok<static>` if no error was found
+`Ok<static>` if no error is found
 
-`Error<OutOfRangeException>` if something went wrong
+`Error<OutOfRangeException>` if the value of any unit is out of range
 
 
 [php-results-doc]: https://hereldar.github.io/php-results/

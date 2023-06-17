@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Tests;
 
 use DateTimeImmutable as NativeDateTime;
-use Exception;
 use Generator;
 use Hereldar\DateTimes\DateTime;
 use Hereldar\DateTimes\LocalDate;
@@ -23,13 +22,13 @@ use Throwable;
 abstract class TestCase extends PHPUnitTestCase
 {
     /**
-     * @param Exception|class-string<Throwable> $expectedException
+     * @param Throwable|class-string<Throwable> $expectedException
      *
      * @psalm-suppress InternalClass
      * @psalm-suppress InternalMethod
      */
     public static function assertException(
-        Exception|string $expectedException,
+        Throwable|string $expectedException,
         callable $callback
     ): void {
         $exception = null;

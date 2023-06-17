@@ -68,7 +68,7 @@ Obtains the current date from the system clock in the specified
 time-zone. If no time-zone is specified, the `UTC` time-zone
 will be used.
 
-**Throws:**
+**Exceptions:**
 
 `TimeZoneException` if the time-zone name cannot be found
 
@@ -98,7 +98,7 @@ their Unix epoch value (1 January 1970).
 
 `$day` the day of the month, from 1 to 31
 
-**Throws:**
+**Exceptions:**
 
 `OutOfRangeException` if the value of any unit is out of range
 
@@ -125,7 +125,7 @@ their Unix epoch value (1st of 1970).
 
 `$day` the day of the year, from 1 to 366
 
-**Throws:**
+**Exceptions:**
 
 `OutOfRangeException` if the value of any unit is out of range
 
@@ -155,13 +155,13 @@ something went wrong.
 
 `$format` the expected format, or a list of accepted formats
 
-**Returns:**
+**Return Values:**
 
-`Ok<string>` if no error was found
+`Ok<string>` if no error is found
 
-`Error<ParseException>` if something went wrong
+`Error<ParseException>` if the text cannot be parsed
 
-**Throws:**
+**Exceptions:**
 
 `InvalidArgumentException` if an empty list of formats is passed
 
@@ -178,7 +178,7 @@ format (e.g. `'2023-02-17'`).
 The date is returned directly if no error is found, otherwise
 an exception is thrown.
 
-**Throws:**
+**Exceptions:**
 
 `ParseException` if the text cannot be parsed
 
@@ -195,7 +195,7 @@ format (e.g. `'Fri, 17 Feb 2023'`).
 The date is returned directly if no error is found, otherwise
 an exception is thrown.
 
-**Throws:**
+**Exceptions:**
 
 `ParseException` if the text cannot be parsed
 
@@ -212,7 +212,7 @@ format (e.g. `'2023-02-17'`).
 The date is returned directly if no error is found, otherwise
 an exception is thrown.
 
-**Throws:**
+**Exceptions:**
 
 `ParseException` if the text cannot be parsed
 
@@ -229,7 +229,7 @@ Makes a new `LocalDate` from a text with the SQL date format
 The date is returned directly if no error is found, otherwise
 an exception is thrown.
 
-**Throws:**
+**Exceptions:**
 
 `ParseException` if the text cannot be parsed
 
@@ -277,11 +277,30 @@ The text is not returned directly, but a [result][php-results-doc]
 that will contain the text if no error was found, or an exception if
 something went wrong.
 
-**Returns:**
+**Return Values:**
 
-`Ok<string>` if no error was found
+`Ok<string>` if no error is found
 
-`Error<FormatException>` if something went wrong
+`Error<FormatException>` if the format is incorrect
+
+
+### formatted
+
+```php
+public function formatted(string $format = LocalDate::ISO8601): string;
+```
+
+Formats this date using the specified format.
+
+If the format is not specified, the ISO 8601 date format will
+be used (`Y-m-d`).
+
+The text is returned directly if no error is found, otherwise
+an exception is thrown.
+
+**Exceptions:**
+
+`FormatException` if the format is incorrect
 
 
 ### toIso8601
@@ -370,7 +389,7 @@ If individual time units are passed, they must be within their
 valid range. Missing units will be taken from the Unix epoch
 (00:00:00).
 
-**Throws:**
+**Exceptions:**
 
 `InvalidArgumentException` if a `LocalTime` is combined with some time units
 
@@ -577,9 +596,11 @@ specify overflow and units other than years, months and days,
 since only the order of the three first parameters is
 guaranteed.
 
-**Throws:**
+**Exceptions:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
+
+`ArithmeticError` if any value exceeds the PHP limits for an integer
 
 
 ### minus
@@ -620,9 +641,11 @@ specify overflow and units other than years, months and days,
 since only the order of the three first parameters is
 guaranteed.
 
-**Throws:**
+**Exceptions:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
+
+`ArithmeticError` if any value exceeds the PHP limits for an integer
 
 
 ### with
@@ -646,7 +669,7 @@ day.
 
 `$day` the day of the month, from 1 to 31
 
-**Throws:**
+**Exceptions:**
 
 `OutOfRangeException` if the value of any unit is out of range
 
@@ -664,13 +687,14 @@ public function add(
    int $decades = 0,
    int $quarters = 0,
    int $weeks = 0,
-): Ok;
+): Ok|Error;
 ```
 
 Makes a copy of this date with the specified amount of years,
-months and days added. It works the same as the [plus()](#plus)
-method, but returns a [result][php-results-doc] instead of the new
-date.
+months and days added.
+
+It works the same as the [plus()](#plus) method, but returns a
+[result][php-results-doc] instead of the new date.
 
 The result will contain the new date if no error was found, or
 an exception if something went wrong.
@@ -679,11 +703,13 @@ However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
 
-**Returns:**
+**Return Values:**
 
-`Ok<static>` if no error was found
+`Ok<static>` if no error is found
 
-**Throws:**
+`Error<ArithmeticError>` if any value exceeds the PHP limits for an integer
+
+**Exceptions:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
 
@@ -701,13 +727,14 @@ public function subtract(
    int $decades = 0,
    int $quarters = 0,
    int $weeks = 0,
-):  Ok;
+): Ok|Error;
 ```
 
 Makes a copy of this date with the specified amount of years,
-months and days subtracted. It works the same as the
-[minus()](#minus) method, but returns a [result][php-results-doc]
-instead of the new date.
+months and days subtracted.
+
+It works the same as the [minus()](#minus) method, but returns
+a [result][php-results-doc] instead of the new date.
 
 The result will contain the new date if no error was found, or
 an exception if something went wrong.
@@ -716,11 +743,13 @@ However, if a `Period` is combined with any time unit, the
 exception will not be captured, allowing it to be thrown
 normally.
 
-**Returns:**
+**Return Values:**
 
-`Ok<static>` if no error was found
+`Ok<static>` if no error is found
 
-**Throws:**
+`Error<ArithmeticError>` if any value exceeds the PHP limits for an integer
+
+**Exceptions:**
 
 `InvalidArgumentException` if a `Period` is combined with some time units
 
@@ -736,7 +765,9 @@ public function copy(
 ```
 
 Makes a copy of this date with the specified year, month and
-day. It works the same as the [with()](#with) method, but returns
+day.
+
+It works the same as the [with()](#with) method, but returns
 a [result][php-results-doc] instead of the new date.
 
 The result will contain the new date if no error was found, or
@@ -750,11 +781,11 @@ an exception if something went wrong.
 
 `$day` the day of the month, from 1 to 31
 
-**Returns:**
+**Return Values:**
 
-`Ok<static>` if no error was found
+`Ok<static>` if no error is found
 
-`Error<OutOfRangeException>` if something went wrong
+`Error<OutOfRangeException>` if the value of any unit is out of range
 
 
 [php-results-doc]: https://hereldar.github.io/php-results/

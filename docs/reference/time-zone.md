@@ -48,7 +48,7 @@ Gets the list of available time-zone identifiers.
 The list of identifiers may grow over time. Results can be
 filtered by `TimeZoneGroup`.
 
-**Returns:**
+**Return Values:**
 
 `list<string>` the list of time-zone identifiers
 
@@ -67,11 +67,11 @@ Gets the list of time-zone identifiers for a single country.
 
 `$code` a two-letter (uppercase) ISO 3166-1 country code
 
-**Returns:**
+**Return Values:**
 
 `list<string>` the list of time-zone identifiers
 
-**Throws:**
+**Exceptions:**
 
 `CountryException` if the country cannot be found
 
@@ -86,7 +86,7 @@ public static function of(
 
 Makes a new `TimeZone` with the specified name.
 
-**Throws:**
+**Exceptions:**
 
 `TimeZoneException` if the time-zone name cannot be found
 

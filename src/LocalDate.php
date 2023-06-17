@@ -11,10 +11,10 @@ use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
+use Hereldar\DateTimes\Interfaces\Copyable;
 use Hereldar\DateTimes\Interfaces\Datelike;
 use Hereldar\DateTimes\Interfaces\Formattable;
 use Hereldar\DateTimes\Interfaces\Summable;
-use Hereldar\DateTimes\Interfaces\Parsable;
 use Hereldar\DateTimes\Services\Adder;
 use Hereldar\DateTimes\Services\Validator;
 use Hereldar\Results\Error;
@@ -37,7 +37,7 @@ use Stringable;
  *
  * @psalm-consistent-constructor
  */
-class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
+class LocalDate implements Datelike, Formattable, Stringable, Copyable, Summable
 {
     final public const ISO8601 = 'Y-m-d';
     final public const RFC2822 = 'D, d M Y';
@@ -357,7 +357,23 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
      */
     public function format(string $format = LocalDate::ISO8601): Ok|Error
     {
-        return Ok::withValue($this->value->format($format));
+        return Ok::withValue($this->formatted($format));
+    }
+
+    /**
+     * Formats this date using the specified format.
+     *
+     * If the format is not specified, the ISO 8601 date format will
+     * be used (`Y-m-d`).
+     *
+     * The text is returned directly if no error is found, otherwise
+     * an exception is thrown.
+     *
+     * @throws FormatException
+     */
+    public function formatted(string $format = LocalDate::ISO8601): string
+    {
+        return $this->value->format($format);
     }
 
     /**
@@ -369,7 +385,7 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
      */
     public function toIso8601(): string
     {
-        return $this->value->format(self::ISO8601);
+        return $this->formatted(self::ISO8601);
     }
 
     /**
@@ -381,7 +397,7 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
      */
     public function toRfc2822(): string
     {
-        return $this->value->format(self::RFC2822);
+        return $this->formatted(self::RFC2822);
     }
 
     /**
@@ -393,7 +409,7 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
      */
     public function toRfc3339(): string
     {
-        return $this->value->format(self::RFC3339);
+        return $this->formatted(self::RFC3339);
     }
 
     /**
@@ -405,7 +421,7 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
      */
     public function toSql(): string
     {
-        return $this->value->format(self::SQL);
+        return $this->formatted(self::SQL);
     }
 
     /**
@@ -650,6 +666,7 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
      * guaranteed.
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
+     * @throws ArithmeticError if any value exceeds the PHP limits for an integer
      */
     public function plus(
         int|Period $years = 0,
@@ -713,6 +730,7 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
      * guaranteed.
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
+     * @throws ArithmeticError if any value exceeds the PHP limits for an integer
      */
     public function minus(
         int|Period $years = 0,
@@ -788,8 +806,10 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
 
     /**
      * Makes a copy of this date with the specified amount of years,
-     * months and days added. It works the same as the {@see plus()}
-     * method, but returns a result instead of the new date.
+     * months and days added.
+     *
+     * It works the same as the {@see plus()} method, but returns a
+     * result instead of the new date.
      *
      * The result will contain the new date if no error was found, or
      * an exception if something went wrong.
@@ -800,7 +820,7 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>
+     * @return Ok<static>|Error<ArithmeticError>
      */
     public function add(
         int|Period $years = 0,
@@ -812,21 +832,28 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
         int $decades = 0,
         int $quarters = 0,
         int $weeks = 0,
-    ): Ok {
+    ): Ok|Error {
+        try {
+            $time = $this->plus(
+                $years, $months, $days,
+                $overflow,
+                $millennia, $centuries, $decades,
+                $quarters, $weeks,
+            );
+        } catch (ArithmeticError $e) {
+            return Error::withException($e);
+        }
+
         /** @var Ok<static> */
-        return Ok::withValue($this->plus(
-            $years, $months, $days,
-            $overflow,
-            $millennia, $centuries, $decades,
-            $quarters, $weeks,
-        ));
+        return Ok::withValue($time);
     }
 
     /**
      * Makes a copy of this date with the specified amount of years,
-     * months and days subtracted. It works the same as the
-     * {@see minus()} method, but returns a result instead of the new
-     * date.
+     * months and days subtracted.
+     *
+     * It works the same as the {@see minus()} method, but returns a
+     * result instead of the new date.
      *
      * The result will contain the new date if no error was found, or
      * an exception if something went wrong.
@@ -837,7 +864,7 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
      *
      * @throws InvalidArgumentException if a `Period` is combined with some time units
      *
-     * @return Ok<static>
+     * @return Ok<static>|Error<ArithmeticError>
      */
     public function subtract(
         int|Period $years = 0,
@@ -849,22 +876,28 @@ class LocalDate implements Datelike, Formattable, Parsable, Stringable, Summable
         int $decades = 0,
         int $quarters = 0,
         int $weeks = 0,
-    ): Ok {
-            $date = $this->minus(
+    ): Ok|Error {
+        try {
+            $time = $this->minus(
                 $years, $months, $days,
                 $overflow,
                 $millennia, $centuries, $decades,
                 $quarters, $weeks,
             );
+        } catch (ArithmeticError $e) {
+            return Error::withException($e);
+        }
 
         /** @var Ok<static> */
-        return Ok::withValue($date);
+        return Ok::withValue($time);
     }
 
     /**
      * Makes a copy of this date with the specified year, month and
-     * day. It works the same as the {@see with()} method, but returns
-     * a result instead of the new date.
+     * day.
+     *
+     * It works the same as the {@see with()} method, but returns a
+     * result instead of the new date.
      *
      * The result will contain the new date if no error was found, or
      * an exception if something went wrong.

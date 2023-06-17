@@ -8,6 +8,13 @@ use OutOfRangeException;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
 
+/**
+ * @internal
+ */
+final class CustomOffset extends Offset
+{
+}
+
 final class CreationTest extends TestCase
 {
     public function testHours(): void
@@ -89,5 +96,38 @@ final class CreationTest extends TestCase
             new OutOfRangeException('seconds must be between -54000 and 54000, -54001 given'),
             fn () => Offset::fromTotalSeconds(Offset::TOTAL_SECONDS_MIN - 1)
         );
+    }
+
+    public function testZero(): void
+    {
+        $offset = Offset::zero();
+        self::assertInstanceOf(Offset::class, $offset);
+        self::assertOffset($offset, 0, 0, 0);
+
+        $offset = CustomOffset::zero();
+        self::assertInstanceOf(CustomOffset::class, $offset);
+        self::assertOffset($offset, 0, 0, 0);
+    }
+
+    public function testMax(): void
+    {
+        $offset = Offset::max();
+        self::assertInstanceOf(Offset::class, $offset);
+        self::assertOffset($offset, 15, 0, 0);
+
+        $offset = CustomOffset::max();
+        self::assertInstanceOf(CustomOffset::class, $offset);
+        self::assertOffset($offset, 15, 0, 0);
+    }
+
+    public function testMin(): void
+    {
+        $offset = Offset::min();
+        self::assertInstanceOf(Offset::class, $offset);
+        self::assertOffset($offset, -15, 0, 0);
+
+        $offset = CustomOffset::min();
+        self::assertInstanceOf(CustomOffset::class, $offset);
+        self::assertOffset($offset, -15, 0, 0);
     }
 }

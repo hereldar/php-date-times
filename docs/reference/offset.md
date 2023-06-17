@@ -101,14 +101,14 @@ public const TOTAL_MINUTES_MIN = -900;
 ### TOTAL_SECONDS_MAX
 
 ```php
-public const TOTAL_SECONDS_MAX = +900;
+public const TOTAL_SECONDS_MAX = +54000;
 ```
 
 
 ### TOTAL_SECONDS_MIN
 
 ```php
-public const TOTAL_SECONDS_MIN = -900;
+public const TOTAL_SECONDS_MIN = -54000;
 ```
 
 
@@ -162,13 +162,13 @@ their UTC value (00:00:00).
 
 **Parameters:**
 
-`$hours` the hour of the day, from -15 to 15
+`$hours` the amount of hours, from -15 to 15
 
-`$minutes` the minute of the hour, from -59 to 59
+`$minutes` the amount of minutes, from -59 to 59
 
-`$seconds` the second of the minute, from -59 to 59
+`$seconds` the amount of seconds, from -59 to 59
 
-**Throws:**
+**Exceptions:**
 
 `OutOfRangeException` if the value of any unit is out of range
 
@@ -186,7 +186,7 @@ The resulting offset must be in the range -15:00 to +15:00.
 
 `$minutes` total number of minutes, from -900 to 900
 
-**Throws:**
+**Exceptions:**
 
 `OutOfRangeException` if the total is not in the required range
 
@@ -202,9 +202,9 @@ The resulting offset must be in the range -15:00 to +15:00.
 
 **Parameters:**
 
-`$seconds` total number of seconds, from -54000 to 54000
+`$seconds` total number of seconds, from -54,000 to 54,000
 
-**Throws:**
+**Exceptions:**
 
 `OutOfRangeException` if the total is not in the required range
 
@@ -234,15 +234,17 @@ something went wrong.
 
 `$format` the expected format, or a list of accepted formats
 
-**Throws:**
+**Return Values:**
+
+`Ok<static>` if no error is found
+
+`Error<ParseException>` if the text cannot be parsed
+
+`Error<OutOfRangeException>` if the value of any unit is out of range
+
+**Exceptions:**
 
 `InvalidArgumentException` if an empty list of formats is passed
-
-**Returns:**
-
-`Ok<static>` if no error was found
-
-`Error<ParseException>` if something went wrong
 
 
 ### fromIso8601
@@ -257,9 +259,11 @@ format (e.g. `'+02:30'`).
 The offset is returned directly if no error is found, otherwise
 an exception is thrown.
 
-**Throws:**
+**Exceptions:**
 
 `ParseException` if the text cannot be parsed
+
+`OutOfRangeException` if the value of any unit is out of range
 
 
 ## Methods
@@ -290,11 +294,30 @@ The text is not returned directly, but a [result][php-results-doc]
 that will contain the text if no error was found, or an exception if
 something went wrong.
 
-**Returns:**
+**Return Values:**
 
-`Ok<string>` if no error was found
+`Ok<string>` if no error is found
 
-`Error<FormatException>` if something went wrong
+`Error<FormatException>` if the format is incorrect
+
+
+### formatted
+
+```php
+public function formatted(string $format = Offset::ISO8601): string;
+```
+
+Formats this offset using the specified format.
+
+If the format is not specified, the ISO 8601 offset format will
+be used (`%R%H:%I`).
+
+The text is returned directly if no error is found, otherwise
+an exception is thrown.
+
+**Exceptions:**
+
+`FormatException` if the format is incorrect
 
 
 ### toIso8601
@@ -415,7 +438,7 @@ Returns the total number of minutes, from -900 to 900.
 public function totalSeconds(): int;
 ```
 
-Returns the total number of seconds, from -54000 to 54000.
+Returns the total number of seconds, from -54,000 to 54,000.
 
 
 ### compareTo
@@ -507,15 +530,6 @@ Checks if this offset is less than or equal to the specified
 offset.
 
 
-### isNegative
-
-```php
-public function isNegative(): bool;
-```
-
-Checks if this offset is less than zero.
-
-
 ### isPositive
 
 ```php
@@ -523,6 +537,15 @@ public function isPositive(): bool;
 ```
 
 Checks if this offset is greater than zero.
+
+
+### isNegative
+
+```php
+public function isNegative(): bool;
+```
+
+Checks if this offset is less than zero.
 
 
 ### isZero
@@ -547,7 +570,7 @@ public function plus(
 Returns a copy of this offset with the specified amount of
 hours, minutes and seconds added.
 
-**Throws:**
+**Exceptions:**
 
 `ArithmeticError` if any value exceeds the PHP limits for an integer
 
@@ -567,7 +590,7 @@ public function minus(
 Returns a copy of this offset with the specified amount of
 hours, minutes and seconds subtracted.
 
-**Throws:**
+**Exceptions:**
 
 `ArithmeticError` if any value exceeds the PHP limits for an integer
 
@@ -589,13 +612,13 @@ and seconds.
 
 **Parameters:**
 
-`$hours` the hour of the day, from -15 to 15
+`$hours` the amount of hours, from -15 to 15
 
-`$minutes` the minute of the hour, from -59 to 59
+`$minutes` the amount of minutes, from -59 to 59
 
-`$seconds` the second of the minute, from -59 to 59
+`$seconds` the amount of seconds, from -59 to 59
 
-**Throws:**
+**Exceptions:**
 
 `OutOfRangeException` if the value of any unit is out of range
 
@@ -611,18 +634,21 @@ public function add(
 ```
 
 Makes a copy of this offset with the specified amount of hours,
-minutes and seconds added. It works the same as the [plus()](#plus)
-method, but returns a [result][php-results-doc] instead of the
-new offset.
+minutes and seconds added.
+
+It works the same as the [plus()](#plus) method, but returns a
+[result][php-results-doc] instead of the new offset.
 
 The result will contain the new offset if no error was found,
 or an exception if something went wrong.
 
-**Returns:**
+**Return Values:**
 
-`Ok<static>` if no error was found
+`Ok<static>` if no error is found
 
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
+`Error<ArithmeticError>` if any value exceeds the PHP limits for an integer
+
+`Error<OutOfRangeException>` if the value of any unit is out of range
 
 
 ### subtract
@@ -636,18 +662,21 @@ public function subtract(
 ```
 
 Makes a copy of this offset with the specified amount of hours,
-minutes and seconds subtracted. It works the same as the
-[minus()](#minus) method, but returns a [result][php-results-doc]
-instead of the new offset.
+minutes and seconds subtracted.
+
+It works the same as the [minus()](#minus) method, but returns
+a [result][php-results-doc] instead of the new offset.
 
 The result will contain the new offset if no error was found,
 or an exception if something went wrong.
 
-**Returns:**
+**Return Values:**
 
-`Ok<static>` if no error was found
+`Ok<static>` if no error is found
 
-`Error<ArithmeticError|OutOfRangeException>` if something went wrong
+`Error<ArithmeticError>` if any value exceeds the PHP limits for an integer
+
+`Error<OutOfRangeException>` if the value of any unit is out of range
 
 
 ### copy
@@ -662,25 +691,27 @@ public function copy(
 ```
 
 Makes a copy of this offset with the specified hours, minutes
-and seconds. It works the same as the [with()](#with) method, but
-returns a [result][php-results-doc] instead of the new time.
+and seconds.
+
+It works the same as the [with()](#with) method, but returns a
+[result][php-results-doc] instead of the new offset.
 
 The result will contain the new offset if no error was found, or
 an exception if something went wrong.
 
 **Parameters:**
 
-`$hours` the hour of the day, from -15 to 15
+`$hours` the amount of hours, from -15 to 15
 
-`$minutes` the minute of the hour, from -59 to 59
+`$minutes` the amount of minutes, from -59 to 59
 
-`$seconds` the second of the minute, from -59 to 59
+`$seconds` the amount of seconds, from -59 to 59
 
-**Returns:**
+**Return Values:**
 
-`Ok<static>` if no error was found
+`Ok<static>` if no error is found
 
-`Error<OutOfRangeException>` if something went wrong
+`Error<OutOfRangeException>` if the value of any unit is out of range
 
 
 [php-results-doc]: https://hereldar.github.io/php-results/
