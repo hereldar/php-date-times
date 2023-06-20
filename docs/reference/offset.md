@@ -2,7 +2,7 @@
 # Offset
 
 
-A time offset from Greenwich/UTC, such as `+02:00`.
+A time offset from Greenwich/UTC, such as `-06:00`.
 
 Although time offsets usually consist of a fixed number of hours
 and minutes, this class also supports seconds.

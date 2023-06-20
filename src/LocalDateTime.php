@@ -25,7 +25,7 @@ use OutOfRangeException;
 use Stringable;
 
 /**
- * A date-time without a time-zone in the ISO-8601 calendar system,
+ * A date and time without a time-zone in the ISO-8601 calendar system,
  * such as 17:30:09 on 3 December 2007.
  *
  * This class does not store a time-zone. Instead, it is a description

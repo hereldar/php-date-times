@@ -1,7 +1,7 @@
 
 # TimeZone
 
-A time-zone, such as `Europe/Paris`.
+A time-zone, such as `America/Mexico_City`.
 
 There are three different types of time-zone rules:
 

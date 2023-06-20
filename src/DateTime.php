@@ -26,8 +26,8 @@ use OutOfRangeException;
 use Stringable;
 
 /**
- * A date-time with a time-zone in the ISO-8601 calendar system, such
- * as 17:30:09 Europe/Paris on 3 December 2007.
+ * A date and time with a time-zone in the ISO-8601 calendar system,
+ * such as 17:30:09 America/Mexico_City on 3 December 2007.
  *
  * Instances of this class are immutable and not affected by any
  * method calls.
@@ -740,7 +740,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
     }
 
     /**
-     * Returns the time-zone, such as `Europe/Paris`.
+     * Returns the time-zone, such as `America/Mexico_City`.
      */
     public function timeZone(): TimeZone
     {

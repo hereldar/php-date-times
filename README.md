@@ -6,7 +6,6 @@ DateTimes
 [![Type Coverage][shepherd-coverage-badge]][shepherd-url]
 [![Psalm Level][shepherd-level-badge]][shepherd-url]
 [![Packagist][packagist-version-badge]][packagist-url]
-[![Downloads][packagist-downloads-badge]][packagist-url]
 [![License][license-badge]][license-url]
 
 [php-badge]: https://img.shields.io/badge/php-8.1%20to%208.2-777bb3.svg
@@ -31,14 +30,12 @@ concepts, including dates, times, time-zones and periods.
 LocalDate::now()->minus(weeks: 1)->atTime(LocalTime::noon())->toIso8601();
 ```
 
-Features
---------
+Highlights
+----------
 
 - Separation of concepts
 - Immutability
-- Comprehensive documentation
 - Strong typing
-- Framework-agnostic
 
 Installation
 ------------

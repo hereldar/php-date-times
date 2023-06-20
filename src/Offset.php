@@ -18,7 +18,7 @@ use OutOfRangeException;
 use Stringable;
 
 /**
- * A time offset from Greenwich/UTC, such as `+02:00`.
+ * A time offset from Greenwich/UTC, such as `-06:00`.
  *
  * Although time offsets usually consist of a fixed number of hours
  * and minutes, this class also supports seconds.
@@ -30,10 +30,10 @@ use Stringable;
  */
 class Offset implements Formattable, Stringable, Copyable, Summable
 {
-    final public const ISO8601 = '%R%H:%I'; // +02:00
-    final public const RFC2822 = '%R%H%I';  // +0200
-    final public const RFC3339 = '%R%H:%I'; // +02:00
-    final public const SQL = '%R%H:%I';     // +02:00
+    final public const ISO8601 = '%R%H:%I'; // -06:00
+    final public const RFC2822 = '%R%H%I';  // -0600
+    final public const RFC3339 = '%R%H:%I'; // -06:00
+    final public const SQL = '%R%H:%I';     // -06:00
 
     public const HOURS_MAX = +self::HOURS_LIMIT;
     public const HOURS_MIN = -self::HOURS_LIMIT;

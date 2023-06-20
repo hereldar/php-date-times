@@ -4,7 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   lang: 'en-US',
   title: "PHP DateTimes",
-  description: "Immutable classes for dates, times, time-zones and periods",
+  description: "Immutable classes to work with dates and times without mixing concepts",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: nav(),
@@ -31,11 +31,12 @@ function nav() {
       activeMatch: '/reference/',
       items: [
         { text: 'DateTime', link: '/reference/date-time' },
-        { text: 'LocalDate', link: '/reference/local-date' },
         { text: 'LocalDateTime', link: '/reference/local-date-time' },
+        { text: 'LocalDate', link: '/reference/local-date' },
         { text: 'LocalTime', link: '/reference/local-time' },
         { text: 'TimeZone', link: '/reference/time-zone' },
-        { text: 'Offset', link: '/reference/offset' }
+        { text: 'Offset', link: '/reference/offset' },
+        { text: 'Period', link: '/reference/period' }
       ]
     }
   ]
@@ -51,13 +52,30 @@ function sidebarReference() {
   return [
     {
       text: 'Reference',
+      link: '/reference/',
       items: [
-        { text: 'DateTime', link: '/reference/date-time' },
-        { text: 'LocalDate', link: '/reference/local-date' },
-        { text: 'LocalDateTime', link: '/reference/local-date-time' },
-        { text: 'LocalTime', link: '/reference/local-time' },
-        { text: 'TimeZone', link: '/reference/time-zone' },
-        { text: 'Offset', link: '/reference/offset' }
+        {
+          text: 'Dates and Times',
+          items: [
+            { text: 'DateTime', link: '/reference/date-time' },
+            { text: 'LocalDateTime', link: '/reference/local-date-time' },
+            { text: 'LocalDate', link: '/reference/local-date' },
+            { text: 'LocalTime', link: '/reference/local-time' }
+          ]
+        },
+        {
+          text: 'Time Zones',
+          items: [
+            { text: 'TimeZone', link: '/reference/time-zone' },
+            { text: 'Offset', link: '/reference/offset' }
+          ]
+        },
+        {
+          text: 'Durations',
+          items: [
+            { text: 'Period', link: '/reference/period' }
+          ]
+        }
       ]
     }
   ]

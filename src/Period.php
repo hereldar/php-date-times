@@ -16,10 +16,11 @@ use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
 use Stringable;
+use TypeError;
 
 /**
- * An amount of time in the ISO-8601 calendar system, such as '2
- * months, 3 days and 12 hours'.
+ * An amount of time in the ISO-8601 calendar system, such as 2 months,
+ * 3 days and 12 hours.
  *
  * This class models a quantity or amount of time in terms of years,
  * months, days, hours, minutes, seconds and microseconds.
@@ -108,6 +109,20 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
     }
 
     /**
+     * Makes a `Period` consisting of the number of years, months,
+     * days, hours, minutes, seconds and microseconds between two
+     * time points.
+     *
+     * Both the start and the end points must store the same time
+     * units. This means that a `Date` cannot be passed next to a
+     * `Time`, otherwise an exception will be thrown.
+     *
+     * The period can be negative if the end is before the start. The
+     * negative sign shall be the same for each time unit. To ensure a
+     * positive period is obtained call {@see abs()} on the result.
+     *
+     * @throws TypeError if the given objects store different time units
+     *
      * @psalm-suppress PossiblyInvalidArgument
      */
     public static function between(
