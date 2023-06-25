@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   lang: 'en-US',
-  title: "PHP DateTimes",
+  title: "Hereldar\\DateTimes",
   description: "Immutable classes to work with dates and times without mixing concepts",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
@@ -25,7 +25,13 @@ export default defineConfig({
 
 function nav() {
   return [
-    { text: 'Guide', link: '/' },
+    {
+      text: 'Guide',
+      items: [
+        {text: 'Getting Started', link: '/'},
+        {text: 'Design philosophy', link: '/design-philosophy'}
+      ]
+    },
     {
       text: 'Reference',
       activeMatch: '/reference/',
@@ -44,7 +50,8 @@ function nav() {
 
 function sidebarGuide() {
   return [
-    {text: 'Guide', link: '/'}
+    {text: 'Getting Started', link: '/'},
+    {text: 'Design philosophy', link: '/design-philosophy'}
   ]
 }
 

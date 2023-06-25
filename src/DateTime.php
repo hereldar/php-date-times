@@ -115,7 +115,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
 
     /**
      * Makes a new `DateTime` with the specified year, month, day,
-     * hour, minute, second, microsecond and time-zon. The time units
+     * hour, minute, second, microsecond and time-zone. The time units
      * must be within their valid range, otherwise an exception will
      * be thrown.
      * All parameters are optional and, if not specified, will take

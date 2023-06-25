@@ -1,8 +1,10 @@
+
 Getting Started
 ===============
 
-`DateTime` is a library with several classes representing the main
-date-time concepts, including dates, times, time-zones and periods.
+`Hereldar\DateTimes` is a library with several classes representing
+the main date-time concepts, including dates, times, time-zones and
+periods.
 
 ```php
 LocalDate::now()->minus(weeks: 1)->atTime(LocalTime::noon())->toIso8601();

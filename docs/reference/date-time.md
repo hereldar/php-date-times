@@ -166,7 +166,7 @@ public static function of(
 ```
 
 Makes a new `DateTime` with the specified year, month, day,
-hour, minute, second, microsecond and time-zon. The time units
+hour, minute, second, microsecond and time-zone. The time units
 must be within their valid range, otherwise an exception will
 be thrown.
 
