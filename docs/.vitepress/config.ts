@@ -29,7 +29,7 @@ function nav() {
       text: 'Guide',
       items: [
         {text: 'Getting Started', link: '/'},
-        {text: 'Design philosophy', link: '/design-philosophy'}
+        {text: 'Design Philosophy', link: '/design-philosophy'}
       ]
     },
     {
@@ -51,7 +51,7 @@ function nav() {
 function sidebarGuide() {
   return [
     {text: 'Getting Started', link: '/'},
-    {text: 'Design philosophy', link: '/design-philosophy'}
+    {text: 'Design Philosophy', link: '/design-philosophy'}
   ]
 }
 

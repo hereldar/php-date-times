@@ -15,7 +15,8 @@ Highlights
 
 - Separation of concepts
 - Immutability
-- Strong typing
+- Type safety
+- Cohesion
 
 Installation
 ------------
