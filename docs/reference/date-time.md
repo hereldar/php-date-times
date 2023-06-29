@@ -374,8 +374,8 @@ otherwise an exception is thrown.
 public static function fromNative(NativeDateTimeInterface $value): static;
 ```
 
-Makes a new `DateTime` from a native `DateTime` or
-`DateTimeImmutable`.
+Makes a new `DateTime` from a [`DateTime`][native-date-time] or
+[`DateTimeImmutable`][native-date-time-immutable].
 
 
 ### fromSecondsSinceEpoch
@@ -561,7 +561,7 @@ an exception is thrown.
 public function toNative(): NativeDateTime;
 ```
 
-Returns a native `DateTimeImmutable` with the values of this
+Returns a native [`DateTimeImmutable`][native-date-time-immutable] with the values of this
 date-time.
 
 
@@ -571,8 +571,8 @@ date-time.
 public function date(): LocalDate;
 ```
 
-Returns a `LocalDate` with the same year, month and day as this
-date-time.
+Returns a [`LocalDate`](local-date) with the same year,
+month and day as this date-time.
 
 
 ### year
@@ -659,8 +659,8 @@ Returns whether it is a leap year.
 public function time(): LocalTime;
 ```
 
-Returns a `LocalTime` with the same hour, minute, second and
-microsecond as this date-time.
+Returns a [`LocalTime`](local-time) with the same hour,
+minute, second and microsecond as this date-time.
 
 
 ### hour
@@ -1135,4 +1135,8 @@ or an exception if something went wrong.
 `Error<TimeZoneException>` if the time-zone name cannot be found
 
 
+[native-date-time]: https://www.php.net/manual/en/class.datetime.php
+[native-date-time-immutable]: https://www.php.net/manual/en/class.datetimeimmutable.php
+[native-date-time-zone]: https://www.php.net/manual/en/class.datetimezone.php
+[native-date-interval]: https://www.php.net/manual/en/class.dateinterval.php
 [php-results-doc]: https://hereldar.github.io/php-results/

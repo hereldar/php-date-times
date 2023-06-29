@@ -61,6 +61,9 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
     /** @var array<class-string, static> */
     private static array $noons = [];
 
+    /**
+     * @internal
+     */
     private function __construct(
         private readonly NativeDateTime $value,
     ) {

@@ -58,6 +58,9 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
     /** @var array<class-string, static> */
     private static array $epochs = [];
 
+    /**
+     * @internal
+     */
     private function __construct(
         private readonly NativeDateTime $value,
     ) {

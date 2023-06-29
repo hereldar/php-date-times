@@ -295,8 +295,8 @@ otherwise an exception is thrown.
 public static function fromNative(NativeDateTimeInterface $value): static;
 ```
 
-Makes a new `LocalDateTime` from a native `DateTime` or
-`DateTimeImmutable`.
+Makes a new `LocalDateTime` from a native [`DateTime`][native-date-time] or
+[`DateTimeImmutable`][native-date-time-immutable].
 
 Only the date and time values will be taken, while time-zone
 values will be ignored.
@@ -438,7 +438,7 @@ an exception is thrown.
 public function toNative(): NativeDateTime;
 ```
 
-Returns a native `DateTimeImmutable` with the values of this
+Returns a native [`DateTimeImmutable`][native-date-time-immutable] with the values of this
 date-time.
 
 The time-zone value will be taken from the Unix epoch (UTC).
@@ -450,8 +450,8 @@ The time-zone value will be taken from the Unix epoch (UTC).
 public function atTimeZone(TimeZone|string $timeZone): DateTime;
 ```
 
-Combines this date-time with a time-zone to make a `DateTime`.
-It accepts a `TimeZone` object or a text with its name.
+Combines this date-time with a time-zone to make a [`DateTime`](date-time).
+It accepts a [`TimeZone`](time-zone) object or a text with its name.
 
 
 ### atOffset
@@ -464,7 +464,7 @@ public function atOffset(
 ): DateTime;
 ```
 
-Combines this date-time with an offset to make a `DateTime`. It
+Combines this date-time with an offset to make a [`DateTime`](date-time). It
 accepts an `Offset` or individual time units.
 
 If an `Offset` is passed as the first argument, no further
@@ -494,8 +494,8 @@ valid range. Missing units will be zero (00:00:00).
 public function date(): LocalDate;
 ```
 
-Returns a `LocalDate` with the same year, month and day as this
-date-time.
+Returns a [`LocalDate`](local-date) with the same year,
+month and day as this date-time.
 
 
 ### year
@@ -580,8 +580,8 @@ Returns whether it is a leap year.
 public function time(): LocalTime;
 ```
 
-Returns a `LocalTime` with the same hour, minute, second and
-microsecond as this date-time.
+Returns a [`LocalTime`](local-time) with the same hour,
+minute, second and microsecond as this date-time.
 
 
 ### hour
@@ -995,4 +995,8 @@ or an exception if something went wrong.
 `Error<OutOfRangeException>` if the value of any unit is out of range
 
 
+[native-date-time]: https://www.php.net/manual/en/class.datetime.php
+[native-date-time-immutable]: https://www.php.net/manual/en/class.datetimeimmutable.php
+[native-date-time-zone]: https://www.php.net/manual/en/class.datetimezone.php
+[native-date-interval]: https://www.php.net/manual/en/class.dateinterval.php
 [php-results-doc]: https://hereldar.github.io/php-results/

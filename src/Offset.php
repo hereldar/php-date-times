@@ -70,6 +70,9 @@ class Offset implements Formattable, Stringable, Copyable, Summable
 
     private const FORMAT_PATTERN = '/%([%a-zA-Z])/';
 
+    /**
+     * @internal
+     */
     private function __construct(
         private readonly int $value,
     ) {

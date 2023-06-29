@@ -80,6 +80,9 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
 
     private const FORMAT_PATTERN = '/%([%a-zA-Z])/';
 
+    /**
+     * @internal
+     */
     private function __construct(
         private readonly int $years = 0,
         private readonly int $months = 0,

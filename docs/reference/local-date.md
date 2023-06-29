@@ -242,8 +242,8 @@ public static function fromNative(
 ): static;
 ```
 
-Makes a new `LocalDate` from a native `DateTime` or
-`DateTimeImmutable`.
+Makes a new `LocalDate` from a native [`DateTime`][native-date-time] or
+[`DateTimeImmutable`][native-date-time-immutable].
 
 Only the date values will be taken, while time and time-zone
 values will be ignored.
@@ -361,7 +361,7 @@ an exception is thrown.
 public function toNative(): NativeDateTime;
 ```
 
-Returns a native `DateTimeImmutable` with the values of this
+Returns a native [`DateTimeImmutable`][native-date-time-immutable] with the values of this
 date.
 
 The time and time-zone values will be taken from the Unix epoch
@@ -379,11 +379,11 @@ public function atTime(
 ): LocalDateTime;
 ```
 
-Combines this date with a time to make a `LocalDateTime`. It
-accepts a `LocalTime` or individual time units.
+Combines this date with a time to make a [`LocalDateTime`](local-date-time).
+It accepts a [`LocalTime`](local-time) or individual time units.
 
-If a `LocalTime` is passed as the first argument, no further
-arguments will be accepted.
+If a [`LocalTime`](local-time) is passed as the first argument,
+no further arguments will be accepted.
 
 If individual time units are passed, they must be within their
 valid range. Missing units will be taken from the Unix epoch
@@ -391,7 +391,7 @@ valid range. Missing units will be taken from the Unix epoch
 
 **Exceptions:**
 
-`InvalidArgumentException` if a `LocalTime` is combined with some time units
+`InvalidArgumentException` if a [`LocalTime`](local-time) is combined with some time units
 
 `OutOfRangeException` if the value of any unit is out of range
 
@@ -788,4 +788,8 @@ an exception if something went wrong.
 `Error<OutOfRangeException>` if the value of any unit is out of range
 
 
+[native-date-time]: https://www.php.net/manual/en/class.datetime.php
+[native-date-time-immutable]: https://www.php.net/manual/en/class.datetimeimmutable.php
+[native-date-time-zone]: https://www.php.net/manual/en/class.datetimezone.php
+[native-date-interval]: https://www.php.net/manual/en/class.dateinterval.php
 [php-results-doc]: https://hereldar.github.io/php-results/

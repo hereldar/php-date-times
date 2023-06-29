@@ -99,7 +99,7 @@ public static function fromNative(
 ): static;
 ```
 
-Makes a new `TimeZone` from a native `DateTimeZone`.
+Makes a new `TimeZone` from a native [`DateTimeZone`][native-date-time-zone].
 
 
 ### fromOffset
@@ -131,7 +131,7 @@ Outputs this time-zone as a `string`, using its name.
 public function toNative(): NativeTimeZone;
 ```
 
-Returns a native `DateTimeZone` with the information of this
+Returns a native [`DateTimeZone`][native-date-time-zone] with the information of this
 time-zone.
 
 
@@ -217,3 +217,10 @@ public function isNotEqual(TimeZone $that): bool;
 
 Checks if the given time-zone has a different name from this
 time-zone.
+
+
+[native-date-time]: https://www.php.net/manual/en/class.datetime.php
+[native-date-time-immutable]: https://www.php.net/manual/en/class.datetimeimmutable.php
+[native-date-time-zone]: https://www.php.net/manual/en/class.datetimezone.php
+[native-date-interval]: https://www.php.net/manual/en/class.dateinterval.php
+[php-results-doc]: https://hereldar.github.io/php-results/

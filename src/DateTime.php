@@ -71,6 +71,9 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
     /** @var array<class-string, static> */
     private static array $epochs = [];
 
+    /**
+     * @internal
+     */
     private function __construct(
         private readonly NativeDateTime $value
     ) {

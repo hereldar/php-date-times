@@ -32,6 +32,9 @@ class TimeZone implements Stringable
     /** @var array<class-string, array<string, static>> */
     private static array $timeZones = [];
 
+    /**
+     * @internal
+     */
     private function __construct(
         private readonly NativeTimeZone $value,
     ) {

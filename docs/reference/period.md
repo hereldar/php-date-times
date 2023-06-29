@@ -167,7 +167,7 @@ public static function fromNative(
 ): static;
 ```
 
-Makes a new `Period` from a native `DateInterval`.
+Makes a new `Period` from a native [`DateInterval`][native-date-interval].
 
 
 ## Methods
@@ -245,7 +245,7 @@ an exception is thrown.
 public function toNative(): NativeDateInterval;
 ```
 
-Returns a native `DateInterval` with the values of this period.
+Returns a native [`DateInterval`][native-date-interval] with the values of this period.
 
 
 ### years
@@ -803,4 +803,8 @@ or an exception if something went wrong.
 `Error<ArithmeticError>` if any value exceeds the PHP limits for an integer
 
 
+[native-date-time]: https://www.php.net/manual/en/class.datetime.php
+[native-date-time-immutable]: https://www.php.net/manual/en/class.datetimeimmutable.php
+[native-date-time-zone]: https://www.php.net/manual/en/class.datetimezone.php
+[native-date-interval]: https://www.php.net/manual/en/class.dateinterval.php
 [php-results-doc]: https://hereldar.github.io/php-results/

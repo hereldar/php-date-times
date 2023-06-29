@@ -393,7 +393,7 @@ an exception is thrown.
 public function toTimeZone(): TimeZone;
 ```
 
-Returns a fixed `TimeZone` with this offset.
+Returns a fixed [`TimeZone`](time-zone) with this offset.
 
 
 ### hours
@@ -714,4 +714,8 @@ an exception if something went wrong.
 `Error<OutOfRangeException>` if the value of any unit is out of range
 
 
+[native-date-time]: https://www.php.net/manual/en/class.datetime.php
+[native-date-time-immutable]: https://www.php.net/manual/en/class.datetimeimmutable.php
+[native-date-time-zone]: https://www.php.net/manual/en/class.datetimezone.php
+[native-date-interval]: https://www.php.net/manual/en/class.dateinterval.php
 [php-results-doc]: https://hereldar.github.io/php-results/
