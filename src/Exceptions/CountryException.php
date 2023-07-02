@@ -15,7 +15,7 @@ final class CountryException extends InvalidArgumentException
         string $code,
         ?Throwable $previous = null,
     ) {
-        $message = "Unknown or bad country ({$code})";
+        $message = "Unknown or bad country code ({$code})";
 
         parent::__construct($message, 0, $previous);
         $this->countryCode = $code;

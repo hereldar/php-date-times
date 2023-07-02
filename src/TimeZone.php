@@ -9,8 +9,10 @@ use Hereldar\DateTimes\Enums\TimeZoneGroup;
 use Hereldar\DateTimes\Enums\TimeZoneType;
 use Hereldar\DateTimes\Exceptions\CountryException;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
+use InvalidArgumentException;
 use Stringable;
 use Throwable;
+use ValueError;
 
 /**
  * A time-zone, such as `America/Mexico_City`.
@@ -90,10 +92,14 @@ class TimeZone implements Stringable
     public static function countryIdentifiers(
         string $code,
     ): array {
-        $identifiers = NativeTimeZone::listIdentifiers(
-            NativeTimeZone::PER_COUNTRY,
-            $code,
-        );
+        try {
+            $identifiers = NativeTimeZone::listIdentifiers(
+                NativeTimeZone::PER_COUNTRY,
+                $code,
+            );
+        } catch (ValueError) {
+            throw new CountryException($code);
+        }
 
         if (!$identifiers) {
             throw new CountryException($code);
