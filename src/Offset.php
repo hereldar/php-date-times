@@ -30,10 +30,13 @@ use Stringable;
  */
 class Offset implements Formattable, Stringable, Copyable, Summable
 {
-    final public const ISO8601 = '%R%H:%I'; // -06:00
-    final public const RFC2822 = '%R%H%I';  // -0600
-    final public const RFC3339 = '%R%H:%I'; // -06:00
-    final public const SQL = '%R%H:%I';     // -06:00
+    final public const ISO8601 = '%R%H:%I';
+    final public const ISO8601_SECONDS = '%R%H:%I:%S';
+    final public const RFC2822 = '%R%H%I';
+    final public const RFC3339 = '%R%H:%I';
+    final public const RFC3339_SECONDS = '%R%H:%I:%S';
+    final public const SQL = '%R%H:%I';
+    final public const SQL_SECONDS = '%R%H:%I:%S';
 
     public const HOURS_MAX = +self::HOURS_LIMIT;
     public const HOURS_MIN = -self::HOURS_LIMIT;
@@ -68,6 +71,17 @@ class Offset implements Formattable, Stringable, Copyable, Summable
         /xS
     REGEX;
 
+    private const RFC2822_PATTERN = <<<'REGEX'
+        /
+            (?P<sign>[+-])
+            (?P<hours>[0-9]{2})
+            (?P<minutes>[0-9]{2})
+            (?:
+                (?P<seconds>[0-9]{2})
+            )?
+        /xS
+    REGEX;
+
     private const FORMAT_PATTERN = '/%([%a-zA-Z])/';
 
     /**
@@ -79,12 +93,11 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     }
 
     /**
-     * Outputs this offset as a `string`, using the default format of
-     * the class.
+     * Outputs this offset as a `string`, using the ISO 8601 format.
      */
     public function __toString(): string
     {
-        return $this->format()->orFail();
+        return $this->toIso8601();
     }
 
     /**
@@ -190,11 +203,6 @@ class Offset implements Formattable, Stringable, Copyable, Summable
         string $string,
         string|array $format = Offset::ISO8601,
     ): Ok|Error {
-        if ($format === self::ISO8601) {
-            /** @var Ok<static> */
-            return Ok::withValue(static::fromIso8601($string));
-        }
-
         /** @var array<int, string> $formats */
         $formats = [];
 
@@ -306,6 +314,66 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     }
 
     /**
+     * Makes a new `Offset` from a text with the RFC 2822 offset
+     * format (e.g. `'+0230'`).
+     *
+     * The offset is returned directly if no error is found, otherwise
+     * an exception is thrown.
+     *
+     * @throws ParseException if the text cannot be parsed
+     * @throws OutOfRangeException if the value of any unit is out of range
+     */
+    public static function fromRfc2822(string $string): static
+    {
+        $matches = [];
+
+        if (!preg_match(self::RFC2822_PATTERN, $string, $matches)) {
+            throw new ParseException($string, self::RFC2822);
+        }
+
+        $sign = match ($matches['sign']) {
+            '-' => -1,
+            default => 1,
+        };
+
+        return static::of(
+            hours: $sign * (int) ($matches['hours']),
+            minutes: $sign * (int) ($matches['minutes']),
+            seconds: $sign * (int) ($matches['seconds'] ?? 0),
+        );
+    }
+
+    /**
+     * Makes a new `Offset` from a text with the RFC 3339 offset
+     * format (e.g. `'+02:30'`).
+     *
+     * The offset is returned directly if no error is found, otherwise
+     * an exception is thrown.
+     *
+     * @throws ParseException if the text cannot be parsed
+     * @throws OutOfRangeException if the value of any unit is out of range
+     */
+    public static function fromRfc3339(string $string): static
+    {
+        return static::fromIso8601($string);
+    }
+
+    /**
+     * Makes a new `Offset` from a text with the SQL offset format
+     * (e.g. `'+02:30'`).
+     *
+     * The offset is returned directly if no error is found, otherwise
+     * an exception is thrown.
+     *
+     * @throws ParseException if the text cannot be parsed
+     * @throws OutOfRangeException if the value of any unit is out of range
+     */
+    public static function fromSql(string $string): static
+    {
+        return static::fromIso8601($string);
+    }
+
+    /**
      * Formats this offset using the specified format.
      *
      * If the format is not specified, the ISO 8601 offset format will
@@ -319,10 +387,6 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      */
     public function format(string $format = Offset::ISO8601): Ok|Error
     {
-        if ($format === self::ISO8601) {
-            return Ok::withValue($this->toIso8601());
-        }
-
         $string = preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
             callback: fn (array $matches) => match ($matches[1]) {
@@ -398,31 +462,17 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      * Formats this offset with the RFC 2822 offset format (e.g.
      * `'+0230'`).
      *
-     * By default, adds seconds if they are non-zero (for example
-     * `'+023045'`). To always add them, set `$seconds` to true. To
-     * never add them, set `$seconds` to false.
-     *
      * The text is returned directly if no error is found, otherwise
      * an exception is thrown.
      */
-    public function toRfc2822(?bool $seconds = null): string
+    public function toRfc2822(): string
     {
-        $string = sprintf(
+        return sprintf(
             '%s%02d%02d',
             ($this->value < 0) ? '-' : '+',
             abs($this->hours()),
             abs($this->minutes())
         );
-
-        if ($seconds === true
-            || ($seconds === null && $this->seconds())) {
-            $string .= sprintf(
-                '%02d',
-                abs($this->seconds())
-            );
-        }
-
-        return $string;
     }
 
     /**

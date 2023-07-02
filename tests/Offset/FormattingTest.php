@@ -27,33 +27,33 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(1, $this->offset->hours());
         self::assertSame('1', $this->offset->format('%h')->orFail());
-        self::assertSame('01', $this->offset->format('%H')->orFail());
+        self::assertSame('01', $this->offset->formatted('%H'));
 
         self::assertSame(0, $this->emptyOffset->hours());
         self::assertSame('0', $this->emptyOffset->format('%h')->orFail());
-        self::assertSame('00', $this->emptyOffset->format('%H')->orFail());
+        self::assertSame('00', $this->emptyOffset->formatted('%H'));
     }
 
     public function testMinutes(): void
     {
         self::assertSame(2, $this->offset->minutes());
         self::assertSame('2', $this->offset->format('%i')->orFail());
-        self::assertSame('02', $this->offset->format('%I')->orFail());
+        self::assertSame('02', $this->offset->formatted('%I'));
 
         self::assertSame(0, $this->emptyOffset->minutes());
         self::assertSame('0', $this->emptyOffset->format('%i')->orFail());
-        self::assertSame('00', $this->emptyOffset->format('%I')->orFail());
+        self::assertSame('00', $this->emptyOffset->formatted('%I'));
     }
 
     public function testSeconds(): void
     {
         self::assertSame(3, $this->offset->seconds());
         self::assertSame('3', $this->offset->format('%s')->orFail());
-        self::assertSame('03', $this->offset->format('%S')->orFail());
+        self::assertSame('03', $this->offset->formatted('%S'));
 
         self::assertSame(0, $this->emptyOffset->seconds());
         self::assertSame('0', $this->emptyOffset->format('%s')->orFail());
-        self::assertSame('00', $this->emptyOffset->format('%S')->orFail());
+        self::assertSame('00', $this->emptyOffset->formatted('%S'));
     }
 
     public function testAll(): void
@@ -68,11 +68,11 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '0h 0i 0s',
-            $this->emptyOffset->format('%hh %ii %ss')->orFail()
+            $this->emptyOffset->formatted('%hh %ii %ss')
         );
         self::assertSame(
             '00H 00I 00S',
-            $this->emptyOffset->format('%HH %II %SS')->orFail()
+            $this->emptyOffset->formatted('%HH %II %SS')
         );
     }
 }

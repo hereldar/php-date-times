@@ -17,18 +17,17 @@ final class Iso8601Test extends TestCase
     public function testIso8601(
         Offset $offset,
         string $expected,
-        bool $reversible = true,
     ): void {
         self::assertEquals($offset, Offset::fromIso8601($expected));
         self::assertEquals($offset, Offset::parse($expected, Offset::ISO8601)->orFail());
         self::assertEquals($offset, Offset::parse($expected)->orFail());
 
-        if ($reversible) {
-            self::assertEquals($expected, $offset->toIso8601());
-            self::assertEquals($expected, $offset->format(Offset::ISO8601)->orFail());
-            self::assertEquals($expected, $offset->format()->orFail());
-            self::assertEquals($expected, (string) $offset);
-        }
+        self::assertEquals($expected, $offset->toIso8601());
+        self::assertEquals($expected, $offset->format(Offset::ISO8601)->orFail());
+        self::assertEquals($expected, $offset->format()->orFail());
+        self::assertEquals($expected, $offset->formatted(Offset::ISO8601));
+        self::assertEquals($expected, $offset->formatted());
+        self::assertEquals($expected, (string) $offset);
     }
 
     public static function dataForIso8601(): Generator
@@ -50,20 +49,40 @@ final class Iso8601Test extends TestCase
             '+00:01',
         ];
         yield [
-            Offset::of(0, 0, 1),
-            '+00:00:01',
-        ];
-        yield [
             Offset::of(1, 2),
             '+01:02',
         ];
         yield [
-            Offset::of(1, 2, 3),
-            '+01:02:03',
-        ];
-        yield [
             Offset::of(-1, -2),
             '-01:02',
+        ];
+    }
+
+    /**
+     * @dataProvider dataForIso8601WithSeconds
+     */
+    public function testIso8601WithSeconds(
+        Offset $offset,
+        string $expected,
+    ): void {
+        self::assertEquals($offset, Offset::fromIso8601($expected));
+        self::assertEquals($offset, Offset::parse($expected, Offset::ISO8601_SECONDS)->orFail());
+
+        self::assertEquals($expected, $offset->toIso8601());
+        self::assertEquals($expected, $offset->format(Offset::ISO8601_SECONDS)->orFail());
+        self::assertEquals($expected, $offset->formatted(Offset::ISO8601_SECONDS));
+        self::assertEquals($expected, (string) $offset);
+    }
+
+    public static function dataForIso8601WithSeconds(): Generator
+    {
+        yield [
+            Offset::of(0, 0, 1),
+            '+00:00:01',
+        ];
+        yield [
+            Offset::of(1, 2, 3),
+            '+01:02:03',
         ];
         yield [
             Offset::of(-1, -2, -3),

@@ -27,6 +27,8 @@ final class Iso8601Test extends TestCase
             self::assertEquals($expected, $period->toIso8601());
             self::assertEquals($expected, $period->format(Period::ISO8601)->orFail());
             self::assertEquals($expected, $period->format()->orFail());
+            self::assertEquals($expected, $period->formatted(Period::ISO8601));
+            self::assertEquals($expected, $period->formatted());
             self::assertEquals($expected, (string) $period);
         }
 
@@ -41,6 +43,8 @@ final class Iso8601Test extends TestCase
             self::assertEquals($expected, $period->toIso8601());
             self::assertEquals($expected, $period->format(Period::ISO8601)->orFail());
             self::assertEquals($expected, $period->format()->orFail());
+            self::assertEquals($expected, $period->formatted(Period::ISO8601));
+            self::assertEquals($expected, $period->formatted());
             self::assertEquals($expected, (string) $period);
         }
     }

@@ -21,6 +21,13 @@ final public const ISO8601 = '%R%H:%I';
 ```
 
 
+### ISO8601_SECONDS
+
+```php
+final public const ISO8601_SECONDS = '%R%H:%I:%S';
+```
+
+
 ### RFC2822
 
 ```php
@@ -35,11 +42,25 @@ final public const RFC3339 = '%R%H:%I';
 ```
 
 
+### RFC3339_SECONDS
+
+```php
+final public const RFC3339_SECONDS = '%R%H:%I:%S';
+```
+
+
 ### SQL
 
 ```php
 final public const SQL = '%R%H:%I';
-``` 
+```
+
+
+### SQL_SECONDS
+
+```php
+final public const SQL_SECONDS = '%R%H:%I:%S';
+```
 
 
 ### HOURS_MAX
@@ -254,7 +275,64 @@ public static function fromIso8601(string $string): static;
 ```
 
 Makes a new `Offset` from a text with the ISO 8601 offset
-format (e.g. `'+02:30'`).
+format (e.g. `'+02:30'` or `'+02:30:45'`).
+
+The offset is returned directly if no error is found, otherwise
+an exception is thrown.
+
+**Exceptions:**
+
+`ParseException` if the text cannot be parsed
+
+`OutOfRangeException` if the value of any unit is out of range
+
+
+### fromRfc2822
+
+```php
+public static function fromRfc2822(string $string): static;
+```
+
+Makes a new `Offset` from a text with the RFC 2822 offset
+format (e.g. `'+0230'`).
+
+The offset is returned directly if no error is found, otherwise
+an exception is thrown.
+
+**Exceptions:**
+
+`ParseException` if the text cannot be parsed
+
+`OutOfRangeException` if the value of any unit is out of range
+
+
+### fromRfc3339
+
+```php
+public static function fromRfc3339(string $string): static;
+```
+
+Makes a new `Offset` from a text with the RFC 3339 offset
+format (e.g. `'+02:30'` or `'+02:30:45'`).
+
+The offset is returned directly if no error is found, otherwise
+an exception is thrown.
+
+**Exceptions:**
+
+`ParseException` if the text cannot be parsed
+
+`OutOfRangeException` if the value of any unit is out of range
+
+
+### fromSql
+
+```php
+public static function fromSql(string $string): static;
+```
+
+Makes a new `Offset` from a text with the SQL offset format
+(e.g. `'+02:30'` or `'+02:30:45'`).
 
 The offset is returned directly if no error is found, otherwise
 an exception is thrown.
@@ -275,8 +353,7 @@ an exception is thrown.
 public function __toString(): string;
 ```
 
-Outputs this offset as a `string`, using the default format of
-the class.
+Outputs this offset as a `string`, using the ISO 8601 format.
 
 
 ### format
@@ -340,15 +417,11 @@ an exception is thrown.
 ### toRfc2822
 
 ```php
-public function toRfc2822(?bool $seconds = null): string;
+public function toRfc2822(): string;
 ```
 
 Formats this offset with the RFC 2822 offset format (e.g.
 `'+0230'`).
-
-By default, adds seconds if they are non-zero (for example
-`'+023045'`). To always add them, set `$seconds` to true. To
-never add them, set `$seconds` to false.
 
 The text is returned directly if no error is found, otherwise
 an exception is thrown.
