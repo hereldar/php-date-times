@@ -20,7 +20,7 @@ final class ParsingTest extends TestCase
         );
         self::assertException(
             InvalidArgumentException::class,
-            fn ()  => LocalTime::parse('1pm', [])
+            fn () => LocalTime::parse('1pm', [])
         );
         self::assertEquals(
             LocalTime::of(13),

@@ -158,6 +158,11 @@ final class CreationTest extends TestCase
     {
         $period = Period::of(1, 2, 3, 4, 5, 6, 7);
         self::assertPeriod($period, 1, 2, 3, 4, 5, 6, 7);
+
+        self::assertException(
+            new ArithmeticError('Addition of 9223372036854775807 plus 0, 1000 and 0 is not an integer'),
+            fn () => Period::of(years: PHP_INT_MAX, centuries: 10)
+        );
     }
 
     public function testZero(): void
@@ -177,7 +182,7 @@ final class CreationTest extends TestCase
             DateTime::fromIso8601('2010-01-15T03:00:15Z'),
             DateTime::fromIso8601('2011-03-18T15:45:45.723+02:00', milliseconds: true),
         );
-        self::assertInstanceOf(Period::class, $period);
+        self::assertInstanceOf(CustomPeriod::class, $period);
         self::assertPeriod($period, 1, 2, 3, 10, 45, 30, 723_000);
 
         self::assertTrue(Period::between(
@@ -197,7 +202,7 @@ final class CreationTest extends TestCase
             LocalDateTime::fromIso8601('2010-01-15T03:00:15'),
             LocalDateTime::fromIso8601('2011-03-18T15:45:45.723', milliseconds: true),
         );
-        self::assertInstanceOf(Period::class, $period);
+        self::assertInstanceOf(CustomPeriod::class, $period);
         self::assertPeriod($period, 1, 2, 3, 12, 45, 30, 723_000);
 
         self::assertTrue(Period::between(
@@ -217,7 +222,7 @@ final class CreationTest extends TestCase
             LocalDate::fromIso8601('2010-01-15'),
             LocalDate::fromIso8601('2011-03-18'),
         );
-        self::assertInstanceOf(Period::class, $period);
+        self::assertInstanceOf(CustomPeriod::class, $period);
         self::assertPeriod($period, 1, 2, 3, 0, 0, 0, 0);
 
         self::assertTrue(Period::between(
@@ -237,7 +242,7 @@ final class CreationTest extends TestCase
             LocalTime::fromIso8601('03:00:15'),
             LocalTime::fromIso8601('15:45:45.723', milliseconds: true),
         );
-        self::assertInstanceOf(Period::class, $period);
+        self::assertInstanceOf(CustomPeriod::class, $period);
         self::assertPeriod($period, 0, 0, 0, 12, 45, 30, 723_000);
 
         self::assertTrue(Period::between(

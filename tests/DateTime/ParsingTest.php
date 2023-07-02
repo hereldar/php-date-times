@@ -22,7 +22,7 @@ final class ParsingTest extends TestCase
         );
         self::assertException(
             InvalidArgumentException::class,
-            fn ()  => DateTime::parse('25th of December, 1986, 1pm', [])
+            fn () => DateTime::parse('25th of December, 1986, 1pm', [])
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 13),

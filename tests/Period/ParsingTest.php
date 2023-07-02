@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\Period;
 
+use ArithmeticError;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
@@ -180,7 +181,7 @@ final class ParsingTest extends TestCase
     {
         self::assertException(
             InvalidArgumentException::class,
-            fn ()  => Period::parse('01:02:03', [])
+            fn () => Period::parse('01:02:03', [])
         );
         self::assertEquals(
             Period::of(1, 2, 3),
@@ -189,6 +190,18 @@ final class ParsingTest extends TestCase
         self::assertEquals(
             Period::of(1, 2, 3),
             Period::parse('0001/02/03', ['%Y%M%D', '%Y/%M/%D'])->orFail()
+        );
+    }
+
+    public function testArithmeticError(): void
+    {
+        self::assertException(
+            new ArithmeticError('Multiplication of 9223372036854775807 by 7 is not an integer'),
+            fn () => Period::parse('9223372036854775807', '%w')->orFail()
+        );
+        self::assertException(
+            new ArithmeticError('Addition of 9223372036854775807 plus 7 is not an integer'),
+            fn () => Period::parse('9223372036854775807/1', '%d/%w')->orFail()
         );
     }
 }

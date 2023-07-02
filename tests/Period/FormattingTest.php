@@ -27,33 +27,33 @@ final class FormattingTest extends TestCase
     {
         self::assertSame(1, $this->period->years());
         self::assertSame('1', $this->period->format('%y')->orFail());
-        self::assertSame('0001', $this->period->format('%Y')->orFail());
+        self::assertSame('0001', $this->period->formatted('%Y'));
 
         self::assertSame(0, $this->emptyPeriod->years());
         self::assertSame('0', $this->emptyPeriod->format('%y')->orFail());
-        self::assertSame('0000', $this->emptyPeriod->format('%Y')->orFail());
+        self::assertSame('0000', $this->emptyPeriod->formatted('%Y'));
     }
 
     public function testMonths(): void
     {
         self::assertSame(2, $this->period->months());
         self::assertSame('2', $this->period->format('%m')->orFail());
-        self::assertSame('02', $this->period->format('%M')->orFail());
+        self::assertSame('02', $this->period->formatted('%M'));
 
         self::assertSame(0, $this->emptyPeriod->months());
         self::assertSame('0', $this->emptyPeriod->format('%m')->orFail());
-        self::assertSame('00', $this->emptyPeriod->format('%M')->orFail());
+        self::assertSame('00', $this->emptyPeriod->formatted('%M'));
     }
 
     public function testDays(): void
     {
         self::assertSame(3, $this->period->days());
         self::assertSame('3', $this->period->format('%d')->orFail());
-        self::assertSame('03', $this->period->format('%D')->orFail());
+        self::assertSame('03', $this->period->formatted('%D'));
 
         self::assertSame(0, $this->emptyPeriod->days());
         self::assertSame('0', $this->emptyPeriod->format('%d')->orFail());
-        self::assertSame('00', $this->emptyPeriod->format('%D')->orFail());
+        self::assertSame('00', $this->emptyPeriod->formatted('%D'));
     }
 
     public function testWeeksAndDays(): void
@@ -62,55 +62,55 @@ final class FormattingTest extends TestCase
 
         self::assertSame(25, $period->days());
         self::assertSame('3-4', $period->format('%w-%e')->orFail());
-        self::assertSame('03-04', $period->format('%W-%E')->orFail());
+        self::assertSame('03-04', $period->formatted('%W-%E'));
 
         self::assertSame(0, $this->emptyPeriod->days());
         self::assertSame('0-0', $this->emptyPeriod->format('%w-%e')->orFail());
-        self::assertSame('00-00', $this->emptyPeriod->format('%W-%E')->orFail());
+        self::assertSame('00-00', $this->emptyPeriod->formatted('%W-%E'));
     }
 
     public function testHours(): void
     {
         self::assertSame(4, $this->period->hours());
         self::assertSame('4', $this->period->format('%h')->orFail());
-        self::assertSame('04', $this->period->format('%H')->orFail());
+        self::assertSame('04', $this->period->formatted('%H'));
 
         self::assertSame(0, $this->emptyPeriod->hours());
         self::assertSame('0', $this->emptyPeriod->format('%h')->orFail());
-        self::assertSame('00', $this->emptyPeriod->format('%H')->orFail());
+        self::assertSame('00', $this->emptyPeriod->formatted('%H'));
     }
 
     public function testMinutes(): void
     {
         self::assertSame(5, $this->period->minutes());
         self::assertSame('5', $this->period->format('%i')->orFail());
-        self::assertSame('05', $this->period->format('%I')->orFail());
+        self::assertSame('05', $this->period->formatted('%I'));
 
         self::assertSame(0, $this->emptyPeriod->minutes());
         self::assertSame('0', $this->emptyPeriod->format('%i')->orFail());
-        self::assertSame('00', $this->emptyPeriod->format('%I')->orFail());
+        self::assertSame('00', $this->emptyPeriod->formatted('%I'));
     }
 
     public function testSeconds(): void
     {
         self::assertSame(6, $this->period->seconds());
         self::assertSame('6', $this->period->format('%s')->orFail());
-        self::assertSame('06', $this->period->format('%S')->orFail());
+        self::assertSame('06', $this->period->formatted('%S'));
 
         self::assertSame(0, $this->emptyPeriod->seconds());
         self::assertSame('0', $this->emptyPeriod->format('%s')->orFail());
-        self::assertSame('00', $this->emptyPeriod->format('%S')->orFail());
+        self::assertSame('00', $this->emptyPeriod->formatted('%S'));
     }
 
     public function testFractionOfSeconds(): void
     {
         self::assertSame(7_000, $this->period->microseconds());
         self::assertSame('.007', $this->period->format('%f')->orFail());
-        self::assertSame('.007000', $this->period->format('%F')->orFail());
+        self::assertSame('.007000', $this->period->formatted('%F'));
 
         self::assertSame(0, $this->emptyPeriod->microseconds());
         self::assertSame('', $this->emptyPeriod->format('%f')->orFail());
-        self::assertSame('', $this->emptyPeriod->format('%F')->orFail());
+        self::assertSame('', $this->emptyPeriod->formatted('%F'));
     }
 
     public function testMilliseconds(): void
@@ -119,11 +119,11 @@ final class FormattingTest extends TestCase
 
         self::assertSame(2_000, $period->microseconds());
         self::assertSame('2', $period->format('%v')->orFail());
-        self::assertSame('002', $period->format('%V')->orFail());
+        self::assertSame('002', $period->formatted('%V'));
 
         self::assertSame(0, $this->emptyPeriod->microseconds());
         self::assertSame('0', $this->emptyPeriod->format('%v')->orFail());
-        self::assertSame('000', $this->emptyPeriod->format('%V')->orFail());
+        self::assertSame('000', $this->emptyPeriod->formatted('%V'));
     }
 
     public function testMicroseconds(): void
@@ -132,11 +132,11 @@ final class FormattingTest extends TestCase
 
         self::assertSame(2, $period->microseconds());
         self::assertSame('2', $period->format('%u')->orFail());
-        self::assertSame('000002', $period->format('%U')->orFail());
+        self::assertSame('000002', $period->formatted('%U'));
 
         self::assertSame(0, $this->emptyPeriod->microseconds());
         self::assertSame('0', $this->emptyPeriod->format('%u')->orFail());
-        self::assertSame('000000', $this->emptyPeriod->format('%U')->orFail());
+        self::assertSame('000000', $this->emptyPeriod->formatted('%U'));
     }
 
     public function testAll(): void
@@ -151,11 +151,11 @@ final class FormattingTest extends TestCase
         );
         self::assertSame(
             '0y 0m 0d 0h 0i 0s',
-            $this->emptyPeriod->format('%yy %mm %dd %hh %ii %s%fs')->orFail()
+            $this->emptyPeriod->formatted('%yy %mm %dd %hh %ii %s%fs')
         );
         self::assertSame(
             '0000Y 00M 00D 00H 00I 00S',
-            $this->emptyPeriod->format('%YY %MM %DD %HH %II %S%FS')->orFail()
+            $this->emptyPeriod->formatted('%YY %MM %DD %HH %II %S%FS')
         );
     }
 }

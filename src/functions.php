@@ -24,7 +24,7 @@ if (!function_exists('intadd')) {
         $num2 = (string) end($nums);
 
         if (count($nums) > 2) {
-            $num2 = implode(', ', array_slice($nums, 1, -1)).$num2;
+            $num2 = implode(', ', array_slice($nums, 1, -1))." and {$num2}";
         }
 
         throw new ArithmeticError("Addition of {$num1} plus {$num2} is not an integer");
