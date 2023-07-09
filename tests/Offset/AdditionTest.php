@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\Offset;
 
+use ArithmeticError;
 use OutOfRangeException;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
@@ -38,6 +39,18 @@ final class AdditionTest extends TestCase
 
         $offset = Offset::of(8, 10, 12)->plus(-2, -3, -4);
         self::assertOffset($offset, 6, 7, 8);
+    }
+
+    public function testArithmeticError(): void
+    {
+        self::assertException(
+            ArithmeticError::class,
+            fn () => Offset::zero()->plus(hours: PHP_INT_MAX)
+        );
+        self::assertException(
+            ArithmeticError::class,
+            fn () => Offset::zero()->plus(seconds: PHP_INT_MAX, minutes: 1)
+        );
     }
 
     public function testOutOfRangeException(): void
