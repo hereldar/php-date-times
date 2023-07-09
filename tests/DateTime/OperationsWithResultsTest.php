@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\DateTime;
 
+use ArithmeticError;
 use Hereldar\DateTimes\DateTime;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
 use Hereldar\DateTimes\Period;
@@ -37,6 +38,10 @@ final class OperationsWithResultsTest extends TestCase
             InvalidArgumentException::class,
             fn () => $dateTime->add(Period::of(1), 2)
         );
+        self::assertException(
+            ArithmeticError::class,
+            fn () => $dateTime->add(weeks: PHP_INT_MAX)->orFail()
+        );
     }
 
     public function testSubtraction(): void
@@ -62,6 +67,10 @@ final class OperationsWithResultsTest extends TestCase
         self::assertException(
             InvalidArgumentException::class,
             fn () => $dateTime->subtract(Period::of(1), 2)
+        );
+        self::assertException(
+            ArithmeticError::class,
+            fn () => $dateTime->subtract(weeks: PHP_INT_MIN)->orFail()
         );
     }
 

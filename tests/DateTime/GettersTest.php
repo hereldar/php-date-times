@@ -45,6 +45,12 @@ final class GettersTest extends TestCase
         self::assertSame(4, $dateTime->dayOfWeek());
     }
 
+    public function testDayOfYear(): void
+    {
+        $dateTime = DateTime::of(1986, 12, 25, 12, 30, 25, 999);
+        self::assertSame(359, $dateTime->dayOfYear());
+    }
+
     public function testInLeapYear(): void
     {
         $dateTime = DateTime::of(1986, 12, 25, 12, 30, 25, 999);
