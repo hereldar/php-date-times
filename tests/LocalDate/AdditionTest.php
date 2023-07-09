@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\LocalDate;
 
+use ArithmeticError;
 use Hereldar\DateTimes\LocalDate;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
@@ -214,6 +215,18 @@ final class AdditionTest extends TestCase
         self::assertException(
             new InvalidArgumentException('No time units are allowed when a period is passed'),
             fn () => LocalDate::of(1986, 9, 25)->plus(Period::of(1), 2)
+        );
+    }
+
+    public function testArithmeticError(): void
+    {
+        self::assertException(
+            ArithmeticError::class,
+            fn () => LocalDate::epoch()->plus(weeks: PHP_INT_MAX)
+        );
+        self::assertException(
+            ArithmeticError::class,
+            fn () => LocalDate::epoch()->plus(days: PHP_INT_MAX, weeks: 1)
         );
     }
 }

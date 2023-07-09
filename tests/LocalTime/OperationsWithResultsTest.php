@@ -39,7 +39,7 @@ final class OperationsWithResultsTest extends TestCase
         );
         self::assertException(
             ArithmeticError::class,
-            fn () => LocalTime::epoch()->add(milliseconds: PHP_INT_MAX)->orFail()
+            fn () => $time->add(milliseconds: PHP_INT_MAX)->orFail()
         );
     }
 
@@ -69,7 +69,7 @@ final class OperationsWithResultsTest extends TestCase
         );
         self::assertException(
             ArithmeticError::class,
-            fn () => LocalTime::epoch()->subtract(milliseconds: PHP_INT_MIN)->orFail()
+            fn () => $time->subtract(milliseconds: PHP_INT_MIN)->orFail()
         );
     }
 

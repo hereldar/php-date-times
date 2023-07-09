@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\LocalDate;
 
+use ArithmeticError;
 use Hereldar\DateTimes\LocalDate;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
@@ -214,6 +215,18 @@ final class SubtractionTest extends TestCase
         self::assertException(
             new InvalidArgumentException('No time units are allowed when a period is passed'),
             fn () => LocalDate::of(1986, 9, 25)->minus(Period::of(1), 2)
+        );
+    }
+
+    public function testArithmeticError(): void
+    {
+        self::assertException(
+            ArithmeticError::class,
+            fn () => LocalDate::epoch()->minus(weeks: PHP_INT_MIN)
+        );
+        self::assertException(
+            ArithmeticError::class,
+            fn () => LocalDate::epoch()->minus(days: PHP_INT_MIN, weeks: -1)
         );
     }
 }
