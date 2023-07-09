@@ -11,34 +11,34 @@ final class GettersTest extends TestCase
 {
     public function testHour(): void
     {
-        $dateTime = LocalTime::of(12, 30, 25, 999);
-        self::assertSame(12, $dateTime->hour());
+        $time = LocalTime::of(12, 30, 25, 999);
+        self::assertSame(12, $time->hour());
     }
 
     public function testMinute(): void
     {
-        $dateTime = LocalTime::of(12, 30, 25, 999);
-        self::assertSame(30, $dateTime->minute());
+        $time = LocalTime::of(12, 30, 25, 999);
+        self::assertSame(30, $time->minute());
     }
 
     public function testSecond(): void
     {
-        $dateTime = LocalTime::of(12, 30, 25, 999);
-        self::assertSame(25, $dateTime->second());
+        $time = LocalTime::of(12, 30, 25, 999);
+        self::assertSame(25, $time->second());
     }
 
     public function testMillisecond(): void
     {
-        $dateTime = LocalTime::of(12, 30, 25, 999);
-        self::assertSame(0, $dateTime->millisecond());
+        $time = LocalTime::of(12, 30, 25, 999);
+        self::assertSame(0, $time->millisecond());
 
-        $dateTime = LocalTime::of(12, 30, 25, 999_999);
-        self::assertSame(999, $dateTime->millisecond());
+        $time = LocalTime::of(12, 30, 25, 999_999);
+        self::assertSame(999, $time->millisecond());
     }
 
     public function testMicrosecond(): void
     {
-        $dateTime = LocalTime::of(12, 30, 25, 999);
-        self::assertSame(999, $dateTime->microsecond());
+        $time = LocalTime::of(12, 30, 25, 999);
+        self::assertSame(999, $time->microsecond());
     }
 }

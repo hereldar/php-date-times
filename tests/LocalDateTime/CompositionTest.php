@@ -8,6 +8,7 @@ use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
 use Hereldar\DateTimes\TimeZone;
+use InvalidArgumentException;
 use OutOfRangeException;
 
 final class CompositionTest extends TestCase
@@ -32,6 +33,11 @@ final class CompositionTest extends TestCase
 
         $dateTime2 = $localDateTime->atOffset(1, 45);
         self::assertDateTime($dateTime2, 1, 2, 3, 4, 5, 6, 7, '+01:45');
+
+        self::assertException(
+            InvalidArgumentException::class,
+            fn () => $localDateTime->atOffset(Offset::of(1), 45)
+        );
     }
 
     public function testInvalidHours(): void

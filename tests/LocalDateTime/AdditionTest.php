@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\LocalDateTime;
 
+use ArithmeticError;
 use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
@@ -336,5 +337,17 @@ final class AdditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         LocalDateTime::of(1986, 9, 25, 0, 0, 0)->plus(Period::of(1), 2);
+    }
+
+    public function testArithmeticError(): void
+    {
+        self::assertException(
+            ArithmeticError::class,
+            fn () => LocalDateTime::epoch()->plus(weeks: PHP_INT_MAX)
+        );
+        self::assertException(
+            ArithmeticError::class,
+            fn () => LocalDateTime::epoch()->plus(microseconds: PHP_INT_MAX, milliseconds: 1)
+        );
     }
 }

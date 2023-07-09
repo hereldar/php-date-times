@@ -11,49 +11,49 @@ final class GettersTest extends TestCase
 {
     public function testYear(): void
     {
-        $dateTime = LocalDate::of(1986, 12, 25);
-        self::assertSame(1986, $dateTime->year());
+        $date = LocalDate::of(1986, 12, 25);
+        self::assertSame(1986, $date->year());
     }
 
     public function testMonth(): void
     {
-        $dateTime = LocalDate::of(1986, 12, 25);
-        self::assertSame(12, $dateTime->month());
+        $date = LocalDate::of(1986, 12, 25);
+        self::assertSame(12, $date->month());
     }
 
     public function testWeek(): void
     {
-        $dateTime = LocalDate::of(1986, 12, 25);
-        self::assertSame(52, $dateTime->week());
+        $date = LocalDate::of(1986, 12, 25);
+        self::assertSame(52, $date->week());
     }
 
     public function testWeekYear(): void
     {
-        $dateTime = LocalDate::of(1986, 12, 25);
-        self::assertSame(1986, $dateTime->weekYear());
+        $date = LocalDate::of(1986, 12, 25);
+        self::assertSame(1986, $date->weekYear());
     }
 
     public function testDay(): void
     {
-        $dateTime = LocalDate::of(1986, 12, 25);
-        self::assertSame(25, $dateTime->day());
+        $date = LocalDate::of(1986, 12, 25);
+        self::assertSame(25, $date->day());
     }
 
     public function testDayOfWeek(): void
     {
-        $dateTime = LocalDate::of(1986, 12, 25);
-        self::assertSame(4, $dateTime->dayOfWeek());
+        $date = LocalDate::of(1986, 12, 25);
+        self::assertSame(4, $date->dayOfWeek());
     }
 
     public function testDayOfYear(): void
     {
-        $dateTime = LocalDate::of(1986, 12, 25);
-        self::assertSame(359, $dateTime->dayOfYear());
+        $date = LocalDate::of(1986, 12, 25);
+        self::assertSame(359, $date->dayOfYear());
     }
 
     public function testInLeapYear(): void
     {
-        $dateTime = LocalDate::of(1986, 12, 25);
-        self::assertFalse($dateTime->inLeapYear());
+        $date = LocalDate::of(1986, 12, 25);
+        self::assertFalse($date->inLeapYear());
     }
 }
