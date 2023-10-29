@@ -36,11 +36,11 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             InvalidArgumentException::class,
-            fn () => $dateTime->add(Period::of(1), 2)
+            fn() => $dateTime->add(Period::of(1), 2)
         );
         self::assertException(
             ArithmeticError::class,
-            fn () => $dateTime->add(weeks: PHP_INT_MAX)->orFail()
+            fn() => $dateTime->add(weeks: PHP_INT_MAX)->orFail()
         );
     }
 
@@ -66,11 +66,11 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             InvalidArgumentException::class,
-            fn () => $dateTime->subtract(Period::of(1), 2)
+            fn() => $dateTime->subtract(Period::of(1), 2)
         );
         self::assertException(
             ArithmeticError::class,
-            fn () => $dateTime->subtract(weeks: PHP_INT_MIN)->orFail()
+            fn() => $dateTime->subtract(weeks: PHP_INT_MIN)->orFail()
         );
     }
 
@@ -95,11 +95,11 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             OutOfRangeException::class,
-            fn () => $dateTime->copy(day: 31)->orFail()
+            fn() => $dateTime->copy(day: 31)->orFail()
         );
         self::assertException(
             TimeZoneException::class,
-            fn () => $dateTime->copy(timeZone: '6:00')->orFail()
+            fn() => $dateTime->copy(timeZone: '6:00')->orFail()
         );
     }
 }

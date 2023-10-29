@@ -35,11 +35,11 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             InvalidArgumentException::class,
-            fn () => $time->add(Period::of(1), 2)
+            fn() => $time->add(Period::of(1), 2)
         );
         self::assertException(
             ArithmeticError::class,
-            fn () => $time->add(milliseconds: PHP_INT_MAX)->orFail()
+            fn() => $time->add(milliseconds: PHP_INT_MAX)->orFail()
         );
     }
 
@@ -65,11 +65,11 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             InvalidArgumentException::class,
-            fn () => $time->subtract(Period::of(1), 2)
+            fn() => $time->subtract(Period::of(1), 2)
         );
         self::assertException(
             ArithmeticError::class,
-            fn () => $time->subtract(milliseconds: PHP_INT_MIN)->orFail()
+            fn() => $time->subtract(milliseconds: PHP_INT_MIN)->orFail()
         );
     }
 
@@ -94,7 +94,7 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             OutOfRangeException::class,
-            fn () => $time->copy(second: 60)->orFail()
+            fn() => $time->copy(second: 60)->orFail()
         );
     }
 }

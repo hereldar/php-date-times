@@ -7,12 +7,8 @@ namespace Hereldar\DateTimes\Tests\Offset;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
 
-/**
- * @internal
- */
-final class OffsetSubclass extends Offset
-{
-}
+/** @internal */
+final class OffsetSubclass extends Offset {}
 
 final class ComparisonTest extends TestCase
 {

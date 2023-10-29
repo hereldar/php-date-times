@@ -13,12 +13,8 @@ use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 use TypeError;
 
-/**
- * @internal
- */
-final class CustomPeriod extends Period
-{
-}
+/** @internal */
+final class CustomPeriod extends Period {}
 
 final class CreationTest extends TestCase
 {
@@ -71,11 +67,11 @@ final class CreationTest extends TestCase
 
         self::assertException(
             new ArithmeticError('Multiplication of 9223372036854775807 by 1000 is not an integer'),
-            fn () => Period::of(millennia: PHP_INT_MAX)
+            fn() => Period::of(millennia: PHP_INT_MAX)
         );
         self::assertException(
             new ArithmeticError('Multiplication of -9223372036854775808 by 1000 is not an integer'),
-            fn () => Period::of(millennia: PHP_INT_MIN)
+            fn() => Period::of(millennia: PHP_INT_MIN)
         );
     }
 
@@ -86,11 +82,11 @@ final class CreationTest extends TestCase
 
         self::assertException(
             new ArithmeticError('Multiplication of 9223372036854775807 by 100 is not an integer'),
-            fn () => Period::of(centuries: PHP_INT_MAX)
+            fn() => Period::of(centuries: PHP_INT_MAX)
         );
         self::assertException(
             new ArithmeticError('Multiplication of -9223372036854775808 by 100 is not an integer'),
-            fn () => Period::of(centuries: PHP_INT_MIN)
+            fn() => Period::of(centuries: PHP_INT_MIN)
         );
     }
 
@@ -101,11 +97,11 @@ final class CreationTest extends TestCase
 
         self::assertException(
             new ArithmeticError('Multiplication of 9223372036854775807 by 10 is not an integer'),
-            fn () => Period::of(decades: PHP_INT_MAX)
+            fn() => Period::of(decades: PHP_INT_MAX)
         );
         self::assertException(
             new ArithmeticError('Multiplication of -9223372036854775808 by 10 is not an integer'),
-            fn () => Period::of(decades: PHP_INT_MIN)
+            fn() => Period::of(decades: PHP_INT_MIN)
         );
     }
 
@@ -116,11 +112,11 @@ final class CreationTest extends TestCase
 
         self::assertException(
             new ArithmeticError('Multiplication of 9223372036854775807 by 3 is not an integer'),
-            fn () => Period::of(quarters: PHP_INT_MAX)
+            fn() => Period::of(quarters: PHP_INT_MAX)
         );
         self::assertException(
             new ArithmeticError('Multiplication of -9223372036854775808 by 3 is not an integer'),
-            fn () => Period::of(quarters: PHP_INT_MIN)
+            fn() => Period::of(quarters: PHP_INT_MIN)
         );
     }
 
@@ -131,11 +127,11 @@ final class CreationTest extends TestCase
 
         self::assertException(
             new ArithmeticError('Multiplication of 9223372036854775807 by 7 is not an integer'),
-            fn () => Period::of(weeks: PHP_INT_MAX)
+            fn() => Period::of(weeks: PHP_INT_MAX)
         );
         self::assertException(
             new ArithmeticError('Multiplication of -9223372036854775808 by 7 is not an integer'),
-            fn () => Period::of(weeks: PHP_INT_MIN)
+            fn() => Period::of(weeks: PHP_INT_MIN)
         );
     }
 
@@ -146,11 +142,11 @@ final class CreationTest extends TestCase
 
         self::assertException(
             new ArithmeticError('Multiplication of 9223372036854775807 by 1000 is not an integer'),
-            fn () => Period::of(milliseconds: PHP_INT_MAX)
+            fn() => Period::of(milliseconds: PHP_INT_MAX)
         );
         self::assertException(
             new ArithmeticError('Multiplication of -9223372036854775808 by 1000 is not an integer'),
-            fn () => Period::of(milliseconds: PHP_INT_MIN)
+            fn() => Period::of(milliseconds: PHP_INT_MIN)
         );
     }
 
@@ -161,7 +157,7 @@ final class CreationTest extends TestCase
 
         self::assertException(
             new ArithmeticError('Addition of 9223372036854775807 plus 0, 1000 and 0 is not an integer'),
-            fn () => Period::of(years: PHP_INT_MAX, centuries: 10)
+            fn() => Period::of(years: PHP_INT_MAX, centuries: 10)
         );
     }
 
@@ -192,7 +188,7 @@ final class CreationTest extends TestCase
 
         self::assertException(
             TypeError::class,
-            fn () => Period::between(DateTime::epoch(), LocalDateTime::epoch())
+            fn() => Period::between(DateTime::epoch(), LocalDateTime::epoch())
         );
     }
 
@@ -212,7 +208,7 @@ final class CreationTest extends TestCase
 
         self::assertException(
             TypeError::class,
-            fn () => Period::between(LocalDateTime::epoch(), DateTime::epoch())
+            fn() => Period::between(LocalDateTime::epoch(), DateTime::epoch())
         );
     }
 
@@ -232,7 +228,7 @@ final class CreationTest extends TestCase
 
         self::assertException(
             TypeError::class,
-            fn () => Period::between(LocalDate::epoch(), DateTime::epoch())
+            fn() => Period::between(LocalDate::epoch(), DateTime::epoch())
         );
     }
 
@@ -252,7 +248,7 @@ final class CreationTest extends TestCase
 
         self::assertException(
             TypeError::class,
-            fn () => Period::between(LocalTime::epoch(), DateTime::epoch())
+            fn() => Period::between(LocalTime::epoch(), DateTime::epoch())
         );
     }
 }

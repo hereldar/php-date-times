@@ -7,12 +7,8 @@ namespace Hereldar\DateTimes\Tests\LocalTime;
 use Hereldar\DateTimes\LocalTime;
 use Hereldar\DateTimes\Tests\TestCase;
 
-/**
- * @internal
- */
-final class LocalTimeSubclass extends LocalTime
-{
-}
+/** @internal */
+final class LocalTimeSubclass extends LocalTime {}
 
 final class ComparisonTest extends TestCase
 {

@@ -8,8 +8,8 @@ use DateTimeZone as NativeTimeZone;
 use Generator;
 use Hereldar\DateTimes\Enums\TimeZoneType;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
-use Hereldar\DateTimes\TimeZone;
 use Hereldar\DateTimes\Tests\TestCase;
+use Hereldar\DateTimes\TimeZone;
 use Throwable;
 
 final class CreationTest extends TestCase

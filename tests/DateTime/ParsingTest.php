@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\DateTime;
 
-use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\DateTime;
+use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
 use Hereldar\DateTimes\TimeZone;
@@ -22,7 +22,7 @@ final class ParsingTest extends TestCase
         );
         self::assertException(
             InvalidArgumentException::class,
-            fn () => DateTime::parse('25th of December, 1986, 1pm', [])
+            fn() => DateTime::parse('25th of December, 1986, 1pm', [])
         );
         self::assertEquals(
             DateTime::of(1986, 12, 25, 13),

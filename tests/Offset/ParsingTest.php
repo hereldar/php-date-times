@@ -55,7 +55,6 @@ final class ParsingTest extends TestCase
         self::assertInstanceOf(Offset::class, $offset);
         self::assertOffset($offset, 1, 0, 0);
 
-
         $offset = Offset::parse('15', '%H')->orFail();
         self::assertInstanceOf(Offset::class, $offset);
         self::assertOffset($offset, 15, 0, 0);
@@ -109,7 +108,7 @@ final class ParsingTest extends TestCase
     {
         self::assertException(
             InvalidArgumentException::class,
-            fn () => Offset::parse('01:02:03', [])
+            fn() => Offset::parse('01:02:03', [])
         );
         self::assertEquals(
             Offset::of(1, 2, 3),

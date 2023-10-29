@@ -9,8 +9,8 @@ use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\LocalDate;
 use Hereldar\DateTimes\LocalDateTime;
 use Hereldar\DateTimes\Offset;
-use Hereldar\DateTimes\TimeZone;
 use Hereldar\DateTimes\Tests\TestCase;
+use Hereldar\DateTimes\TimeZone;
 
 final class ConversionTest extends TestCase
 {

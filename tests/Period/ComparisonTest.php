@@ -7,12 +7,8 @@ namespace Hereldar\DateTimes\Tests\Period;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;
 
-/**
- * @internal
- */
-final class PeriodSubclass extends Period
-{
-}
+/** @internal */
+final class PeriodSubclass extends Period {}
 
 final class ComparisonTest extends TestCase
 {

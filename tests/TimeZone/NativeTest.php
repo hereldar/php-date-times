@@ -6,8 +6,8 @@ namespace Hereldar\DateTimes\Tests\TimeZone;
 
 use DateTimeZone as NativeTimeZone;
 use Generator;
-use Hereldar\DateTimes\TimeZone;
 use Hereldar\DateTimes\Tests\TestCase;
+use Hereldar\DateTimes\TimeZone;
 
 final class NativeTest extends TestCase
 {

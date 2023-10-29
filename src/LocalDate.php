@@ -52,8 +52,7 @@ class LocalDate implements Datelike, Formattable, Stringable, Copyable, Summable
      */
     private function __construct(
         private readonly NativeDateTime $value,
-    ) {
-    }
+    ) {}
 
     /**
      * Outputs this date as a `string`, using the default format of

@@ -15,7 +15,7 @@ use SplFileInfo;
 
 final class ClarifyingParenthesesAroundComparisonsFixer extends AbstractFixer
 {
-    private const TARGET_TOKENS = [
+    private const TARGET_KINDS = [
         T_AND_EQUAL,
         T_COALESCE_EQUAL,
         T_CONCAT_EQUAL,
@@ -29,10 +29,13 @@ final class ClarifyingParenthesesAroundComparisonsFixer extends AbstractFixer
         T_RETURN,
         T_XOR_EQUAL,
         T_YIELD,
+    ];
+
+    private const TARGET_TOKENS = [
         '=',
     ];
 
-    private const COMPARISON_TOKENS = [
+    private const COMPARISON_KINDS = [
         T_BOOLEAN_AND,
         T_BOOLEAN_OR,
         T_IS_EQUAL,
@@ -41,6 +44,10 @@ final class ClarifyingParenthesesAroundComparisonsFixer extends AbstractFixer
         T_IS_NOT_EQUAL,
         T_IS_NOT_IDENTICAL,
         T_IS_SMALLER_OR_EQUAL,
+        T_SPACESHIP,
+    ];
+
+    private const COMPARISON_TOKENS = [
         '>',
         '<',
     ];
@@ -50,12 +57,11 @@ final class ClarifyingParenthesesAroundComparisonsFixer extends AbstractFixer
         return new FixerDefinition(
             'Adds clarifying parentheses around comparisons.',
             [
-                new CodeSample(
-                    <<<'CODE'
+                new CodeSample(<<<'PHP'
+                    <?php
                     $foo = $bar === null;
                     return 1 + 2;
-                    CODE
-                ),
+                    PHP),
             ]
         );
     }
@@ -75,7 +81,8 @@ final class ClarifyingParenthesesAroundComparisonsFixer extends AbstractFixer
 
     public function isCandidate(Tokens $tokens): bool
     {
-        return $tokens->isAnyTokenKindsFound(self::COMPARISON_TOKENS);
+        return $tokens->isAnyTokenKindsFound(self::COMPARISON_KINDS)
+            || $tokens->isAnyTokenKindsFound(self::COMPARISON_TOKENS);
     }
 
     protected function applyFix(SplFileInfo $file, Tokens $tokens): void
@@ -86,7 +93,8 @@ final class ClarifyingParenthesesAroundComparisonsFixer extends AbstractFixer
          */
         foreach ($tokens as $index => $token) {
 
-            if (!$token->isGivenKind(self::TARGET_TOKENS)) {
+            if (!$token->isGivenKind(self::TARGET_KINDS)
+                || $token->equalsAny(self::TARGET_TOKENS)) {
                 continue;
             }
 
@@ -105,7 +113,8 @@ final class ClarifyingParenthesesAroundComparisonsFixer extends AbstractFixer
             $blockEndIndex = $tokens->getNextTokenOfKind($blockStartIndex, [';', [T_CLOSE_TAG]]);
 
             if (null === $blockEndIndex
-                || !$this->containsAnyComparisonToken($tokens, $blockStartIndex, $blockEndIndex)) {
+                || !$this->containsAnyComparisonToken($tokens, $blockStartIndex, $blockEndIndex)
+                || $tokens->isPartialCodeMultiline($blockStartIndex, $blockEndIndex)) {
                 continue;
             }
 
@@ -117,11 +126,9 @@ final class ClarifyingParenthesesAroundComparisonsFixer extends AbstractFixer
     private function containsAnyComparisonToken(Tokens $tokens, int $startIndex, int $endIndex): bool
     {
         for ($i = $startIndex; $i < $endIndex; ++$i) {
-
-            /** @var Token $token */
             $token = $tokens[$i];
-
-            if ($token->isGivenKind(self::COMPARISON_TOKENS)) {
+            if ($token->isGivenKind(self::COMPARISON_KINDS)
+                || $token->equalsAny(self::COMPARISON_TOKENS)) {
                 return true;
             }
         }

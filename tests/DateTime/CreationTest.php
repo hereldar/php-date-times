@@ -13,12 +13,8 @@ use Hereldar\DateTimes\Tests\TestCase;
 use Hereldar\DateTimes\TimeZone;
 use OutOfRangeException;
 
-/**
- * @internal
- */
-final class CustomDateTime extends DateTime
-{
-}
+/** @internal */
+final class CustomDateTime extends DateTime {}
 
 final class CreationTest extends TestCase
 {
@@ -62,15 +58,15 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, -5 given'),
-            fn () => DateTime::of(-2, -5)
+            fn() => DateTime::of(-2, -5)
         );
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 0 given'),
-            fn () => DateTime::of(1986, 0)
+            fn() => DateTime::of(1986, 0)
         );
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 13 given'),
-            fn () => DateTime::of(month: 13)
+            fn() => DateTime::of(month: 13)
         );
     }
 
@@ -84,41 +80,41 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, -1 given'),
-            fn () => DateTime::of(day: -1)
+            fn() => DateTime::of(day: -1)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 0 given'),
-            fn () => DateTime::of(-1, 1, 0)
+            fn() => DateTime::of(-1, 1, 0)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 32 given'),
-            fn () => DateTime::of(1986, 1, 32)
+            fn() => DateTime::of(1986, 1, 32)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 30, 31 given'),
-            fn () => DateTime::of(1986, 4, 31)
+            fn() => DateTime::of(1986, 4, 31)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 28, 29 given'),
-            fn () => DateTime::of(1986, 2, 29)
+            fn() => DateTime::of(1986, 2, 29)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 29, 30 given'),
-            fn () => DateTime::of(1960, 2, 30)
+            fn() => DateTime::of(1960, 2, 30)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 28, 29 given'),
-            fn () => DateTime::of(1900, 2, 29)
+            fn() => DateTime::of(1900, 2, 29)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 29, 30 given'),
-            fn () => DateTime::of(2000, 2, 30)
+            fn() => DateTime::of(2000, 2, 30)
         );
     }
 
     public function testHour(): void
     {
-        $dateTime = DateTime::of(hour:  14);
+        $dateTime = DateTime::of(hour: 14);
         self::assertSame(14, $dateTime->hour());
     }
 
@@ -126,11 +122,11 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('hour must be between 0 and 23, -1 given'),
-            fn () => DateTime::of(hour: -1)
+            fn() => DateTime::of(hour: -1)
         );
         self::assertException(
             new OutOfRangeException('hour must be between 0 and 23, 24 given'),
-            fn () => DateTime::of(1986, 1, 1, 24)
+            fn() => DateTime::of(1986, 1, 1, 24)
         );
     }
 
@@ -144,11 +140,11 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, -1 given'),
-            fn () => DateTime::of(1986, 1, 1, 0, -1)
+            fn() => DateTime::of(1986, 1, 1, 0, -1)
         );
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, 60 given'),
-            fn () => DateTime::of(1986, 1, 1, 0, 60)
+            fn() => DateTime::of(1986, 1, 1, 0, 60)
         );
     }
 
@@ -162,11 +158,11 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('second must be between 0 and 59, -1 given'),
-            fn () => DateTime::of(second: -1)
+            fn() => DateTime::of(second: -1)
         );
         self::assertException(
             new OutOfRangeException('second must be between 0 and 59, 60 given'),
-            fn () => DateTime::of(1986, 1, 1, 0, 0, 60)
+            fn() => DateTime::of(1986, 1, 1, 0, 0, 60)
         );
     }
 
@@ -180,11 +176,11 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('microsecond must be between 0 and 999999, -1 given'),
-            fn () => DateTime::of(microsecond: -1)
+            fn() => DateTime::of(microsecond: -1)
         );
         self::assertException(
             new OutOfRangeException('microsecond must be between 0 and 999999, 1000000 given'),
-            fn () => DateTime::of(1986, 1, 1, 0, 0, 0, 1_000_000)
+            fn() => DateTime::of(1986, 1, 1, 0, 0, 0, 1_000_000)
         );
     }
 
@@ -213,11 +209,11 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new TimeZoneException('Mars/Phobos'),
-            fn () => DateTime::of(timeZone: 'Mars/Phobos')
+            fn() => DateTime::of(timeZone: 'Mars/Phobos')
         );
         self::assertException(
             new TimeZoneException('CET+04:45'),
-            fn () => DateTime::of(1970, 1, 1, 0, 0, 0, 0, 'CET+04:45')
+            fn() => DateTime::of(1970, 1, 1, 0, 0, 0, 0, 'CET+04:45')
         );
     }
 

@@ -29,11 +29,11 @@ final class CompositionTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('hour must be between 0 and 23, -1 given'),
-            fn () => $date->atTime(hour: -1)
+            fn() => $date->atTime(hour: -1)
         );
         self::assertException(
             new OutOfRangeException('hour must be between 0 and 23, 24 given'),
-            fn () => $date->atTime(24)
+            fn() => $date->atTime(24)
         );
     }
 
@@ -43,11 +43,11 @@ final class CompositionTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, -1 given'),
-            fn () => $date->atTime(minute: -1)
+            fn() => $date->atTime(minute: -1)
         );
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, 60 given'),
-            fn () => $date->atTime(0, 60)
+            fn() => $date->atTime(0, 60)
         );
     }
 
@@ -57,11 +57,11 @@ final class CompositionTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('second must be between 0 and 59, -1 given'),
-            fn () => $date->atTime(second: -1)
+            fn() => $date->atTime(second: -1)
         );
         self::assertException(
             new OutOfRangeException('second must be between 0 and 59, 60 given'),
-            fn () => $date->atTime(0, 0, 60)
+            fn() => $date->atTime(0, 0, 60)
         );
     }
 
@@ -71,11 +71,11 @@ final class CompositionTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('microsecond must be between 0 and 999999, -1 given'),
-            fn () => $date->atTime(microsecond: -1)
+            fn() => $date->atTime(microsecond: -1)
         );
         self::assertException(
             new OutOfRangeException('microsecond must be between 0 and 999999, 1000000 given'),
-            fn () => $date->atTime(0, 0, 0, 1_000_000)
+            fn() => $date->atTime(0, 0, 0, 1_000_000)
         );
     }
 
@@ -83,7 +83,7 @@ final class CompositionTest extends TestCase
     {
         self::assertException(
             new InvalidArgumentException('No time units are allowed when a local time is passed'),
-            fn () => LocalDate::of(1986, 9, 25)->atTime(LocalTime::of(hour: 1), minute: 2)
+            fn() => LocalDate::of(1986, 9, 25)->atTime(LocalTime::of(hour: 1), minute: 2)
         );
     }
 }

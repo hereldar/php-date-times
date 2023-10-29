@@ -66,8 +66,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      */
     private function __construct(
         private readonly NativeDateTime $value,
-    ) {
-    }
+    ) {}
 
     /**
      * Outputs this time as a `string`, using the default format of
@@ -727,7 +726,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
 
     /**
      * Returns a copy of this time with the specified amount of hours,
-     * minutes, seconds and microseconds subtracted. It accepts a 
+     * minutes, seconds and microseconds subtracted. It accepts a
      * `Period` or individual time units.
      *
      * If a `Period` is passed as the first argument, no individual

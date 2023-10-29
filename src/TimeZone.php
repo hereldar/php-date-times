@@ -9,7 +9,6 @@ use Hereldar\DateTimes\Enums\TimeZoneGroup;
 use Hereldar\DateTimes\Enums\TimeZoneType;
 use Hereldar\DateTimes\Exceptions\CountryException;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
-use InvalidArgumentException;
 use Stringable;
 use Throwable;
 use ValueError;
@@ -39,8 +38,7 @@ class TimeZone implements Stringable
      */
     private function __construct(
         private readonly NativeTimeZone $value,
-    ) {
-    }
+    ) {}
 
     /**
      * Outputs this time-zone as a `string`, using its name.
@@ -225,7 +223,7 @@ class TimeZone implements Stringable
             return $result;
         }
 
-        return $a->getName() <=> $b->getName();
+        return ($a->getName() <=> $b->getName());
     }
 
     /**

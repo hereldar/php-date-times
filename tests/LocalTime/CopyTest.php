@@ -24,11 +24,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('hour must be between 0 and 23, -1 given'),
-            fn () => $time->with(hour: -1)
+            fn() => $time->with(hour: -1)
         );
         self::assertException(
             new OutOfRangeException('hour must be between 0 and 23, 24 given'),
-            fn () => $time->with(24)
+            fn() => $time->with(24)
         );
     }
 
@@ -46,11 +46,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, -1 given'),
-            fn () => $time->with(minute: -1)
+            fn() => $time->with(minute: -1)
         );
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, 60 given'),
-            fn () => $time->with(0, 60)
+            fn() => $time->with(0, 60)
         );
     }
 
@@ -68,11 +68,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('second must be between 0 and 59, -1 given'),
-            fn () => $time->with(second: -1)
+            fn() => $time->with(second: -1)
         );
         self::assertException(
             new OutOfRangeException('second must be between 0 and 59, 60 given'),
-            fn () => $time->with(0, 0, 60)
+            fn() => $time->with(0, 0, 60)
         );
     }
 
@@ -90,11 +90,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('microsecond must be between 0 and 999999, -1 given'),
-            fn () => $time->with(microsecond: -1)
+            fn() => $time->with(microsecond: -1)
         );
         self::assertException(
             new OutOfRangeException('microsecond must be between 0 and 999999, 1000000 given'),
-            fn () => $time->with(0, 0, 0, 1_000_000)
+            fn() => $time->with(0, 0, 0, 1_000_000)
         );
     }
 

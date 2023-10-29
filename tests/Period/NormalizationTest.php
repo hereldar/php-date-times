@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\Period;
 
-use DivisionByZeroError;
 use Generator;
 use Hereldar\DateTimes\Period;
 use Hereldar\DateTimes\Tests\TestCase;

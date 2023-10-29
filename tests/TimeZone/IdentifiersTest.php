@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\TimeZone;
 
-use DateTimeZone as NativeTimeZone;
-use Generator;
 use Hereldar\DateTimes\Enums\TimeZoneGroup;
-use Hereldar\DateTimes\Enums\TimeZoneType;
 use Hereldar\DateTimes\Exceptions\CountryException;
-use Hereldar\DateTimes\Exceptions\TimeZoneException;
-use Hereldar\DateTimes\TimeZone;
 use Hereldar\DateTimes\Tests\TestCase;
-use Throwable;
+use Hereldar\DateTimes\TimeZone;
 
 final class IdentifiersTest extends TestCase
 {
@@ -33,12 +28,12 @@ final class IdentifiersTest extends TestCase
 
         self::assertException(
             new CountryException('UK'),
-            fn () => TimeZone::countryIdentifiers('UK')
+            fn() => TimeZone::countryIdentifiers('UK')
         );
 
         self::assertException(
             new CountryException('Bad'),
-            fn () => TimeZone::countryIdentifiers('Bad')
+            fn() => TimeZone::countryIdentifiers('Bad')
         );
     }
 }

@@ -76,7 +76,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
                 )?
             )?
         /xS
-    REGEX;
+        REGEX;
 
     private const FORMAT_PATTERN = '/%([%a-zA-Z])/';
 
@@ -91,8 +91,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         private readonly int $minutes = 0,
         private readonly int $seconds = 0,
         private readonly int $microseconds = 0,
-    ) {
-    }
+    ) {}
 
     /**
      * Outputs this period as a `string`, using the default format of
@@ -300,7 +299,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
     ): Ok|Error {
         $pattern = preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
-            callback: static fn (array $matches) => match ($matches[1]) {
+            callback: static fn(array $matches) => match ($matches[1]) {
                 '%' => '%',
                 'R' => '(?P<sign>[+-])',
                 'r' => '(?P<sign>\-?)',
@@ -442,7 +441,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
 
         $string = preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
-            callback: fn (array $matches) => match ($matches[1]) {
+            callback: fn(array $matches) => match ($matches[1]) {
                 '%' => '%',
                 'Y' => sprintf('%04d', $this->years),
                 'y' => (string) $this->years,
@@ -552,7 +551,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         }
 
         if ($f) {
-            $microseconds = rtrim(sprintf("%06d", $f), '0');
+            $microseconds = rtrim(sprintf('%06d', $f), '0');
             $string .= "{$s}.{$microseconds}S";
         } elseif ($s) {
             $string .= "{$s}S";
@@ -753,7 +752,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      */
     public function isSimilar(Period $that): bool
     {
-        return 0 === $this->compareTo($that);
+        return (0 === $this->compareTo($that));
     }
 
     /**
@@ -766,7 +765,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      */
     public function isNotSimilar(Period $that): bool
     {
-        return 0 !== $this->compareTo($that);
+        return (0 !== $this->compareTo($that));
     }
 
     /**
@@ -1143,7 +1142,6 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
     /**
      * @param int[] $values
      * @param int[] $factors
-     * @param bool $changed
      *
      * @return int[]
      */
@@ -1172,7 +1170,6 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
     /**
      * @param int[] $values
      * @param int[] $factors
-     * @param bool $changed
      *
      * @return int[]
      */

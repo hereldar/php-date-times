@@ -50,7 +50,6 @@ final class Validator
 
     public static function dayOfYear(int $day, int $year): void
     {
-
         if (self::yearIsLeap($year)) {
             $max = 366;
         } else {

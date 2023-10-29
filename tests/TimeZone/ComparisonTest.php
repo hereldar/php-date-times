@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Hereldar\DateTimes\Tests\TimeZone;
 
-use Hereldar\DateTimes\TimeZone;
 use Hereldar\DateTimes\Tests\TestCase;
+use Hereldar\DateTimes\TimeZone;
 
-/**
- * @internal
- */
-final class TimeZoneSubclass extends TimeZone
-{
-}
+/** @internal */
+final class TimeZoneSubclass extends TimeZone {}
 
 final class ComparisonTest extends TestCase
 {

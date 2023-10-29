@@ -10,12 +10,8 @@ use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
 use Hereldar\DateTimes\TimeZone;
 
-/**
- * @internal
- */
-final class DateTimeSubclass extends DateTime
-{
-}
+/** @internal */
+final class DateTimeSubclass extends DateTime {}
 
 final class ComparisonTest extends TestCase
 {

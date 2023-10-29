@@ -69,7 +69,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
                 (?P<seconds>[0-9]{2})
             )?
         /xS
-    REGEX;
+        REGEX;
 
     private const RFC2822_PATTERN = <<<'REGEX'
         /
@@ -80,7 +80,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
                 (?P<seconds>[0-9]{2})
             )?
         /xS
-    REGEX;
+        REGEX;
 
     private const FORMAT_PATTERN = '/%([%a-zA-Z])/';
 
@@ -89,8 +89,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      */
     private function __construct(
         private readonly int $value,
-    ) {
-    }
+    ) {}
 
     /**
      * Outputs this offset as a `string`, using the ISO 8601 format.
@@ -244,7 +243,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     ): Ok|Error {
         $pattern = preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
-            callback: static fn (array $matches) => match ($matches[1]) {
+            callback: static fn(array $matches) => match ($matches[1]) {
                 '%' => '%',
                 'R' => '(?P<sign>[+-])',
                 'r' => '(?P<sign>\-?)',
@@ -389,7 +388,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     {
         $string = preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
-            callback: fn (array $matches) => match ($matches[1]) {
+            callback: fn(array $matches) => match ($matches[1]) {
                 '%' => '%',
                 'R' => ($this->isNegative()) ? '-' : '+',
                 'r' => ($this->isNegative()) ? '-' : '',
@@ -577,7 +576,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      */
     public function compareTo(Offset $that): int
     {
-        return $this->value <=> $that->totalSeconds();
+        return ($this->value <=> $that->totalSeconds());
     }
 
     /**

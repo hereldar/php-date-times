@@ -214,7 +214,7 @@ final class SubtractionTest extends TestCase
     {
         self::assertException(
             new InvalidArgumentException('No time units are allowed when a period is passed'),
-            fn () => LocalDate::of(1986, 9, 25)->minus(Period::of(1), 2)
+            fn() => LocalDate::of(1986, 9, 25)->minus(Period::of(1), 2)
         );
     }
 
@@ -222,11 +222,11 @@ final class SubtractionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn () => LocalDate::epoch()->minus(weeks: PHP_INT_MIN)
+            fn() => LocalDate::epoch()->minus(weeks: PHP_INT_MIN)
         );
         self::assertException(
             ArithmeticError::class,
-            fn () => LocalDate::epoch()->minus(days: PHP_INT_MIN, weeks: -1)
+            fn() => LocalDate::epoch()->minus(days: PHP_INT_MIN, weeks: -1)
         );
     }
 }

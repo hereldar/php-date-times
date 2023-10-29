@@ -32,11 +32,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 0 given'),
-            fn () => $date->with(1986, 0)
+            fn() => $date->with(1986, 0)
         );
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 13 given'),
-            fn () => $date->with(month: 13)
+            fn() => $date->with(month: 13)
         );
     }
 
@@ -54,31 +54,31 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 0 given'),
-            fn () => $date->with(day: 0)
+            fn() => $date->with(day: 0)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 32 given'),
-            fn () => $date->with(1986, 1, 32)
+            fn() => $date->with(1986, 1, 32)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 30, 31 given'),
-            fn () => $date->with(1986, 4, 31)
+            fn() => $date->with(1986, 4, 31)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 28, 29 given'),
-            fn () => $date->with(1986, 2, 29)
+            fn() => $date->with(1986, 2, 29)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 29, 30 given'),
-            fn () => $date->with(1960, 2, 30)
+            fn() => $date->with(1960, 2, 30)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 28, 29 given'),
-            fn () => $date->with(1900, 2, 29)
+            fn() => $date->with(1900, 2, 29)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 29, 30 given'),
-            fn () => $date->with(2000, 2, 30)
+            fn() => $date->with(2000, 2, 30)
         );
     }
 

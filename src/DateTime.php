@@ -7,8 +7,8 @@ namespace Hereldar\DateTimes;
 use ArithmeticError;
 use DateTime as MutableNativeDateTime;
 use DateTimeImmutable as NativeDateTime;
-use DateTimeZone as NativeTimeZone;
 use DateTimeInterface as NativeDateTimeInterface;
+use DateTimeZone as NativeTimeZone;
 use Hereldar\DateTimes\Exceptions\FormatException;
 use Hereldar\DateTimes\Exceptions\ParseException;
 use Hereldar\DateTimes\Exceptions\TimeZoneException;
@@ -76,8 +76,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
      */
     private function __construct(
         private readonly NativeDateTime $value
-    ) {
-    }
+    ) {}
 
     /**
      * Outputs this date-time as a `string`, using the default format

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Hereldar\DateTimes\Tests\Offset;
 
 use ArithmeticError;
-use OutOfRangeException;
 use Hereldar\DateTimes\Offset;
 use Hereldar\DateTimes\Tests\TestCase;
+use OutOfRangeException;
 
 final class SubtractionTest extends TestCase
 {
@@ -45,11 +45,11 @@ final class SubtractionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn () => Offset::zero()->plus(minutes: PHP_INT_MIN)
+            fn() => Offset::zero()->plus(minutes: PHP_INT_MIN)
         );
         self::assertException(
             ArithmeticError::class,
-            fn () => Offset::zero()->plus(seconds: PHP_INT_MIN, hours: -1)
+            fn() => Offset::zero()->plus(seconds: PHP_INT_MIN, hours: -1)
         );
     }
 
@@ -57,23 +57,23 @@ final class SubtractionTest extends TestCase
     {
         self::assertException(
             OutOfRangeException::class,
-            fn () => Offset::of(Offset::HOURS_MIN)->minus(hours: 1)
+            fn() => Offset::of(Offset::HOURS_MIN)->minus(hours: 1)
         );
         self::assertException(
             OutOfRangeException::class,
-            fn () => Offset::of(Offset::HOURS_MIN, Offset::MINUTES_MIN)->minus(minutes: 1)
+            fn() => Offset::of(Offset::HOURS_MIN, Offset::MINUTES_MIN)->minus(minutes: 1)
         );
         self::assertException(
             OutOfRangeException::class,
-            fn () => Offset::of(Offset::HOURS_MIN, Offset::MINUTES_MIN, Offset::SECONDS_MIN)->minus(seconds: 1)
+            fn() => Offset::of(Offset::HOURS_MIN, Offset::MINUTES_MIN, Offset::SECONDS_MIN)->minus(seconds: 1)
         );
         self::assertException(
             OutOfRangeException::class,
-            fn () => Offset::fromTotalMinutes(Offset::TOTAL_MINUTES_MIN)->minus(minutes: 1)
+            fn() => Offset::fromTotalMinutes(Offset::TOTAL_MINUTES_MIN)->minus(minutes: 1)
         );
         self::assertException(
             OutOfRangeException::class,
-            fn () => Offset::fromTotalSeconds(Offset::TOTAL_SECONDS_MIN)->minus(seconds: 1)
+            fn() => Offset::fromTotalSeconds(Offset::TOTAL_SECONDS_MIN)->minus(seconds: 1)
         );
     }
 }

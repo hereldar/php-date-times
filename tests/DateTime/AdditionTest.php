@@ -173,7 +173,7 @@ final class AdditionTest extends TestCase
         $dateTime = DateTime::of(1986, 9, 21, 0, 0, 0);
         self::assertSame(1, $dateTime->plus(microseconds: 1)->microsecond());
         self::assertSame(1, $dateTime->plus(Period::of(microseconds: 1))->microsecond());
-        $dateTime = DateTime::of(1986, 9, 21,  0, 0, 0, 100_000);
+        $dateTime = DateTime::of(1986, 9, 21, 0, 0, 0, 100_000);
         self::assertSame(100001, $dateTime->plus(microseconds: 1)->microsecond());
         self::assertSame(100001, $dateTime->plus(Period::of(microseconds: 1))->microsecond());
     }
@@ -343,11 +343,11 @@ final class AdditionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn () => DateTime::epoch()->plus(weeks: PHP_INT_MAX)
+            fn() => DateTime::epoch()->plus(weeks: PHP_INT_MAX)
         );
         self::assertException(
             ArithmeticError::class,
-            fn () => DateTime::epoch()->plus(microseconds: PHP_INT_MAX, milliseconds: 1)
+            fn() => DateTime::epoch()->plus(microseconds: PHP_INT_MAX, milliseconds: 1)
         );
     }
 }
