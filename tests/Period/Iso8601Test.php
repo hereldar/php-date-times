@@ -49,6 +49,9 @@ final class Iso8601Test extends TestCase
         }
     }
 
+    /**
+     * @return Generator<int, array{0: Period, 1: string, 2?: false}>
+     */
     public static function dataForIso8601(): Generator
     {
         yield [

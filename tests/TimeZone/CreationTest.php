@@ -28,6 +28,9 @@ final class CreationTest extends TestCase
         self::assertSame($tz->getName(), (string) $timeZone);
     }
 
+    /**
+     * @return Generator<int, array{string}>
+     */
     public static function validTimeZoneIds(): Generator
     {
         $timeZones = [
@@ -85,6 +88,9 @@ final class CreationTest extends TestCase
         }
     }
 
+    /**
+     * @return Generator<int, array{string}>
+     */
     public static function invalidTimeZoneIdsAndOffsets(): Generator
     {
         $timeZones = [

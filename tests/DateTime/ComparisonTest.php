@@ -168,6 +168,9 @@ final class ComparisonTest extends TestCase
         self::assertFalse(DateTimeSubclass::of(2000, 1, 1, 12, 0, 0)->isLessOrEqual(DateTime::of(2000, 1, 1, 11, 59, 59)));
     }
 
+    /**
+     * @return Generator<int, array{DateTime, DateTime}>
+     */
     public static function equalDateTimes(): Generator
     {
         yield [

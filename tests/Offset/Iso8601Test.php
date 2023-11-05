@@ -30,6 +30,9 @@ final class Iso8601Test extends TestCase
         self::assertEquals($expected, (string) $offset);
     }
 
+    /**
+     * @return Generator<int, array{Offset, string}>
+     */
     public static function dataForIso8601(): Generator
     {
         yield [
@@ -74,6 +77,9 @@ final class Iso8601Test extends TestCase
         self::assertEquals($expected, (string) $offset);
     }
 
+    /**
+     * @return Generator<int, array{Offset, string}>
+     */
     public static function dataForIso8601WithSeconds(): Generator
     {
         yield [

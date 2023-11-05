@@ -26,6 +26,9 @@ final class Rfc3339Test extends TestCase
         self::assertEquals($expected, $offset->formatted(Offset::RFC3339));
     }
 
+    /**
+     * @return Generator<int, array{Offset, string}>
+     */
     public static function dataForRfc3339(): Generator
     {
         yield [
@@ -69,6 +72,9 @@ final class Rfc3339Test extends TestCase
         self::assertEquals($expected, $offset->formatted(Offset::RFC3339_SECONDS));
     }
 
+    /**
+     * @return Generator<int, array{Offset, string}>
+     */
     public static function dataForRfc3339WithSeconds(): Generator
     {
         yield [

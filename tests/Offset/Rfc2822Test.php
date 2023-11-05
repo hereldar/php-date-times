@@ -26,6 +26,9 @@ final class Rfc2822Test extends TestCase
         self::assertEquals($expected, $offset->formatted(Offset::RFC2822));
     }
 
+    /**
+     * @return Generator<int, array{Offset, string}>
+     */
     public static function dataForRfc2822(): Generator
     {
         yield [

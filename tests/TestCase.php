@@ -341,6 +341,9 @@ abstract class TestCase extends PHPUnitTestCase
         static::assertSame($expected, $actual);
     }
 
+    /**
+     * @return Generator<int, array{string}>
+     */
     public static function timeZoneNames(): Generator
     {
         $timeZoneNames = [

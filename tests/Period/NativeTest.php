@@ -26,6 +26,9 @@ final class NativeTest extends TestCase
         self::assertEquals($nativeDateInterval, $period->toNative());
     }
 
+    /**
+     * @return Generator<int, array{Period, NativeDateInterval}>
+     */
     public static function dataForNativeDateInterval(): Generator
     {
         yield [

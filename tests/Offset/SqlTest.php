@@ -26,6 +26,9 @@ final class SqlTest extends TestCase
         self::assertEquals($expected, $offset->formatted(Offset::SQL));
     }
 
+    /**
+     * @return Generator<int, array{Offset, string}>
+     */
     public static function dataForSql(): Generator
     {
         yield [
@@ -69,6 +72,9 @@ final class SqlTest extends TestCase
         self::assertEquals($expected, $offset->formatted(Offset::SQL_SECONDS));
     }
 
+    /**
+     * @return Generator<int, array{Offset, string}>
+     */
     public static function dataForSqlWithSeconds(): Generator
     {
         yield [

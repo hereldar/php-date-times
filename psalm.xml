@@ -20,10 +20,8 @@
     </projectFiles>
     <issueHandlers>
         <InaccessibleProperty errorLevel="suppress"/>
-        <UnusedClass>
-            <errorLevel type="suppress">
-                <directory name="tests"/>
-            </errorLevel>
-        </UnusedClass>
     </issueHandlers>
+    <plugins>
+        <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
+    </plugins>
 </psalm>

@@ -26,6 +26,9 @@ final class NativeTest extends TestCase
         self::assertEquals($nativeDateTime, $dateTime->toNative());
     }
 
+    /**
+     * @return Generator<int, array{NativeDateTimeInterface, DateTime}>
+     */
     public static function dataForNativeDateTime(): Generator
     {
         yield [

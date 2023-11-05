@@ -30,6 +30,9 @@ final class NativeTest extends TestCase
         }
     }
 
+    /**
+     * @return Generator<int, array{NativeDateTimeInterface, LocalTime, bool}>
+     */
     public static function dataForNativeDateTime(): Generator
     {
         yield [

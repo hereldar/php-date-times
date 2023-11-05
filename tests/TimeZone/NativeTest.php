@@ -24,6 +24,9 @@ final class NativeTest extends TestCase
         self::assertEquals($nativeTimeZone, $timeZone->toNative());
     }
 
+    /**
+     * @return Generator<int, array{string}>
+     */
     public static function validTimeZones(): Generator
     {
         $timeZones = [
