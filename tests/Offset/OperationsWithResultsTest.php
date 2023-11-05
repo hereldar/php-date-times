@@ -26,7 +26,7 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             ArithmeticError::class,
-            fn() => Offset::of(seconds: 1)->add(seconds: PHP_INT_MAX)->orFail()
+            fn() => Offset::of(seconds: 1)->add(seconds: \PHP_INT_MAX)->orFail()
         );
     }
 
@@ -45,7 +45,7 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             ArithmeticError::class,
-            fn() => Offset::of(seconds: -2)->subtract(seconds: PHP_INT_MAX)->orFail()
+            fn() => Offset::of(seconds: -2)->subtract(seconds: \PHP_INT_MAX)->orFail()
         );
     }
 }

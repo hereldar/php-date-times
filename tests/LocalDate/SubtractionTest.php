@@ -222,11 +222,11 @@ final class SubtractionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalDate::epoch()->minus(weeks: PHP_INT_MIN)
+            fn() => LocalDate::epoch()->minus(weeks: \PHP_INT_MIN)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalDate::epoch()->minus(days: PHP_INT_MIN, weeks: -1)
+            fn() => LocalDate::epoch()->minus(days: \PHP_INT_MIN, weeks: -1)
         );
     }
 }

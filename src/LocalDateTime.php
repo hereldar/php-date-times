@@ -94,7 +94,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         TimeZone|Offset|string $timeZone = 'UTC',
     ): static {
         $tz = match (true) {
-            is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+            \is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
             $timeZone instanceof TimeZone => $timeZone->toNative(),
             $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
         };
@@ -200,8 +200,8 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         /** @var array<int, string> $formats */
         $formats = [];
 
-        if (is_array($format)) {
-            if (count($format) === 0) {
+        if (\is_array($format)) {
+            if (\count($format) === 0) {
                 throw new InvalidArgumentException(
                     'At least one format must be passed'
                 );
@@ -216,7 +216,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
             return $result;
         }
 
-        if (count($formats) > 1) {
+        if (\count($formats) > 1) {
             while ($fmt = next($formats)) {
                 $r = self::parseSimple($string, $fmt, $tz);
 
@@ -525,7 +525,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         int $minutes = 0,
         int $seconds = 0,
     ): DateTime {
-        if (is_int($hours)) {
+        if (\is_int($hours)) {
             $offset = Offset::of($hours, $minutes, $seconds);
         } elseif (!$minutes && !$seconds) {
             $offset = $hours;
@@ -820,7 +820,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         int $weeks = 0,
         int $milliseconds = 0,
     ): static {
-        if (is_int($years)) {
+        if (\is_int($years)) {
             $period = Period::of(
                 $years, $months, $days,
                 $hours, $minutes, $seconds, $microseconds,
@@ -891,7 +891,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         int $weeks = 0,
         int $milliseconds = 0,
     ): static {
-        if (is_int($years)) {
+        if (\is_int($years)) {
             $period = Period::of(
                 $years, $months, $days,
                 $hours, $minutes, $seconds, $microseconds,

@@ -206,7 +206,7 @@ final class AdditionTest extends TestCase
     public function testArithmeticError(): void
     {
         $this->expectException(ArithmeticError::class);
-        Period::of(PHP_INT_MAX)->plus(Period::of(1));
+        Period::of(\PHP_INT_MAX)->plus(Period::of(1));
     }
 
     public function testInvalidArgumentException(): void

@@ -133,7 +133,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         TimeZone|Offset|string $timeZone = 'UTC',
     ): static {
         $tz = match (true) {
-            is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+            \is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
             $timeZone instanceof TimeZone => $timeZone->toNative(),
             $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
         };
@@ -212,8 +212,8 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         /** @var array<int, string> $formats */
         $formats = [];
 
-        if (is_array($format)) {
-            if (count($format) === 0) {
+        if (\is_array($format)) {
+            if (\count($format) === 0) {
                 throw new InvalidArgumentException(
                     'At least one format must be passed'
                 );
@@ -228,7 +228,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
             return $result;
         }
 
-        if (count($formats) > 1) {
+        if (\count($formats) > 1) {
             while ($fmt = next($formats)) {
                 $r = self::parseSimple($string, $fmt, $tz);
 
@@ -520,7 +520,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         int $month = 1,
         int $day = 1,
     ): LocalDateTime {
-        if (is_int($year)) {
+        if (\is_int($year)) {
             Validator::month($month);
             Validator::day($day, $month, $year);
         } elseif ($month === 1 && $day === 1) {
@@ -700,7 +700,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         int $microseconds = 0,
         int $milliseconds = 0,
     ): static {
-        if (is_int($hours)) {
+        if (\is_int($hours)) {
             $period = Period::of(
                 0, 0, 0,
                 $hours, $minutes, $seconds, $microseconds,
@@ -747,7 +747,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         int $microseconds = 0,
         int $milliseconds = 0,
     ): static {
-        if (is_int($hours)) {
+        if (\is_int($hours)) {
             $period = Period::of(
                 0, 0, 0,
                 $hours, $minutes, $seconds, $microseconds,

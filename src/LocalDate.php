@@ -83,7 +83,7 @@ class LocalDate implements Datelike, Formattable, Stringable, Copyable, Summable
         TimeZone|Offset|string $timeZone = 'UTC',
     ): static {
         $tz = match (true) {
-            is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+            \is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
             $timeZone instanceof TimeZone => $timeZone->toNative(),
             $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
         };
@@ -217,8 +217,8 @@ class LocalDate implements Datelike, Formattable, Stringable, Copyable, Summable
         /** @var array<int, string> $formats */
         $formats = [];
 
-        if (is_array($format)) {
-            if (count($format) === 0) {
+        if (\is_array($format)) {
+            if (\count($format) === 0) {
                 throw new InvalidArgumentException(
                     'At least one format must be passed'
                 );
@@ -233,7 +233,7 @@ class LocalDate implements Datelike, Formattable, Stringable, Copyable, Summable
             return $result;
         }
 
-        if (count($formats) > 1) {
+        if (\count($formats) > 1) {
             while ($fmt = next($formats)) {
                 $r = self::parseSimple($string, $fmt, $tz);
 
@@ -458,7 +458,7 @@ class LocalDate implements Datelike, Formattable, Stringable, Copyable, Summable
         int $second = 0,
         int $microsecond = 0,
     ): LocalDateTime {
-        if (is_int($hour)) {
+        if (\is_int($hour)) {
             Validator::hour($hour);
             Validator::minute($minute);
             Validator::second($second);
@@ -681,7 +681,7 @@ class LocalDate implements Datelike, Formattable, Stringable, Copyable, Summable
         int $quarters = 0,
         int $weeks = 0,
     ): static {
-        if (is_int($years)) {
+        if (\is_int($years)) {
             $period = Period::of(
                 $years, $months, $days,
                 0, 0, 0, 0,
@@ -745,7 +745,7 @@ class LocalDate implements Datelike, Formattable, Stringable, Copyable, Summable
         int $quarters = 0,
         int $weeks = 0,
     ): static {
-        if (is_int($years)) {
+        if (\is_int($years)) {
             $period = Period::of(
                 $years, $months, $days,
                 0, 0, 0, 0,

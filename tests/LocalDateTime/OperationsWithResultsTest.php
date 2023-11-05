@@ -39,7 +39,7 @@ final class OperationsWithResultsTest extends TestCase
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => $dateTime->add(weeks: PHP_INT_MAX)->orFail()
+            fn() => $dateTime->add(weeks: \PHP_INT_MAX)->orFail()
         );
     }
 
@@ -69,7 +69,7 @@ final class OperationsWithResultsTest extends TestCase
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => $dateTime->subtract(weeks: PHP_INT_MIN)->orFail()
+            fn() => $dateTime->subtract(weeks: \PHP_INT_MIN)->orFail()
         );
     }
 

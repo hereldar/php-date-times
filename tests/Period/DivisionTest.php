@@ -44,6 +44,6 @@ final class DivisionTest extends TestCase
     public function testArithmeticError(): void
     {
         $this->expectException(ArithmeticError::class);
-        Period::of(PHP_INT_MIN)->dividedBy(-1);
+        Period::of(\PHP_INT_MIN)->dividedBy(-1);
     }
 }

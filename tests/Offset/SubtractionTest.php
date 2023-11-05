@@ -45,11 +45,11 @@ final class SubtractionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn() => Offset::zero()->plus(minutes: PHP_INT_MIN)
+            fn() => Offset::zero()->plus(minutes: \PHP_INT_MIN)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => Offset::zero()->plus(seconds: PHP_INT_MIN, hours: -1)
+            fn() => Offset::zero()->plus(seconds: \PHP_INT_MIN, hours: -1)
         );
     }
 

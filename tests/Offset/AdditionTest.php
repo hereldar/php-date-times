@@ -45,11 +45,11 @@ final class AdditionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn() => Offset::zero()->plus(hours: PHP_INT_MAX)
+            fn() => Offset::zero()->plus(hours: \PHP_INT_MAX)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => Offset::zero()->plus(seconds: PHP_INT_MAX, minutes: 1)
+            fn() => Offset::zero()->plus(seconds: \PHP_INT_MAX, minutes: 1)
         );
     }
 

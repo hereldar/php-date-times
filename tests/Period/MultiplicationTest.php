@@ -43,6 +43,6 @@ final class MultiplicationTest extends TestCase
     public function testArithmeticError(): void
     {
         $this->expectException(ArithmeticError::class);
-        Period::of(PHP_INT_MAX)->multipliedBy(2);
+        Period::of(\PHP_INT_MAX)->multipliedBy(2);
     }
 }

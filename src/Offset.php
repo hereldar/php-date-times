@@ -205,8 +205,8 @@ class Offset implements Formattable, Stringable, Copyable, Summable
         /** @var array<int, string> $formats */
         $formats = [];
 
-        if (is_array($format)) {
-            if (count($format) === 0) {
+        if (\is_array($format)) {
+            if (\count($format) === 0) {
                 throw new InvalidArgumentException(
                     'At least one format must be passed'
                 );
@@ -221,7 +221,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
             return $result;
         }
 
-        if (count($formats) > 1) {
+        if (\count($formats) > 1) {
             while ($fmt = next($formats)) {
                 $r = self::parseSimple($string, $fmt);
 
@@ -258,7 +258,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
             subject: preg_quote($format, '/')
         );
 
-        if (!is_string($pattern)
+        if (!\is_string($pattern)
             || !preg_match("/^{$pattern}$/", $string, $matches)) {
             return Error::withException(new ParseException($string, $format));
         }
@@ -403,7 +403,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
             subject: $format
         );
 
-        if (!is_string($string)) {
+        if (!\is_string($string)) {
             return Error::withException(new FormatException($format));
         }
 

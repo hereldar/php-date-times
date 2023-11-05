@@ -147,11 +147,11 @@ final class SubtractionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalTime::epoch()->minus(milliseconds: PHP_INT_MIN)
+            fn() => LocalTime::epoch()->minus(milliseconds: \PHP_INT_MIN)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalTime::epoch()->minus(microseconds: PHP_INT_MIN, milliseconds: -1)
+            fn() => LocalTime::epoch()->minus(microseconds: \PHP_INT_MIN, milliseconds: -1)
         );
     }
 }

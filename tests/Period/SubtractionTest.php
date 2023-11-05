@@ -206,7 +206,7 @@ final class SubtractionTest extends TestCase
     public function testArithmeticError(): void
     {
         $this->expectException(ArithmeticError::class);
-        Period::of(PHP_INT_MIN)->minus(Period::of(1));
+        Period::of(\PHP_INT_MIN)->minus(Period::of(1));
     }
 
     public function testInvalidArgumentException(): void

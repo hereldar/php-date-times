@@ -261,8 +261,8 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         /** @var array<int, string> $formats */
         $formats = [];
 
-        if (is_array($format)) {
-            if (count($format) === 0) {
+        if (\is_array($format)) {
+            if (\count($format) === 0) {
                 throw new InvalidArgumentException(
                     'At least one format must be passed'
                 );
@@ -277,7 +277,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
             return $result;
         }
 
-        if (count($formats) > 1) {
+        if (\count($formats) > 1) {
             while ($fmt = next($formats)) {
                 $r = self::parseSimple($string, $fmt);
 
@@ -328,7 +328,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
             subject: preg_quote($format, '/')
         );
 
-        if (!is_string($pattern)
+        if (!\is_string($pattern)
             || !preg_match("/^{$pattern}$/", $string, $matches)) {
             return Error::withException(new ParseException($string, $format));
         }
@@ -342,7 +342,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
 
         $arguments = [];
         foreach ($matches as $key => $value) {
-            if ($value && !is_int($key)) {
+            if ($value && !\is_int($key)) {
                 if ($key === 'decimalSeconds') {
                     $key = 'microseconds';
                     $value = str_pad($value, 6, '0');
@@ -470,7 +470,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
             subject: $format
         );
 
-        if (!is_string($string)) {
+        if (!\is_string($string)) {
             return Error::withException(new FormatException($format));
         }
 
@@ -908,7 +908,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         int $weeks = 0,
         int $milliseconds = 0,
     ): static {
-        if (is_int($years)) {
+        if (\is_int($years)) {
             $period = static::of(
                 $years, $months, $days,
                 $hours, $minutes, $seconds, $microseconds,
@@ -967,7 +967,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         int $weeks = 0,
         int $milliseconds = 0,
     ): static {
-        if (is_int($years)) {
+        if (\is_int($years)) {
             $period = static::of(
                 $years, $months, $days,
                 $hours, $minutes, $seconds, $microseconds,

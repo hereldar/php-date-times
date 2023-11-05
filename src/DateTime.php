@@ -107,7 +107,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
         TimeZone|Offset|string $timeZone = 'UTC',
     ): static {
         $tz = match (true) {
-            is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+            \is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
             $timeZone instanceof TimeZone => $timeZone->toNative(),
             $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
         };
@@ -204,7 +204,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
         TimeZone|Offset|string $timeZone = 'UTC',
     ): Ok|Error {
         $tz = match (true) {
-            is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+            \is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
             $timeZone instanceof TimeZone => $timeZone->toNative(),
             $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
         };
@@ -212,8 +212,8 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
         /** @var array<int, string> $formats */
         $formats = [];
 
-        if (is_array($format)) {
-            if (count($format) === 0) {
+        if (\is_array($format)) {
+            if (\count($format) === 0) {
                 throw new InvalidArgumentException(
                     'At least one format must be passed'
                 );
@@ -228,7 +228,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
             return $result;
         }
 
-        if (count($formats) > 1) {
+        if (\count($formats) > 1) {
             while ($fmt = next($formats)) {
                 $r = self::parseSimple($string, $fmt, $tz);
 
@@ -904,7 +904,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
         int $weeks = 0,
         int $milliseconds = 0,
     ): static {
-        if (is_int($years)) {
+        if (\is_int($years)) {
             $period = Period::of(
                 $years, $months, $days,
                 $hours, $minutes, $seconds, $microseconds,
@@ -975,7 +975,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
         int $weeks = 0,
         int $milliseconds = 0,
     ): static {
-        if (is_int($years)) {
+        if (\is_int($years)) {
             $period = Period::of(
                 $years, $months, $days,
                 $hours, $minutes, $seconds, $microseconds,
@@ -1087,7 +1087,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
 
         if ($timeZone !== null) {
             $tz = match (true) {
-                is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
+                \is_string($timeZone) => TimeZone::of($timeZone)->toNative(),
                 $timeZone instanceof TimeZone => $timeZone->toNative(),
                 $timeZone instanceof Offset => $timeZone->toTimeZone()->toNative(),
             };
