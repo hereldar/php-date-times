@@ -62,7 +62,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: json
           coverage: none
-          tools: vimeo/psalm
+          tools: vimeo/psalm, psalm/plugin-phpunit
 
       - name: Install dependencies
         uses: ramsey/composer-install@v2
