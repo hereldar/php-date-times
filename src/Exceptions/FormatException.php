@@ -14,11 +14,12 @@ final class FormatException extends InvalidArgumentException
         private readonly ?string $error = null,
         ?Throwable $previous = null
     ) {
-        $message = sprintf(
+        $message = \sprintf(
             'Format %s is not valid',
-            var_export($format, true),
+            \var_export($format, true),
         );
 
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($error) {
             $message .= " ({$error})";
         }

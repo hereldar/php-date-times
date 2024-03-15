@@ -16,12 +16,14 @@ final class CreationTest extends TestCase
 {
     /**
      * @dataProvider validTimeZoneIds
+     *
+     * @param non-empty-string $timeZoneId
      */
     public function testSystemTimeZone(
         string $timeZoneId,
     ): void {
         $tz = new NativeTimeZone($timeZoneId);
-        date_default_timezone_set($tz->getName());
+        \date_default_timezone_set($tz->getName());
         $timeZone = TimeZone::system();
 
         self::assertSame($tz->getName(), $timeZone->name());
@@ -29,7 +31,7 @@ final class CreationTest extends TestCase
     }
 
     /**
-     * @return Generator<int, array{string}>
+     * @return Generator<int, array{non-empty-string}>
      */
     public static function validTimeZoneIds(): Generator
     {
@@ -38,16 +40,19 @@ final class CreationTest extends TestCase
             'Asia/Hong_Kong',
             'Africa/Lagos',
             'America/Montevideo',
-            date_default_timezone_get(),
+            \date_default_timezone_get(),
         ];
 
         foreach ($timeZones as $timeZone) {
+            /** @phpstan-ignore-next-line */
             yield [$timeZone];
         }
     }
 
     /**
      * @dataProvider validTimeZoneIdsAndOffsets
+     *
+     * @param non-empty-string $timeZoneName
      */
     public function testCustomTimeZone(
         string $timeZoneName,
@@ -62,7 +67,7 @@ final class CreationTest extends TestCase
     }
 
     /**
-     * @return list<array{0: string, 1: TimeZoneType}>
+     * @return list<array{0: non-empty-string, 1: TimeZoneType}>
      */
     public static function validTimeZoneIdsAndOffsets(): array
     {
@@ -76,6 +81,8 @@ final class CreationTest extends TestCase
 
     /**
      * @dataProvider invalidTimeZoneIdsAndOffsets
+     *
+     * @param non-empty-string $timeZoneName
      */
     public function testTimeZoneException(
         string $timeZoneName,
@@ -89,7 +96,7 @@ final class CreationTest extends TestCase
     }
 
     /**
-     * @return Generator<int, array{string}>
+     * @return Generator<int, array{non-empty-string}>
      */
     public static function invalidTimeZoneIdsAndOffsets(): Generator
     {

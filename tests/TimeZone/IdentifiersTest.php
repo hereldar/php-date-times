@@ -28,12 +28,12 @@ final class IdentifiersTest extends TestCase
 
         self::assertException(
             new CountryException('UK'),
-            fn() => TimeZone::countryIdentifiers('UK')
+            fn () => TimeZone::countryIdentifiers('UK')
         );
 
         self::assertException(
             new CountryException('Bad'),
-            fn() => TimeZone::countryIdentifiers('Bad')
+            fn () => TimeZone::countryIdentifiers('Bad')
         );
     }
 }

@@ -36,7 +36,7 @@ final class CompositionTest extends TestCase
 
         self::assertException(
             InvalidArgumentException::class,
-            fn() => $localDateTime->atOffset(Offset::of(1), 45)
+            fn () => $localDateTime->atOffset(Offset::of(1), 45)
         );
     }
 
@@ -46,11 +46,11 @@ final class CompositionTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('hours must be between -15 and 15, -16 given'),
-            fn() => $localDateTime->atOffset(hours: -16)
+            fn () => $localDateTime->atOffset(hours: -16)
         );
         self::assertException(
             new OutOfRangeException('hours must be between -15 and 15, 16 given'),
-            fn() => $localDateTime->atOffset(16)
+            fn () => $localDateTime->atOffset(16)
         );
     }
 
@@ -60,11 +60,11 @@ final class CompositionTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('minutes must be between -59 and 59, -60 given'),
-            fn() => $localDateTime->atOffset(minutes: -60)
+            fn () => $localDateTime->atOffset(minutes: -60)
         );
         self::assertException(
             new OutOfRangeException('minutes must be between -59 and 59, 60 given'),
-            fn() => $localDateTime->atOffset(0, 60)
+            fn () => $localDateTime->atOffset(0, 60)
         );
     }
 
@@ -74,11 +74,11 @@ final class CompositionTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('seconds must be between -59 and 59, -60 given'),
-            fn() => $localDateTime->atOffset(seconds: -60)
+            fn () => $localDateTime->atOffset(seconds: -60)
         );
         self::assertException(
             new OutOfRangeException('seconds must be between -59 and 59, 60 given'),
-            fn() => $localDateTime->atOffset(0, 0, 60)
+            fn () => $localDateTime->atOffset(0, 0, 60)
         );
     }
 }

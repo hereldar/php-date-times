@@ -13,6 +13,8 @@ final class NativeTest extends TestCase
 {
     /**
      * @dataProvider validTimeZones
+     *
+     * @param non-empty-string $timeZoneName
      */
     public function testNativeTimeZone(
         string $timeZoneName,
@@ -25,7 +27,7 @@ final class NativeTest extends TestCase
     }
 
     /**
-     * @return Generator<int, array{string}>
+     * @return Generator<int, array{non-empty-string}>
      */
     public static function validTimeZones(): Generator
     {

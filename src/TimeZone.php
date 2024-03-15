@@ -61,7 +61,8 @@ class TimeZone implements Stringable
      */
     public static function system(): static
     {
-        return static::of(date_default_timezone_get());
+        /** @phpstan-ignore-next-line */
+        return static::of(\date_default_timezone_get());
     }
 
     /**
@@ -83,9 +84,9 @@ class TimeZone implements Stringable
      *
      * @param string $code a two-letter (uppercase) ISO 3166-1 country code
      *
-     * @throws CountryException if the country cannot be found
-     *
      * @return array<int, string>
+     *
+     * @throws CountryException if the country cannot be found
      */
     public static function countryIdentifiers(
         string $code,
@@ -108,6 +109,8 @@ class TimeZone implements Stringable
 
     /**
      * Makes a new `TimeZone` with the specified name.
+     *
+     * @param non-empty-string $name
      *
      * @throws TimeZoneException if the time-zone name cannot be found
      */
@@ -191,11 +194,11 @@ class TimeZone implements Stringable
     {
         $name = $this->name();
 
-        if (str_contains($name, '/')) {
+        if (\str_contains($name, '/')) {
             return TimeZoneType::Identifier;
         }
 
-        if (str_starts_with($name, '+') || str_starts_with($name, '-')) {
+        if (\str_starts_with($name, '+') || \str_starts_with($name, '-')) {
             return TimeZoneType::Offset;
         }
 
@@ -210,7 +213,7 @@ class TimeZone implements Stringable
      * depending on whether the name of this time-zone is less than,
      * equal to, or greater than the name of the given time-zone name.
      */
-    public function compareTo(TimeZone $that): int
+    public function compareTo(self $that): int
     {
         $dt = DateTime::epoch()->toNative();
 
@@ -219,7 +222,7 @@ class TimeZone implements Stringable
 
         $result = $a->getOffset($dt) <=> $b->getOffset($dt);
 
-        if ($result !== 0) {
+        if (0 !== $result) {
             return $result;
         }
 
@@ -230,7 +233,7 @@ class TimeZone implements Stringable
      * Checks if the given time-zone belongs to the same class and has
      * the same name as this time-zone.
      */
-    public function is(TimeZone $that): bool
+    public function is(self $that): bool
     {
         return $this::class === $that::class
             && $this->name() === $that->name();
@@ -240,7 +243,7 @@ class TimeZone implements Stringable
      * Checks if the given time-zone belongs to another class or has a
      * different name than this time-zone.
      */
-    public function isNot(TimeZone $that): bool
+    public function isNot(self $that): bool
     {
         return $this::class !== $that::class
             || $this->name() !== $that->name();
@@ -250,7 +253,7 @@ class TimeZone implements Stringable
      * Checks if the given time-zone has the same name as this
      * time-zone.
      */
-    public function isEqual(TimeZone $that): bool
+    public function isEqual(self $that): bool
     {
         return ($this->name() === $that->name());
     }
@@ -259,7 +262,7 @@ class TimeZone implements Stringable
      * Checks if the given time-zone has a different name from this
      * time-zone.
      */
-    public function isNotEqual(TimeZone $that): bool
+    public function isNotEqual(self $that): bool
     {
         return ($this->name() !== $that->name());
     }

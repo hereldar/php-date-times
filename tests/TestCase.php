@@ -74,37 +74,37 @@ abstract class TestCase extends PHPUnitTestCase
 
         $expected = ['year' => $year];
 
-        if ($month !== null) {
+        if (null !== $month) {
             $actual['month'] = (int) $dateTime->format('n');
             $expected['month'] = $month;
         }
 
-        if ($day !== null) {
+        if (null !== $day) {
             $actual['day'] = (int) $dateTime->format('j');
             $expected['day'] = $day;
         }
 
-        if ($hour !== null) {
+        if (null !== $hour) {
             $actual['hour'] = (int) $dateTime->format('G');
             $expected['hour'] = $hour;
         }
 
-        if ($minute !== null) {
+        if (null !== $minute) {
             $actual['minute'] = (int) $dateTime->format('i');
             $expected['minute'] = $minute;
         }
 
-        if ($second !== null) {
+        if (null !== $second) {
             $actual['second'] = (int) $dateTime->format('s');
             $expected['second'] = $second;
         }
 
-        if ($microsecond !== null) {
+        if (null !== $microsecond) {
             $actual['microsecond'] = (int) $dateTime->format('u');
             $expected['microsecond'] = $microsecond;
         }
 
-        if ($timeZone !== null) {
+        if (null !== $timeZone) {
             $actual['timeZone'] = $dateTime->getTimezone()->getName();
             $expected['timeZone'] = $timeZone;
         }
@@ -127,37 +127,37 @@ abstract class TestCase extends PHPUnitTestCase
 
         $expected = ['year' => $year];
 
-        if ($month !== null) {
+        if (null !== $month) {
             $actual['month'] = $dateTime->month();
             $expected['month'] = $month;
         }
 
-        if ($day !== null) {
+        if (null !== $day) {
             $actual['day'] = $dateTime->day();
             $expected['day'] = $day;
         }
 
-        if ($hour !== null) {
+        if (null !== $hour) {
             $actual['hour'] = $dateTime->hour();
             $expected['hour'] = $hour;
         }
 
-        if ($minute !== null) {
+        if (null !== $minute) {
             $actual['minute'] = $dateTime->minute();
             $expected['minute'] = $minute;
         }
 
-        if ($second !== null) {
+        if (null !== $second) {
             $actual['second'] = $dateTime->second();
             $expected['second'] = $second;
         }
 
-        if ($microsecond !== null) {
+        if (null !== $microsecond) {
             $actual['microsecond'] = $dateTime->microsecond();
             $expected['microsecond'] = $microsecond;
         }
 
-        if ($timeZone !== null) {
+        if (null !== $timeZone) {
             $actual['timeZone'] = $dateTime->timeZone()->name();
             $expected['timeZone'] = $timeZone;
         }
@@ -175,12 +175,12 @@ abstract class TestCase extends PHPUnitTestCase
 
         $expected = ['year' => $year];
 
-        if ($month !== null) {
+        if (null !== $month) {
             $actual['month'] = $date->month();
             $expected['month'] = $month;
         }
 
-        if ($day !== null) {
+        if (null !== $day) {
             $actual['day'] = $date->day();
             $expected['day'] = $day;
         }
@@ -202,32 +202,32 @@ abstract class TestCase extends PHPUnitTestCase
 
         $expected = ['year' => $year];
 
-        if ($month !== null) {
+        if (null !== $month) {
             $actual['month'] = $dateTime->month();
             $expected['month'] = $month;
         }
 
-        if ($day !== null) {
+        if (null !== $day) {
             $actual['day'] = $dateTime->day();
             $expected['day'] = $day;
         }
 
-        if ($hour !== null) {
+        if (null !== $hour) {
             $actual['hour'] = $dateTime->hour();
             $expected['hour'] = $hour;
         }
 
-        if ($minute !== null) {
+        if (null !== $minute) {
             $actual['minute'] = $dateTime->minute();
             $expected['minute'] = $minute;
         }
 
-        if ($second !== null) {
+        if (null !== $second) {
             $actual['second'] = $dateTime->second();
             $expected['second'] = $second;
         }
 
-        if ($microsecond !== null) {
+        if (null !== $microsecond) {
             $actual['microsecond'] = $dateTime->microsecond();
             $expected['microsecond'] = $microsecond;
         }
@@ -246,17 +246,17 @@ abstract class TestCase extends PHPUnitTestCase
 
         $expected = ['hour' => $hour];
 
-        if ($minute !== null) {
+        if (null !== $minute) {
             $actual['minute'] = $time->minute();
             $expected['minute'] = $minute;
         }
 
-        if ($second !== null) {
+        if (null !== $second) {
             $actual['second'] = $time->second();
             $expected['second'] = $second;
         }
 
-        if ($microsecond !== null) {
+        if (null !== $microsecond) {
             $actual['microsecond'] = $time->microsecond();
             $expected['microsecond'] = $microsecond;
         }
@@ -274,12 +274,12 @@ abstract class TestCase extends PHPUnitTestCase
 
         $expected = ['hours' => $hours];
 
-        if ($minutes !== null) {
+        if (null !== $minutes) {
             $actual['minutes'] = $offset->minutes();
             $expected['minutes'] = $minutes;
         }
 
-        if ($seconds !== null) {
+        if (null !== $seconds) {
             $actual['seconds'] = $offset->seconds();
             $expected['seconds'] = $seconds;
         }
@@ -308,32 +308,32 @@ abstract class TestCase extends PHPUnitTestCase
 
         $expected = ['years' => $years];
 
-        if ($months !== null) {
+        if (null !== $months) {
             $actual['months'] = $period->months();
             $expected['months'] = $months;
         }
 
-        if ($days !== null) {
+        if (null !== $days) {
             $actual['days'] = $period->days();
             $expected['days'] = $days;
         }
 
-        if ($hours !== null) {
+        if (null !== $hours) {
             $actual['hours'] = $period->hours();
             $expected['hours'] = $hours;
         }
 
-        if ($minutes !== null) {
+        if (null !== $minutes) {
             $actual['minutes'] = $period->minutes();
             $expected['minutes'] = $minutes;
         }
 
-        if ($seconds !== null) {
+        if (null !== $seconds) {
             $actual['seconds'] = $period->seconds();
             $expected['seconds'] = $seconds;
         }
 
-        if ($microseconds !== null) {
+        if (null !== $microseconds) {
             $actual['microseconds'] = $period->microseconds();
             $expected['microseconds'] = $microseconds;
         }
@@ -342,7 +342,7 @@ abstract class TestCase extends PHPUnitTestCase
     }
 
     /**
-     * @return Generator<int, array{string}>
+     * @return Generator<int, array{non-empty-string}>
      */
     public static function timeZoneNames(): Generator
     {

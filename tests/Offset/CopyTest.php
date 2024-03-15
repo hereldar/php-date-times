@@ -21,11 +21,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('hours must be between -15 and 15, 16 given'),
-            fn() => $one->with(hours: 16)
+            fn () => $one->with(hours: 16)
         );
         self::assertException(
             new OutOfRangeException('hours must be between -15 and 15, -16 given'),
-            fn() => $one->copy(hours: -16)->orFail()
+            fn () => $one->copy(hours: -16)->orFail()
         );
     }
 
@@ -40,11 +40,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('minutes must be between -59 and 59, 60 given'),
-            fn() => $one->with(minutes: 60)
+            fn () => $one->with(minutes: 60)
         );
         self::assertException(
             new OutOfRangeException('minutes must be between -59 and 59, -60 given'),
-            fn() => $one->copy(minutes: -60)->orFail()
+            fn () => $one->copy(minutes: -60)->orFail()
         );
     }
 
@@ -59,11 +59,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('seconds must be between -59 and 59, 60 given'),
-            fn() => $one->with(seconds: 60)
+            fn () => $one->with(seconds: 60)
         );
         self::assertException(
             new OutOfRangeException('seconds must be between -59 and 59, -60 given'),
-            fn() => $one->copy(seconds: -60)->orFail()
+            fn () => $one->copy(seconds: -60)->orFail()
         );
     }
 
@@ -78,11 +78,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('seconds must be between -54000 and 54000, 54001 given'),
-            fn() => $one->with(15, 0, 1)
+            fn () => $one->with(15, 0, 1)
         );
         self::assertException(
             new OutOfRangeException('seconds must be between -54000 and 54000, -54001 given'),
-            fn() => $one->copy(-15, -0, -1)->orFail()
+            fn () => $one->copy(-15, -0, -1)->orFail()
         );
     }
 }

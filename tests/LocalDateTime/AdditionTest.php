@@ -343,11 +343,11 @@ final class AdditionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalDateTime::epoch()->plus(weeks: \PHP_INT_MAX)
+            fn () => LocalDateTime::epoch()->plus(weeks: \PHP_INT_MAX)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalDateTime::epoch()->plus(microseconds: \PHP_INT_MAX, milliseconds: 1)
+            fn () => LocalDateTime::epoch()->plus(microseconds: \PHP_INT_MAX, milliseconds: 1)
         );
     }
 }

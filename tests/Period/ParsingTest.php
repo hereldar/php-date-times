@@ -181,7 +181,7 @@ final class ParsingTest extends TestCase
     {
         self::assertException(
             InvalidArgumentException::class,
-            fn() => Period::parse('01:02:03', [])
+            fn () => Period::parse('01:02:03', [])
         );
         self::assertEquals(
             Period::of(1, 2, 3),
@@ -197,11 +197,11 @@ final class ParsingTest extends TestCase
     {
         self::assertException(
             new ArithmeticError('Multiplication of 9223372036854775807 by 7 is not an integer'),
-            fn() => Period::parse('9223372036854775807', '%w')->orFail()
+            fn () => Period::parse('9223372036854775807', '%w')->orFail()
         );
         self::assertException(
             new ArithmeticError('Addition of 9223372036854775807 plus 7 is not an integer'),
-            fn() => Period::parse('9223372036854775807/1', '%d/%w')->orFail()
+            fn () => Period::parse('9223372036854775807/1', '%d/%w')->orFail()
         );
     }
 }

@@ -35,11 +35,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 0 given'),
-            fn() => $dateTime->with(1986, 0)
+            fn () => $dateTime->with(1986, 0)
         );
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 13 given'),
-            fn() => $dateTime->with(month: 13)
+            fn () => $dateTime->with(month: 13)
         );
     }
 
@@ -57,31 +57,31 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 0 given'),
-            fn() => $dateTime->with(day: 0)
+            fn () => $dateTime->with(day: 0)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 32 given'),
-            fn() => $dateTime->with(1986, 1, 32)
+            fn () => $dateTime->with(1986, 1, 32)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 30, 31 given'),
-            fn() => $dateTime->with(1986, 4, 31)
+            fn () => $dateTime->with(1986, 4, 31)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 28, 29 given'),
-            fn() => $dateTime->with(1986, 2, 29)
+            fn () => $dateTime->with(1986, 2, 29)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 29, 30 given'),
-            fn() => $dateTime->with(1960, 2, 30)
+            fn () => $dateTime->with(1960, 2, 30)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 28, 29 given'),
-            fn() => $dateTime->with(1900, 2, 29)
+            fn () => $dateTime->with(1900, 2, 29)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 29, 30 given'),
-            fn() => $dateTime->with(2000, 2, 30)
+            fn () => $dateTime->with(2000, 2, 30)
         );
     }
 
@@ -99,11 +99,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('hour must be between 0 and 23, -1 given'),
-            fn() => $dateTime->with(hour: -1)
+            fn () => $dateTime->with(hour: -1)
         );
         self::assertException(
             new OutOfRangeException('hour must be between 0 and 23, 24 given'),
-            fn() => $dateTime->with(1970, 1, 1, 24)
+            fn () => $dateTime->with(1970, 1, 1, 24)
         );
     }
 
@@ -121,11 +121,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, -1 given'),
-            fn() => $dateTime->with(minute: -1)
+            fn () => $dateTime->with(minute: -1)
         );
         self::assertException(
             new OutOfRangeException('minute must be between 0 and 59, 60 given'),
-            fn() => $dateTime->with(1970, 1, 1, 0, 60)
+            fn () => $dateTime->with(1970, 1, 1, 0, 60)
         );
     }
 
@@ -143,11 +143,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('second must be between 0 and 59, -1 given'),
-            fn() => $dateTime->with(second: -1)
+            fn () => $dateTime->with(second: -1)
         );
         self::assertException(
             new OutOfRangeException('second must be between 0 and 59, 60 given'),
-            fn() => $dateTime->with(1970, 1, 1, 0, 0, 60)
+            fn () => $dateTime->with(1970, 1, 1, 0, 0, 60)
         );
     }
 
@@ -165,11 +165,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new OutOfRangeException('microsecond must be between 0 and 999999, -1 given'),
-            fn() => $dateTime->with(microsecond: -1)
+            fn () => $dateTime->with(microsecond: -1)
         );
         self::assertException(
             new OutOfRangeException('microsecond must be between 0 and 999999, 1000000 given'),
-            fn() => $dateTime->with(1970, 1, 1, 0, 0, 0, 1_000_000)
+            fn () => $dateTime->with(1970, 1, 1, 0, 0, 0, 1_000_000)
         );
     }
 
@@ -197,11 +197,11 @@ final class CopyTest extends TestCase
 
         self::assertException(
             new TimeZoneException('Mars/Phobos'),
-            fn() => $dateTime->with(timeZone: 'Mars/Phobos')
+            fn () => $dateTime->with(timeZone: 'Mars/Phobos')
         );
         self::assertException(
             new TimeZoneException('CET+04:45'),
-            fn() => $dateTime->with(1970, 1, 1, 0, 0, 0, 0, 'CET+04:45')
+            fn () => $dateTime->with(1970, 1, 1, 0, 0, 0, 0, 'CET+04:45')
         );
     }
 

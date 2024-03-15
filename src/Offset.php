@@ -194,25 +194,23 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      *
      * @param string|array<int, string> $format
      *
-     * @throws InvalidArgumentException if an empty list of formats is passed
-     *
      * @return Ok<static>|Error<ParseException|OutOfRangeException>
+     *
+     * @throws InvalidArgumentException if an empty list of formats is passed
      */
     public static function parse(
         string $string,
-        string|array $format = Offset::ISO8601,
+        string|array $format = self::ISO8601,
     ): Ok|Error {
         /** @var array<int, string> $formats */
         $formats = [];
 
         if (\is_array($format)) {
-            if (\count($format) === 0) {
-                throw new InvalidArgumentException(
-                    'At least one format must be passed'
-                );
+            if (0 === \count($format)) {
+                throw new InvalidArgumentException('At least one format must be passed');
             }
             $formats = $format;
-            $format = reset($formats);
+            $format = \reset($formats);
         }
 
         $result = self::parseSimple($string, $format);
@@ -221,8 +219,8 @@ class Offset implements Formattable, Stringable, Copyable, Summable
             return $result;
         }
 
-        if (\count($formats) > 1) {
-            while ($fmt = next($formats)) {
+        if (1 < \count($formats)) {
+            while ($fmt = \next($formats)) {
                 $r = self::parseSimple($string, $fmt);
 
                 if ($r->isOk()) {
@@ -241,9 +239,9 @@ class Offset implements Formattable, Stringable, Copyable, Summable
         string $string,
         string $format,
     ): Ok|Error {
-        $pattern = preg_replace_callback(
+        $pattern = \preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
-            callback: static fn(array $matches) => match ($matches[1]) {
+            callback: static fn (array $matches) => match ($matches[1]) {
                 '%' => '%',
                 'R' => '(?P<sign>[+-])',
                 'r' => '(?P<sign>\-?)',
@@ -255,11 +253,11 @@ class Offset implements Formattable, Stringable, Copyable, Summable
                 's' => '(?P<seconds>[0-9]+)',
                 default => $matches[0],
             },
-            subject: preg_quote($format, '/')
+            subject: \preg_quote($format, '/')
         );
 
         if (!\is_string($pattern)
-            || !preg_match("/^{$pattern}$/", $string, $matches)) {
+            || !\preg_match("/^{$pattern}$/", $string, $matches)) {
             return Error::withException(new ParseException($string, $format));
         }
 
@@ -296,7 +294,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     {
         $matches = [];
 
-        if (!preg_match(self::ISO8601_PATTERN, $string, $matches)) {
+        if (!\preg_match(self::ISO8601_PATTERN, $string, $matches)) {
             throw new ParseException($string, self::ISO8601);
         }
 
@@ -306,8 +304,8 @@ class Offset implements Formattable, Stringable, Copyable, Summable
         };
 
         return static::of(
-            hours: $sign * (int) ($matches['hours']),
-            minutes: $sign * (int) ($matches['minutes']),
+            hours: $sign * (int) $matches['hours'],
+            minutes: $sign * (int) $matches['minutes'],
             seconds: $sign * (int) ($matches['seconds'] ?? 0),
         );
     }
@@ -326,7 +324,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     {
         $matches = [];
 
-        if (!preg_match(self::RFC2822_PATTERN, $string, $matches)) {
+        if (!\preg_match(self::RFC2822_PATTERN, $string, $matches)) {
             throw new ParseException($string, self::RFC2822);
         }
 
@@ -336,8 +334,8 @@ class Offset implements Formattable, Stringable, Copyable, Summable
         };
 
         return static::of(
-            hours: $sign * (int) ($matches['hours']),
-            minutes: $sign * (int) ($matches['minutes']),
+            hours: $sign * (int) $matches['hours'],
+            minutes: $sign * (int) $matches['minutes'],
             seconds: $sign * (int) ($matches['seconds'] ?? 0),
         );
     }
@@ -384,20 +382,20 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      *
      * @return Ok<string>|Error<FormatException>
      */
-    public function format(string $format = Offset::ISO8601): Ok|Error
+    public function format(string $format = self::ISO8601): Ok|Error
     {
-        $string = preg_replace_callback(
+        $string = \preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
-            callback: fn(array $matches) => match ($matches[1]) {
+            callback: fn (array $matches) => match ($matches[1]) {
                 '%' => '%',
                 'R' => ($this->isNegative()) ? '-' : '+',
                 'r' => ($this->isNegative()) ? '-' : '',
-                'H' => sprintf('%02d', abs($this->hours())),
-                'h' => (string) abs($this->hours()),
-                'I' => sprintf('%02d', abs($this->minutes())),
-                'i' => (string) abs($this->minutes()),
-                'S' => sprintf('%02d', abs($this->seconds())),
-                's' => (string) abs($this->seconds()),
+                'H' => \sprintf('%02d', \abs($this->hours())),
+                'h' => (string) \abs($this->hours()),
+                'I' => \sprintf('%02d', \abs($this->minutes())),
+                'i' => (string) \abs($this->minutes()),
+                'S' => \sprintf('%02d', \abs($this->seconds())),
+                's' => (string) \abs($this->seconds()),
                 default => $matches[0],
             },
             subject: $format
@@ -421,7 +419,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      *
      * @throws FormatException
      */
-    public function formatted(string $format = Offset::ISO8601): string
+    public function formatted(string $format = self::ISO8601): string
     {
         return $this->format($format)->orFail();
     }
@@ -429,31 +427,32 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     /**
      * Formats this offset with the ISO 8601 offset format (e.g.
      * `'+02:30'`).
-     *
      * By default, adds seconds if they are non-zero (for example
      * `'+02:30:45'`). To always add them, set `$seconds` to true. To
      * never add them, set `$seconds` to false.
-     *
      * The text is returned directly if no error is found, otherwise
      * an exception is thrown.
+     *
+     * @return non-empty-string
      */
     public function toIso8601(?bool $seconds = null): string
     {
-        $string = sprintf(
+        $string = \sprintf(
             '%s%02d:%02d',
-            ($this->value < 0) ? '-' : '+',
-            abs($this->hours()),
-            abs($this->minutes())
+            (0 > $this->value) ? '-' : '+',
+            \abs($this->hours()),
+            \abs($this->minutes())
         );
 
-        if ($seconds === true
-            || ($seconds === null && $this->seconds())) {
-            $string .= sprintf(
+        if (true === $seconds
+            || (null === $seconds && $this->seconds())) {
+            $string .= \sprintf(
                 ':%02d',
-                abs($this->seconds())
+                \abs($this->seconds())
             );
         }
 
+        /** @var non-empty-string */
         return $string;
     }
 
@@ -466,11 +465,11 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      */
     public function toRfc2822(): string
     {
-        return sprintf(
+        return \sprintf(
             '%s%02d%02d',
-            ($this->value < 0) ? '-' : '+',
-            abs($this->hours()),
-            abs($this->minutes())
+            (0 > $this->value) ? '-' : '+',
+            \abs($this->hours()),
+            \abs($this->minutes())
         );
     }
 
@@ -521,7 +520,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     public function hours(): int
     {
         /** @var int<-15, 15> */
-        return intdiv($this->value, 3600);
+        return \intdiv($this->value, 3600);
     }
 
     /**
@@ -554,7 +553,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     public function totalMinutes(): int
     {
         /** @var int<-900, 900> */
-        return intdiv($this->value, 60);
+        return \intdiv($this->value, 60);
     }
 
     /**
@@ -574,7 +573,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      * Returns a negative integer, zero, or a positive integer as this
      * offset is less than, equal to, or greater than the given offset.
      */
-    public function compareTo(Offset $that): int
+    public function compareTo(self $that): int
     {
         return ($this->value <=> $that->totalSeconds());
     }
@@ -583,7 +582,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      * Checks if the given offset belongs to the same class and has
      * the same value as this offset.
      */
-    public function is(Offset $that): bool
+    public function is(self $that): bool
     {
         return $this::class === $that::class
             && $this->value === $that->value;
@@ -593,7 +592,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      * Checks if the given offset belongs to another class or has a
      * different value than this offset.
      */
-    public function isNot(Offset $that): bool
+    public function isNot(self $that): bool
     {
         return $this::class !== $that::class
             || $this->value !== $that->value;
@@ -602,7 +601,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     /**
      * Checks if the given offset has the same value as this offset.
      */
-    public function isEqual(Offset $that): bool
+    public function isEqual(self $that): bool
     {
         return ($this->value === $that->totalSeconds());
     }
@@ -611,7 +610,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      * Checks if the given offset has a different value from this
      * offset.
      */
-    public function isNotEqual(Offset $that): bool
+    public function isNotEqual(self $that): bool
     {
         return ($this->value !== $that->totalSeconds());
     }
@@ -619,7 +618,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     /**
      * Checks if this offset is greater than the specified offset.
      */
-    public function isGreater(Offset $that): bool
+    public function isGreater(self $that): bool
     {
         return ($this->value > $that->totalSeconds());
     }
@@ -628,7 +627,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      * Checks if this offset is greater than or equal to the specified
      * offset.
      */
-    public function isGreaterOrEqual(Offset $that): bool
+    public function isGreaterOrEqual(self $that): bool
     {
         return ($this->value >= $that->totalSeconds());
     }
@@ -636,7 +635,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
     /**
      * Checks if this offset is less than the specified offset.
      */
-    public function isLess(Offset $that): bool
+    public function isLess(self $that): bool
     {
         return ($this->value < $that->totalSeconds());
     }
@@ -645,7 +644,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      * Checks if this offset is less than or equal to the specified
      * offset.
      */
-    public function isLessOrEqual(Offset $that): bool
+    public function isLessOrEqual(self $that): bool
     {
         return ($this->value <= $that->totalSeconds());
     }
@@ -655,7 +654,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      */
     public function isPositive(): bool
     {
-        return ($this->value > 0);
+        return (0 < $this->value);
     }
 
     /**
@@ -663,7 +662,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      */
     public function isNegative(): bool
     {
-        return ($this->value < 0);
+        return (0 > $this->value);
     }
 
     /**
@@ -671,7 +670,7 @@ class Offset implements Formattable, Stringable, Copyable, Summable
      */
     public function isZero(): bool
     {
-        return ($this->value === 0);
+        return (0 === $this->value);
     }
 
     /**
@@ -686,13 +685,13 @@ class Offset implements Formattable, Stringable, Copyable, Summable
         int $minutes = 0,
         int $seconds = 0,
     ): static {
-        $totalSeconds = intadd(
-            intmul($hours, 3600),
-            intmul($minutes, 60),
+        $totalSeconds = \intadd(
+            \intmul($hours, 3600),
+            \intmul($minutes, 60),
             $seconds,
         );
 
-        return static::fromTotalSeconds(intadd($this->value, $totalSeconds));
+        return static::fromTotalSeconds(\intadd($this->value, $totalSeconds));
     }
 
     /**
@@ -707,13 +706,13 @@ class Offset implements Formattable, Stringable, Copyable, Summable
         int $minutes = 0,
         int $seconds = 0,
     ): static {
-        $totalSeconds = intadd(
-            intmul($hours, 3600),
-            intmul($minutes, 60),
+        $totalSeconds = \intadd(
+            \intmul($hours, 3600),
+            \intmul($minutes, 60),
             $seconds,
         );
 
-        return static::fromTotalSeconds(intsub($this->value, $totalSeconds));
+        return static::fromTotalSeconds(\intsub($this->value, $totalSeconds));
     }
 
     /**

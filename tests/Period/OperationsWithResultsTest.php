@@ -28,17 +28,17 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             ArithmeticError::class,
-            fn() => Period::of(\PHP_INT_MAX)->add(1)->orFail()
+            fn () => Period::of(\PHP_INT_MAX)->add(1)->orFail()
         );
 
         self::assertException(
             ArithmeticError::class,
-            fn() => Period::of(1)->add(\PHP_INT_MAX)->orFail()
+            fn () => Period::of(1)->add(\PHP_INT_MAX)->orFail()
         );
 
         self::assertException(
             InvalidArgumentException::class,
-            fn() => Period::zero()->add(Period::of(1), 2)
+            fn () => Period::zero()->add(Period::of(1), 2)
         );
     }
 
@@ -58,17 +58,17 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             ArithmeticError::class,
-            fn() => Period::of(\PHP_INT_MIN)->subtract(1)->orFail()
+            fn () => Period::of(\PHP_INT_MIN)->subtract(1)->orFail()
         );
 
         self::assertException(
             ArithmeticError::class,
-            fn() => Period::of(-2)->subtract(\PHP_INT_MAX)->orFail()
+            fn () => Period::of(-2)->subtract(\PHP_INT_MAX)->orFail()
         );
 
         self::assertException(
             InvalidArgumentException::class,
-            fn() => Period::zero()->subtract(Period::of(1), 2)
+            fn () => Period::zero()->subtract(Period::of(1), 2)
         );
     }
 
@@ -85,7 +85,7 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             ArithmeticError::class,
-            fn() => Period::of(\PHP_INT_MAX)->multiplyBy(2)->orFail()
+            fn () => Period::of(\PHP_INT_MAX)->multiplyBy(2)->orFail()
         );
     }
 
@@ -96,7 +96,7 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             DivisionByZeroError::class,
-            fn() => Period::of(4, 3, 2, 5, 10, 11)->divideBy(0)->orFail()
+            fn () => Period::of(4, 3, 2, 5, 10, 11)->divideBy(0)->orFail()
         );
 
         $period = Period::of(-4, -3, -2, -5, -10, -11)->divideBy(-1)->orFail();
@@ -104,7 +104,7 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             ArithmeticError::class,
-            fn() => Period::of(\PHP_INT_MIN)->divideBy(-1)->orFail()
+            fn () => Period::of(\PHP_INT_MIN)->divideBy(-1)->orFail()
         );
     }
 }

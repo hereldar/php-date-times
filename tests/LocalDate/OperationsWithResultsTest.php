@@ -35,11 +35,11 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             InvalidArgumentException::class,
-            fn() => $date->add(Period::of(1), 2)
+            fn () => $date->add(Period::of(1), 2)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => $date->add(weeks: \PHP_INT_MAX)->orFail()
+            fn () => $date->add(weeks: \PHP_INT_MAX)->orFail()
         );
     }
 
@@ -65,11 +65,11 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             InvalidArgumentException::class,
-            fn() => $date->subtract(Period::of(1), 2)
+            fn () => $date->subtract(Period::of(1), 2)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => $date->subtract(weeks: \PHP_INT_MIN)->orFail()
+            fn () => $date->subtract(weeks: \PHP_INT_MIN)->orFail()
         );
     }
 
@@ -94,7 +94,7 @@ final class OperationsWithResultsTest extends TestCase
 
         self::assertException(
             OutOfRangeException::class,
-            fn() => $date->copy(day: 31)->orFail()
+            fn () => $date->copy(day: 31)->orFail()
         );
     }
 }

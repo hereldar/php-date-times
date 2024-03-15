@@ -1,10 +1,14 @@
 name: Static Analysis
 
-on: [pull_request, push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   phpstan:
-    name: PHPStan - PHP ${{ matrix.php }} (${{ matrix.dependencies }}) Ubuntu
+    name: PHPStan - PHP ${{ matrix.php }} Ubuntu
 
     strategy:
       fail-fast: false
@@ -18,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -26,7 +30,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: json
           coverage: none
-          tools: phpstan/phpstan
+          tools: none
 
       - name: Install dependencies
         uses: ramsey/composer-install@v2
@@ -35,14 +39,12 @@ jobs:
 
       - name: Run Psalm
         run: |
-          phpstan --ansi --no-progress;
+          php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/phpstan --ansi --no-progress --error-format=github;
         env:
           PHP_VERSION: ${{ matrix.php }}
 
   psalm:
-    runs-on: ubuntu-latest
-
-    name: Psalm - PHP ${{ matrix.php }} (${{ matrix.dependencies }}) Ubuntu
+    name: Psalm - PHP ${{ matrix.php }} Ubuntu
 
     strategy:
       fail-fast: false
@@ -52,9 +54,11 @@ jobs:
         dependencies:
           - 'highest'
 
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -62,7 +66,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: json
           coverage: none
-          tools: vimeo/psalm, psalm/plugin-phpunit
+          tools: none
 
       - name: Install dependencies
         uses: ramsey/composer-install@v2
@@ -71,6 +75,6 @@ jobs:
 
       - name: Run Psalm
         run: |
-          psalm --no-progress --output-format=github --shepherd;
+          php -d memory_limit=-1 -d zend.enable_gc=0 -d error_reporting=-1 vendor/bin/psalm --no-progress --output-format=github --shepherd;
         env:
           PHP_VERSION: ${{ matrix.php }}

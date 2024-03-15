@@ -214,7 +214,7 @@ final class AdditionTest extends TestCase
     {
         self::assertException(
             new InvalidArgumentException('No time units are allowed when a period is passed'),
-            fn() => LocalDate::of(1986, 9, 25)->plus(Period::of(1), 2)
+            fn () => LocalDate::of(1986, 9, 25)->plus(Period::of(1), 2)
         );
     }
 
@@ -222,11 +222,11 @@ final class AdditionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalDate::epoch()->plus(weeks: \PHP_INT_MAX)
+            fn () => LocalDate::epoch()->plus(weeks: \PHP_INT_MAX)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalDate::epoch()->plus(days: \PHP_INT_MAX, weeks: 1)
+            fn () => LocalDate::epoch()->plus(days: \PHP_INT_MAX, weeks: 1)
         );
     }
 }

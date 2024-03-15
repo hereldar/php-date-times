@@ -15,12 +15,13 @@ final class ParseException extends InvalidArgumentException
         private readonly ?string $error = null,
         ?Throwable $previous = null
     ) {
-        $message = sprintf(
+        $message = \sprintf(
             'String %s does not match format %s',
-            var_export($string, true),
-            var_export($format, true),
+            \var_export($string, true),
+            \var_export($format, true),
         );
 
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if ($error) {
             $message .= " ({$error})";
         }

@@ -26,9 +26,7 @@ final class Validator
     public static function range(string $param, int $value, int $min, int $max): void
     {
         if ($value < $min || $value > $max) {
-            throw new OutOfRangeException(
-                "{$param} must be between {$min} and {$max}, {$value} given"
-            );
+            throw new OutOfRangeException("{$param} must be between {$min} and {$max}, {$value} given");
         }
     }
 
@@ -39,7 +37,7 @@ final class Validator
 
     public static function day(int $day, int $month, int $year): void
     {
-        if ($month === 2 && self::yearIsLeap($year)) {
+        if (2 === $month && self::yearIsLeap($year)) {
             $max = 29;
         } else {
             $max = self::MONTH_LAST_DAY[$month] ?? 31;
@@ -81,14 +79,12 @@ final class Validator
 
     private static function yearIsLeap(int $year): bool
     {
-        if ($year % 4 !== 0) {
+        if (0 !== $year % 4) {
             return false;
         }
 
-        if ($year % 100 === 0 && $year % 400 !== 0) {
-            return false;
-        }
+        return !(0 === $year % 100 && 0 !== $year % 400)
 
-        return true;
+        ;
     }
 }

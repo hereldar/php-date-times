@@ -127,6 +127,8 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      * time-zone. If no time-zone is specified, the `UTC` time-zone
      * will be used.
      *
+     * @param TimeZone|Offset|non-empty-string $timeZone
+     *
      * @throws TimeZoneException if the time-zone name cannot be found
      */
     public static function now(
@@ -140,7 +142,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
 
         $dt = new NativeDateTime('now', $tz);
 
-        if ($timeZone === 'UTC' || $tz->getName() === 'UTC') {
+        if ('UTC' === $timeZone || 'UTC' === $tz->getName()) {
             return new static($dt->setDate(1970, 1, 1));
         }
 
@@ -175,7 +177,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         Validator::second($second);
         Validator::microsecond($microsecond);
 
-        $string = sprintf(
+        $string = \sprintf(
             '%d:%02d:%02d.%06d',
             $hour,
             $minute,
@@ -199,13 +201,13 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      *
      * @param string|array<int, string> $format
      *
-     * @throws InvalidArgumentException if an empty list of formats is passed
-     *
      * @return Ok<static>|Error<ParseException>
+     *
+     * @throws InvalidArgumentException if an empty list of formats is passed
      */
     public static function parse(
         string $string,
-        string|array $format = LocalTime::ISO8601,
+        string|array $format = self::ISO8601,
     ): Ok|Error {
         $tz = TimeZone::utc()->toNative();
 
@@ -213,13 +215,11 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         $formats = [];
 
         if (\is_array($format)) {
-            if (\count($format) === 0) {
-                throw new InvalidArgumentException(
-                    'At least one format must be passed'
-                );
+            if (0 === \count($format)) {
+                throw new InvalidArgumentException('At least one format must be passed');
             }
             $formats = $format;
-            $format = reset($formats);
+            $format = \reset($formats);
         }
 
         $result = self::parseSimple($string, $format, $tz);
@@ -228,8 +228,8 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
             return $result;
         }
 
-        if (\count($formats) > 1) {
-            while ($fmt = next($formats)) {
+        if (1 < \count($formats)) {
+            while ($fmt = \next($formats)) {
                 $r = self::parseSimple($string, $fmt, $tz);
 
                 if ($r->isOk()) {
@@ -249,22 +249,27 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         string $format,
         NativeTimeZone $tz,
     ): Ok|Error {
-        if (!str_starts_with($format, '!')) {
+        if (!\str_starts_with($format, '!')) {
             $format = "!{$format}";
         }
 
         $dt = NativeDateTime::createFromFormat($format, $string, $tz);
-
         $info = NativeDateTime::getLastErrors();
 
-        /** @psalm-suppress PossiblyFalseArgument */
-        if (empty($info['errors']) && empty($info['warnings'])) {
+        if ($dt && (!$info || (!$info['errors'] && !$info['warnings']))) {
             /** @var Ok<static> */
             return Ok::withValue(new static($dt));
         }
 
-        /** @psalm-suppress PossiblyInvalidArrayAccess */
-        $firstError = reset($info['errors']) ?: reset($info['warnings']) ?: null;
+        if (!$info) {
+            $firstError = null;
+        } elseif ($info['errors']) {
+            $firstError = \reset($info['errors']);
+        } elseif ($info['warnings']) {
+            $firstError = \reset($info['warnings']);
+        } else {
+            $firstError = null;
+        }
 
         return Error::withException(new ParseException($string, $format, $firstError));
     }
@@ -391,7 +396,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      *
      * @return Ok<string>|Error<FormatException>
      */
-    public function format(string $format = LocalTime::ISO8601): Ok|Error
+    public function format(string $format = self::ISO8601): Ok|Error
     {
         return Ok::withValue($this->formatted($format));
     }
@@ -407,7 +412,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      *
      * @throws FormatException
      */
-    public function formatted(string $format = LocalTime::ISO8601): string
+    public function formatted(string $format = self::ISO8601): string
     {
         return $this->value->format($format);
     }
@@ -523,15 +528,13 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         if (\is_int($year)) {
             Validator::month($month);
             Validator::day($day, $month, $year);
-        } elseif ($month === 1 && $day === 1) {
+        } elseif (1 === $month && 1 === $day) {
             $date = $year;
             $year = $date->year();
             $month = $date->month();
             $day = $date->day();
         } else {
-            throw new InvalidArgumentException(
-                'No time units are allowed when a local date is passed'
-            );
+            throw new InvalidArgumentException('No time units are allowed when a local date is passed');
         }
 
         $dt = $this->value->setDate(
@@ -604,7 +607,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      * Returns a negative integer, zero, or a positive integer as this
      * time is before, equal to, or after the given time.
      */
-    public function compareTo(LocalTime $that): int
+    public function compareTo(self $that): int
     {
         return ($this->value <=> $that->toNative());
     }
@@ -613,7 +616,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      * Checks if the given time belongs to the same class and has the
      * same value as this time.
      */
-    public function is(LocalTime $that): bool
+    public function is(self $that): bool
     {
         return $this::class === $that::class
             && $this->value == $that->value;
@@ -623,7 +626,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      * Checks if the given time belongs to another class or has a
      * different value than this time.
      */
-    public function isNot(LocalTime $that): bool
+    public function isNot(self $that): bool
     {
         return $this::class !== $that::class
             || $this->value != $that->value;
@@ -632,7 +635,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
     /**
      * Checks if the given time has the same value as this time.
      */
-    public function isEqual(LocalTime $that): bool
+    public function isEqual(self $that): bool
     {
         return ($this->value == $that->toNative());
     }
@@ -640,7 +643,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
     /**
      * Checks if the given time has a different value from this time.
      */
-    public function isNotEqual(LocalTime $that): bool
+    public function isNotEqual(self $that): bool
     {
         return ($this->value != $that->toNative());
     }
@@ -648,7 +651,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
     /**
      * Checks if this time is after the specified time.
      */
-    public function isGreater(LocalTime $that): bool
+    public function isGreater(self $that): bool
     {
         return ($this->value > $that->toNative());
     }
@@ -656,7 +659,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
     /**
      * Checks if this time is after or equal to the specified time.
      */
-    public function isGreaterOrEqual(LocalTime $that): bool
+    public function isGreaterOrEqual(self $that): bool
     {
         return ($this->value >= $that->toNative());
     }
@@ -664,7 +667,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
     /**
      * Checks if this time is before the specified time.
      */
-    public function isLess(LocalTime $that): bool
+    public function isLess(self $that): bool
     {
         return ($this->value < $that->toNative());
     }
@@ -672,7 +675,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
     /**
      * Checks if this time is before or equal to the specified time.
      */
-    public function isLessOrEqual(LocalTime $that): bool
+    public function isLessOrEqual(self $that): bool
     {
         return ($this->value <= $that->toNative());
     }
@@ -714,9 +717,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         ) {
             $period = $hours;
         } else {
-            throw new InvalidArgumentException(
-                'No time units are allowed when a period is passed'
-            );
+            throw new InvalidArgumentException('No time units are allowed when a period is passed');
         }
 
         $value = $this->value->add($period->toNative());
@@ -761,9 +762,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         ) {
             $period = $hours;
         } else {
-            throw new InvalidArgumentException(
-                'No time units are allowed when a period is passed'
-            );
+            throw new InvalidArgumentException('No time units are allowed when a period is passed');
         }
 
         $value = $this->value->sub($period->toNative());
@@ -788,25 +787,25 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
         ?int $second = null,
         ?int $microsecond = null,
     ): static {
-        if ($hour !== null) {
+        if (null !== $hour) {
             Validator::hour($hour);
         } else {
             $hour = $this->hour();
         }
 
-        if ($minute !== null) {
+        if (null !== $minute) {
             Validator::minute($minute);
         } else {
             $minute = $this->minute();
         }
 
-        if ($second !== null) {
+        if (null !== $second) {
             Validator::second($second);
         } else {
             $second = $this->second();
         }
 
-        if ($microsecond !== null) {
+        if (null !== $microsecond) {
             Validator::microsecond($microsecond);
         } else {
             $microsecond = $this->microsecond();
@@ -829,9 +828,9 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      * exception will not be captured, allowing it to be thrown
      * normally.
      *
-     * @throws InvalidArgumentException if a `Period` is combined with some time units
-     *
      * @return Ok<static>|Error<ArithmeticError>
+     *
+     * @throws InvalidArgumentException if a `Period` is combined with some time units
      */
     public function add(
         int|Period $hours = 0,
@@ -867,9 +866,9 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      * exception will not be captured, allowing it to be thrown
      * normally.
      *
-     * @throws InvalidArgumentException if a `Period` is combined with some time units
-     *
      * @return Ok<static>|Error<ArithmeticError>
+     *
+     * @throws InvalidArgumentException if a `Period` is combined with some time units
      */
     public function subtract(
         int|Period $hours = 0,

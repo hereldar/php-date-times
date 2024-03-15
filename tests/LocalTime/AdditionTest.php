@@ -139,7 +139,7 @@ final class AdditionTest extends TestCase
     {
         self::assertException(
             new InvalidArgumentException('No time units are allowed when a period is passed'),
-            fn() => LocalTime::of(0, 0, 0)->plus(Period::of(hours: 1), minutes: 2)
+            fn () => LocalTime::of(0, 0, 0)->plus(Period::of(hours: 1), minutes: 2)
         );
     }
 
@@ -147,11 +147,11 @@ final class AdditionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalTime::epoch()->plus(milliseconds: \PHP_INT_MAX)
+            fn () => LocalTime::epoch()->plus(milliseconds: \PHP_INT_MAX)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => LocalTime::epoch()->plus(microseconds: \PHP_INT_MAX, milliseconds: 1)
+            fn () => LocalTime::epoch()->plus(microseconds: \PHP_INT_MAX, milliseconds: 1)
         );
     }
 }

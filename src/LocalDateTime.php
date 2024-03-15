@@ -88,6 +88,8 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * specified time-zone. If no time-zone is specified, the `UTC`
      * time-zone will be used.
      *
+     * @param TimeZone|Offset|non-empty-string $timeZone
+     *
      * @throws TimeZoneException if the time-zone name cannot be found
      */
     public static function now(
@@ -101,7 +103,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
 
         $dt = new NativeDateTime('now', $tz);
 
-        if ($timeZone === 'UTC' || $tz->getName() === 'UTC') {
+        if ('UTC' === $timeZone || 'UTC' === $tz->getName()) {
             return new static($dt);
         }
 
@@ -144,17 +146,17 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         Validator::second($second);
         Validator::microsecond($microsecond);
 
-        if ($year < 0) {
+        if (0 > $year) {
             $extraYears = $year;
             $year = 0;
-        } elseif ($year > 9999) {
+        } elseif (9999 < $year) {
             $extraYears = $year - 9999;
             $year = 9999;
         } else {
             $extraYears = 0;
         }
 
-        $string = sprintf(
+        $string = \sprintf(
             '%04d-%d-%d %d:%02d:%02d.%06d',
             $year,
             $month,
@@ -167,7 +169,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
 
         $dateTime = static::parse($string, 'Y-n-j G:i:s.u')->orFail();
 
-        if ($extraYears !== 0) {
+        if (0 !== $extraYears) {
             return $dateTime->plus($extraYears);
         }
 
@@ -187,13 +189,13 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      *
      * @param string|array<int, string> $format
      *
-     * @throws InvalidArgumentException if an empty list of formats is passed
-     *
      * @return Ok<static>|Error<ParseException>
+     *
+     * @throws InvalidArgumentException if an empty list of formats is passed
      */
     public static function parse(
         string $string,
-        string|array $format = LocalDateTime::ISO8601,
+        string|array $format = self::ISO8601,
     ): Ok|Error {
         $tz = TimeZone::utc()->toNative();
 
@@ -201,13 +203,11 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         $formats = [];
 
         if (\is_array($format)) {
-            if (\count($format) === 0) {
-                throw new InvalidArgumentException(
-                    'At least one format must be passed'
-                );
+            if (0 === \count($format)) {
+                throw new InvalidArgumentException('At least one format must be passed');
             }
             $formats = $format;
-            $format = reset($formats);
+            $format = \reset($formats);
         }
 
         $result = self::parseSimple($string, $format, $tz);
@@ -216,8 +216,8 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
             return $result;
         }
 
-        if (\count($formats) > 1) {
-            while ($fmt = next($formats)) {
+        if (1 < \count($formats)) {
+            while ($fmt = \next($formats)) {
                 $r = self::parseSimple($string, $fmt, $tz);
 
                 if ($r->isOk()) {
@@ -237,22 +237,27 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         string $format,
         NativeTimeZone $tz,
     ): Ok|Error {
-        if (!str_starts_with($format, '!')) {
+        if (!\str_starts_with($format, '!')) {
             $format = "!{$format}";
         }
 
         $dt = NativeDateTime::createFromFormat($format, $string, $tz);
-
         $info = NativeDateTime::getLastErrors();
 
-        /** @psalm-suppress PossiblyFalseArgument */
-        if (empty($info['errors']) && empty($info['warnings'])) {
+        if ($dt && (!$info || (!$info['errors'] && !$info['warnings']))) {
             /** @var Ok<static> */
             return Ok::withValue(new static($dt));
         }
 
-        /** @psalm-suppress PossiblyInvalidArrayAccess */
-        $firstError = reset($info['errors']) ?: reset($info['warnings']) ?: null;
+        if (!$info) {
+            $firstError = null;
+        } elseif ($info['errors']) {
+            $firstError = \reset($info['errors']);
+        } elseif ($info['warnings']) {
+            $firstError = \reset($info['warnings']);
+        } else {
+            $firstError = null;
+        }
 
         return Error::withException(new ParseException($string, $format, $firstError));
     }
@@ -381,7 +386,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      *
      * @return Ok<string>|Error<FormatException>
      */
-    public function format(string $format = LocalDateTime::ISO8601): Ok|Error
+    public function format(string $format = self::ISO8601): Ok|Error
     {
         return Ok::withValue($this->formatted($format));
     }
@@ -397,7 +402,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      *
      * @throws FormatException
      */
-    public function formatted(string $format = LocalDateTime::ISO8601): string
+    public function formatted(string $format = self::ISO8601): string
     {
         return $this->value->format($format);
     }
@@ -497,6 +502,8 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
     /**
      * Combines this date-time with a time-zone to make a `DateTime`.
      * It accepts a `TimeZone` object or a text with its name.
+     *
+     * @param TimeZone|non-empty-string $timeZone
      */
     public function atTimeZone(TimeZone|string $timeZone): DateTime
     {
@@ -530,9 +537,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         } elseif (!$minutes && !$seconds) {
             $offset = $hours;
         } else {
-            throw new InvalidArgumentException(
-                'No time units are allowed when an offset is passed'
-            );
+            throw new InvalidArgumentException('No time units are allowed when an offset is passed');
         }
 
         return DateTime::parse(
@@ -628,7 +633,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      */
     public function inLeapYear(): bool
     {
-        return ($this->value->format('L') === '1');
+        return ('1' === $this->value->format('L'));
     }
 
     /**
@@ -701,7 +706,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * Returns a negative integer, zero, or a positive integer as this
      * date-time is before, equal to, or after the given date-time.
      */
-    public function compareTo(LocalDateTime $that): int
+    public function compareTo(self $that): int
     {
         return ($this->value <=> $that->toNative());
     }
@@ -710,7 +715,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * Checks if the given date-time belongs to the same class and has
      * the same value as this date-time.
      */
-    public function is(LocalDateTime $that): bool
+    public function is(self $that): bool
     {
         return $this::class === $that::class
             && $this->value == $that->value;
@@ -720,7 +725,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * Checks if the given date-time belongs to another class or has
      * a different value than this date-time.
      */
-    public function isNot(LocalDateTime $that): bool
+    public function isNot(self $that): bool
     {
         return $this::class !== $that::class
             || $this->value != $that->value;
@@ -730,7 +735,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * Checks if the given date-time has the same value as this
      * date-time.
      */
-    public function isEqual(LocalDateTime $that): bool
+    public function isEqual(self $that): bool
     {
         return ($this->value == $that->toNative());
     }
@@ -739,7 +744,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * Checks if the given date-time has a different value from this
      * date-time.
      */
-    public function isNotEqual(LocalDateTime $that): bool
+    public function isNotEqual(self $that): bool
     {
         return ($this->value != $that->toNative());
     }
@@ -747,7 +752,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
     /**
      * Checks if this date-time is after the specified date-time.
      */
-    public function isGreater(LocalDateTime $that): bool
+    public function isGreater(self $that): bool
     {
         return ($this->value > $that->toNative());
     }
@@ -756,7 +761,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * Checks if this date-time is after or equal to the specified
      * date-time.
      */
-    public function isGreaterOrEqual(LocalDateTime $that): bool
+    public function isGreaterOrEqual(self $that): bool
     {
         return ($this->value >= $that->toNative());
     }
@@ -764,7 +769,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
     /**
      * Checks if this date-time is before the specified date-time.
      */
-    public function isLess(LocalDateTime $that): bool
+    public function isLess(self $that): bool
     {
         return ($this->value < $that->toNative());
     }
@@ -773,7 +778,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * Checks if this date-time is before or equal to the specified
      * date-time.
      */
-    public function isLessOrEqual(LocalDateTime $that): bool
+    public function isLessOrEqual(self $that): bool
     {
         return ($this->value <= $that->toNative());
     }
@@ -837,9 +842,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         ) {
             $period = $years;
         } else {
-            throw new InvalidArgumentException(
-                'No time units are allowed when a period is passed'
-            );
+            throw new InvalidArgumentException('No time units are allowed when a period is passed');
         }
 
         $value = (!$overflow && ($period->months() || $period->years()))
@@ -908,9 +911,7 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
         ) {
             $period = $years;
         } else {
-            throw new InvalidArgumentException(
-                'No time units are allowed when a period is passed'
-            );
+            throw new InvalidArgumentException('No time units are allowed when a period is passed');
         }
 
         $value = (!$overflow && ($period->months() || $period->years()))
@@ -945,20 +946,20 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
     ): static {
         $dt = $this->value;
 
-        if ($year !== null
-            || $month !== null
-            || $day !== null) {
-            if ($year === null) {
+        if (null !== $year
+            || null !== $month
+            || null !== $day) {
+            if (null === $year) {
                 $year = $this->year();
             }
 
-            if ($month !== null) {
+            if (null !== $month) {
                 Validator::month($month);
             } else {
                 $month = $this->month();
             }
 
-            if ($day !== null) {
+            if (null !== $day) {
                 Validator::day($day, $month, $year);
             } else {
                 $day = $this->day();
@@ -967,29 +968,29 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
             $dt = $dt->setDate($year, $month, $day);
         }
 
-        if ($hour !== null
-            || $minute !== null
-            || $second !== null
-            || $microsecond !== null) {
-            if ($hour !== null) {
+        if (null !== $hour
+            || null !== $minute
+            || null !== $second
+            || null !== $microsecond) {
+            if (null !== $hour) {
                 Validator::hour($hour);
             } else {
                 $hour = $this->hour();
             }
 
-            if ($minute !== null) {
+            if (null !== $minute) {
                 Validator::minute($minute);
             } else {
                 $minute = $this->minute();
             }
 
-            if ($second !== null) {
+            if (null !== $second) {
                 Validator::second($second);
             } else {
                 $second = $this->second();
             }
 
-            if ($microsecond !== null) {
+            if (null !== $microsecond) {
                 Validator::microsecond($microsecond);
             } else {
                 $microsecond = $this->microsecond();
@@ -1016,9 +1017,9 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * exception will not be captured, allowing it to be thrown
      * normally.
      *
-     * @throws InvalidArgumentException if a `Period` is combined with some time units
-     *
      * @return Ok<static>|Error<ArithmeticError>
+     *
+     * @throws InvalidArgumentException if a `Period` is combined with some time units
      */
     public function add(
         int|Period $years = 0,
@@ -1068,9 +1069,9 @@ class LocalDateTime implements Datelike, Timelike, Formattable, Stringable, Copy
      * exception will not be captured, allowing it to be thrown
      * normally.
      *
-     * @throws InvalidArgumentException if a `Period` is combined with some time units
-     *
      * @return Ok<static>|Error<ArithmeticError>
+     *
+     * @throws InvalidArgumentException if a `Period` is combined with some time units
      */
     public function subtract(
         int|Period $years = 0,

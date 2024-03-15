@@ -221,13 +221,13 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         int $weeks = 0,
         int $milliseconds = 0,
     ): static {
-        $y = intadd($years, intmul($decades, 10), intmul($centuries, 100), intmul($millennia, 1_000));
-        $m = intadd($months, intmul($quarters, 3));
-        $d = intadd($days, intmul($weeks, 7));
+        $y = \intadd($years, \intmul($decades, 10), \intmul($centuries, 100), \intmul($millennia, 1_000));
+        $m = \intadd($months, \intmul($quarters, 3));
+        $d = \intadd($days, \intmul($weeks, 7));
         $h = $hours;
         $i = $minutes;
         $s = $seconds;
-        $f = intadd($microseconds, intmul($milliseconds, 1_000));
+        $f = \intadd($microseconds, \intmul($milliseconds, 1_000));
 
         return new static($y, $m, $d, $h, $i, $s, $f);
     }
@@ -245,15 +245,15 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @param string|array<int, string> $format
      *
-     * @throws InvalidArgumentException if an empty list of formats is passed
-     *
      * @return Ok<static>|Error<ParseException|ArithmeticError>
+     *
+     * @throws InvalidArgumentException if an empty list of formats is passed
      */
     public static function parse(
         string $string,
-        string|array $format = Period::ISO8601,
+        string|array $format = self::ISO8601,
     ): Ok|Error {
-        if ($format === self::ISO8601) {
+        if (self::ISO8601 === $format) {
             /** @var Ok<static> */
             return Ok::withValue(static::fromIso8601($string));
         }
@@ -262,13 +262,11 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         $formats = [];
 
         if (\is_array($format)) {
-            if (\count($format) === 0) {
-                throw new InvalidArgumentException(
-                    'At least one format must be passed'
-                );
+            if (0 === \count($format)) {
+                throw new InvalidArgumentException('At least one format must be passed');
             }
             $formats = $format;
-            $format = reset($formats);
+            $format = \reset($formats);
         }
 
         $result = self::parseSimple($string, $format);
@@ -277,8 +275,8 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
             return $result;
         }
 
-        if (\count($formats) > 1) {
-            while ($fmt = next($formats)) {
+        if (1 < \count($formats)) {
+            while ($fmt = \next($formats)) {
                 $r = self::parseSimple($string, $fmt);
 
                 if ($r->isOk()) {
@@ -297,9 +295,9 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         string $string,
         string $format,
     ): Ok|Error {
-        $pattern = preg_replace_callback(
+        $pattern = \preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
-            callback: static fn(array $matches) => match ($matches[1]) {
+            callback: static fn (array $matches) => match ($matches[1]) {
                 '%' => '%',
                 'R' => '(?P<sign>[+-])',
                 'r' => '(?P<sign>\-?)',
@@ -325,11 +323,11 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
                 'v' => '(?P<milliseconds>[+-]?[0-9]+)',
                 default => $matches[0],
             },
-            subject: preg_quote($format, '/')
+            subject: \preg_quote($format, '/')
         );
 
         if (!\is_string($pattern)
-            || !preg_match("/^{$pattern}$/", $string, $matches)) {
+            || !\preg_match("/^{$pattern}$/", $string, $matches)) {
             return Error::withException(new ParseException($string, $format));
         }
 
@@ -343,9 +341,9 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         $arguments = [];
         foreach ($matches as $key => $value) {
             if ($value && !\is_int($key)) {
-                if ($key === 'decimalSeconds') {
+                if ('decimalSeconds' === $key) {
                     $key = 'microseconds';
-                    $value = str_pad($value, 6, '0');
+                    $value = \str_pad($value, 6, '0');
                 }
                 $arguments[$key] = $sign * (int) $value;
             }
@@ -375,7 +373,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
     {
         $matches = [];
 
-        if (!preg_match(self::ISO8601_PATTERN, $string, $matches)) {
+        if (!\preg_match(self::ISO8601_PATTERN, $string, $matches)) {
             throw new ParseException($string, self::ISO8601);
         }
 
@@ -384,9 +382,9 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
             default => 1,
         };
         $seconds = (int) ($matches['seconds'] ?? 0);
-        $microseconds = (int) str_pad($matches['microseconds'] ?? '', 6, '0');
+        $microseconds = (int) \str_pad($matches['microseconds'] ?? '', 6, '0');
 
-        if ($seconds < 0) {
+        if (0 > $seconds) {
             $microseconds *= -1;
         }
 
@@ -417,7 +415,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
             $sign * $interval->h,
             $sign * $interval->i,
             $sign * $interval->s,
-            $sign * ((int) round($interval->f * 1_000_000.0)),
+            $sign * ((int) \round($interval->f * 1_000_000.0)),
         );
     }
 
@@ -433,38 +431,38 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @return Ok<string>|Error<FormatException>
      */
-    public function format(string $format = Period::ISO8601): Ok|Error
+    public function format(string $format = self::ISO8601): Ok|Error
     {
-        if ($format === self::ISO8601) {
+        if (self::ISO8601 === $format) {
             return Ok::withValue($this->toIso8601());
         }
 
-        $string = preg_replace_callback(
+        $string = \preg_replace_callback(
             pattern: self::FORMAT_PATTERN,
-            callback: fn(array $matches) => match ($matches[1]) {
+            callback: fn (array $matches) => match ($matches[1]) {
                 '%' => '%',
-                'Y' => sprintf('%04d', $this->years),
+                'Y' => \sprintf('%04d', $this->years),
                 'y' => (string) $this->years,
-                'M' => sprintf('%02d', $this->months),
+                'M' => \sprintf('%02d', $this->months),
                 'm' => (string) $this->months,
-                'W' => sprintf('%02d', intdiv($this->days, 7)),
-                'w' => (string) intdiv($this->days, 7),
-                'D' => sprintf('%02d', $this->days),
+                'W' => \sprintf('%02d', \intdiv($this->days, 7)),
+                'w' => (string) \intdiv($this->days, 7),
+                'D' => \sprintf('%02d', $this->days),
                 'd' => (string) $this->days,
-                'E' => sprintf('%02d', $this->days % 7),
+                'E' => \sprintf('%02d', $this->days % 7),
                 'e' => (string) ($this->days % 7),
-                'H' => sprintf('%02d', $this->hours),
+                'H' => \sprintf('%02d', $this->hours),
                 'h' => (string) $this->hours,
-                'I' => sprintf('%02d', $this->minutes),
+                'I' => \sprintf('%02d', $this->minutes),
                 'i' => (string) $this->minutes,
-                'S' => sprintf('%02d', $this->seconds),
+                'S' => \sprintf('%02d', $this->seconds),
                 's' => (string) $this->seconds,
-                'F' => ($this->microseconds) ? sprintf('.%06d', $this->microseconds) : '',
-                'f' => ($this->microseconds) ? rtrim(sprintf('.%06d', $this->microseconds), '0') : '',
-                'U' => sprintf('%06d', $this->microseconds),
+                'F' => ($this->microseconds) ? \sprintf('.%06d', $this->microseconds) : '',
+                'f' => ($this->microseconds) ? \rtrim(\sprintf('.%06d', $this->microseconds), '0') : '',
+                'U' => \sprintf('%06d', $this->microseconds),
                 'u' => (string) $this->microseconds,
-                'V' => sprintf('%03d', intdiv($this->microseconds, 1_000)),
-                'v' => (string) intdiv($this->microseconds, 1_000),
+                'V' => \sprintf('%03d', \intdiv($this->microseconds, 1_000)),
+                'v' => (string) \intdiv($this->microseconds, 1_000),
                 default => $matches[0],
             },
             subject: $format
@@ -488,7 +486,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @throws FormatException
      */
-    public function formatted(string $format = Period::ISO8601): string
+    public function formatted(string $format = self::ISO8601): string
     {
         return $this->format($format)->orFail();
     }
@@ -551,7 +549,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         }
 
         if ($f) {
-            $microseconds = rtrim(sprintf('%06d', $f), '0');
+            $microseconds = \rtrim(\sprintf('%06d', $f), '0');
             $string .= "{$s}.{$microseconds}S";
         } elseif ($s) {
             $string .= "{$s}S";
@@ -577,7 +575,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         $interval->s = $sign * $this->seconds;
         $interval->f = (float) (($sign * $this->microseconds) / 1_000_000);
 
-        if ($sign === -1) {
+        if (-1 === $sign) {
             $interval->invert = 1;
         }
 
@@ -651,7 +649,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @see normalized()
      */
-    public function compareTo(Period $that): int
+    public function compareTo(self $that): int
     {
         $a = $this->normalized();
         $b = $that->normalized();
@@ -687,7 +685,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      * Checks if the given period belongs to the same class and has
      * the same values as this period.
      */
-    public function is(Period $that): bool
+    public function is(self $that): bool
     {
         return $this::class === $that::class
             && $this->microseconds === $that->microseconds
@@ -703,7 +701,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      * Checks if the given period belongs to another class or has
      * different values than this period.
      */
-    public function isNot(Period $that): bool
+    public function isNot(self $that): bool
     {
         return $this::class !== $that::class
             || $this->microseconds !== $that->microseconds
@@ -718,7 +716,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
     /**
      * Checks if the given period has the same values as this period.
      */
-    public function isEqual(Period $that): bool
+    public function isEqual(self $that): bool
     {
         return $this->microseconds === $that->microseconds()
             && $this->seconds === $that->seconds()
@@ -733,7 +731,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      * Checks if the given period has values different from those of
      * this period.
      */
-    public function isNotEqual(Period $that): bool
+    public function isNotEqual(self $that): bool
     {
         return $this->microseconds !== $that->microseconds()
             || $this->seconds !== $that->seconds()
@@ -750,7 +748,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @see normalized()
      */
-    public function isSimilar(Period $that): bool
+    public function isSimilar(self $that): bool
     {
         return (0 === $this->compareTo($that));
     }
@@ -763,7 +761,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @see normalized()
      */
-    public function isNotSimilar(Period $that): bool
+    public function isNotSimilar(self $that): bool
     {
         return (0 !== $this->compareTo($that));
     }
@@ -775,7 +773,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @see normalized()
      */
-    public function isGreater(Period $that): bool
+    public function isGreater(self $that): bool
     {
         return (0 < $this->compareTo($that));
     }
@@ -788,7 +786,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @see normalized()
      */
-    public function isGreaterOrEqual(Period $that): bool
+    public function isGreaterOrEqual(self $that): bool
     {
         return (0 <= $this->compareTo($that));
     }
@@ -800,7 +798,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @see normalized()
      */
-    public function isLess(Period $that): bool
+    public function isLess(self $that): bool
     {
         return (0 > $this->compareTo($that));
     }
@@ -813,7 +811,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      *
      * @see normalized()
      */
-    public function isLessOrEqual(Period $that): bool
+    public function isLessOrEqual(self $that): bool
     {
         return (0 >= $this->compareTo($that));
     }
@@ -823,13 +821,13 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      */
     public function hasPositiveValues(): bool
     {
-        return $this->microseconds > 0
-            || $this->seconds > 0
-            || $this->minutes > 0
-            || $this->hours > 0
-            || $this->days > 0
-            || $this->months > 0
-            || $this->years > 0;
+        return 0 < $this->microseconds
+            || 0 < $this->seconds
+            || 0 < $this->minutes
+            || 0 < $this->hours
+            || 0 < $this->days
+            || 0 < $this->months
+            || 0 < $this->years;
     }
 
     /**
@@ -837,13 +835,13 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      */
     public function hasNegativeValues(): bool
     {
-        return $this->microseconds < 0
-            || $this->seconds < 0
-            || $this->minutes < 0
-            || $this->hours < 0
-            || $this->days < 0
-            || $this->months < 0
-            || $this->years < 0;
+        return 0 > $this->microseconds
+            || 0 > $this->seconds
+            || 0 > $this->minutes
+            || 0 > $this->hours
+            || 0 > $this->days
+            || 0 > $this->months
+            || 0 > $this->years;
     }
 
     /**
@@ -894,7 +892,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      * @throws ArithmeticError if any value exceeds the PHP limits for an integer
      */
     public function plus(
-        int|Period $years = 0,
+        int|self $years = 0,
         int $months = 0,
         int $days = 0,
         int $hours = 0,
@@ -923,19 +921,17 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         ) {
             $period = $years;
         } else {
-            throw new InvalidArgumentException(
-                'No time units are allowed when a period is passed'
-            );
+            throw new InvalidArgumentException('No time units are allowed when a period is passed');
         }
 
         return new static(
-            intadd($this->years, $period->years()),
-            intadd($this->months, $period->months()),
-            intadd($this->days, $period->days()),
-            intadd($this->hours, $period->hours()),
-            intadd($this->minutes, $period->minutes()),
-            intadd($this->seconds, $period->seconds()),
-            intadd($this->microseconds, $period->microseconds()),
+            \intadd($this->years, $period->years()),
+            \intadd($this->months, $period->months()),
+            \intadd($this->days, $period->days()),
+            \intadd($this->hours, $period->hours()),
+            \intadd($this->minutes, $period->minutes()),
+            \intadd($this->seconds, $period->seconds()),
+            \intadd($this->microseconds, $period->microseconds()),
         );
     }
 
@@ -953,7 +949,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      * @throws ArithmeticError if any value exceeds the PHP limits for an integer
      */
     public function minus(
-        int|Period $years = 0,
+        int|self $years = 0,
         int $months = 0,
         int $days = 0,
         int $hours = 0,
@@ -982,19 +978,17 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
         ) {
             $period = $years;
         } else {
-            throw new InvalidArgumentException(
-                'No time units are allowed when a period is passed'
-            );
+            throw new InvalidArgumentException('No time units are allowed when a period is passed');
         }
 
         return new static(
-            intsub($this->years, $period->years()),
-            intsub($this->months, $period->months()),
-            intsub($this->days, $period->days()),
-            intsub($this->hours, $period->hours()),
-            intsub($this->minutes, $period->minutes()),
-            intsub($this->seconds, $period->seconds()),
-            intsub($this->microseconds, $period->microseconds()),
+            \intsub($this->years, $period->years()),
+            \intsub($this->months, $period->months()),
+            \intsub($this->days, $period->days()),
+            \intsub($this->hours, $period->hours()),
+            \intsub($this->minutes, $period->minutes()),
+            \intsub($this->seconds, $period->seconds()),
+            \intsub($this->microseconds, $period->microseconds()),
         );
     }
 
@@ -1007,13 +1001,13 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
     public function multipliedBy(int $multiplicand): static
     {
         return new static(
-            intmul($this->years, $multiplicand),
-            intmul($this->months, $multiplicand),
-            intmul($this->days, $multiplicand),
-            intmul($this->hours, $multiplicand),
-            intmul($this->minutes, $multiplicand),
-            intmul($this->seconds, $multiplicand),
-            intmul($this->microseconds, $multiplicand),
+            \intmul($this->years, $multiplicand),
+            \intmul($this->months, $multiplicand),
+            \intmul($this->days, $multiplicand),
+            \intmul($this->hours, $multiplicand),
+            \intmul($this->minutes, $multiplicand),
+            \intmul($this->seconds, $multiplicand),
+            \intmul($this->microseconds, $multiplicand),
         );
     }
 
@@ -1031,25 +1025,25 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
     public function dividedBy(int $divisor): static
     {
         $years = $this->years;
-        $y = intdiv($years, $divisor);
+        $y = \intdiv($years, $divisor);
 
         $months = $this->months + ($years % $divisor * 12);
-        $m = intdiv($months, $divisor);
+        $m = \intdiv($months, $divisor);
 
         $days = $this->days + ($months % $divisor * 30);
-        $d = intdiv($days, $divisor);
+        $d = \intdiv($days, $divisor);
 
         $hours = $this->hours + ($days % $divisor * 24);
-        $h = intdiv($hours, $divisor);
+        $h = \intdiv($hours, $divisor);
 
         $minutes = $this->minutes + ($hours % $divisor * 60);
-        $i = intdiv($minutes, $divisor);
+        $i = \intdiv($minutes, $divisor);
 
         $seconds = $this->seconds + ($minutes % $divisor * 60);
-        $s = intdiv($seconds, $divisor);
+        $s = \intdiv($seconds, $divisor);
 
         $microseconds = $this->microseconds + ($seconds % $divisor * 1_000_000);
-        $f = intdiv($microseconds, $divisor);
+        $f = \intdiv($microseconds, $divisor);
 
         return new static($y, $m, $d, $h, $i, $s, $f);
     }
@@ -1060,13 +1054,13 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
     public function abs(): static
     {
         return new static(
-            abs($this->years),
-            abs($this->months),
-            abs($this->days),
-            abs($this->hours),
-            abs($this->minutes),
-            abs($this->seconds),
-            abs($this->microseconds),
+            \abs($this->years),
+            \abs($this->months),
+            \abs($this->days),
+            \abs($this->hours),
+            \abs($this->minutes),
+            \abs($this->seconds),
+            \abs($this->microseconds),
         );
     }
 
@@ -1154,7 +1148,7 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
             $factor = $factors[$key];
 
             if ($previousFactor
-                && $overflow = intdiv($previousValue, $previousFactor)) {
+                && $overflow = \intdiv($previousValue, $previousFactor)) {
                 $previousValue -= $overflow * $previousFactor;
                 $value += $overflow;
                 $changed = true;
@@ -1193,14 +1187,14 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
             }
 
             if ($previousFactor) {
-                if ($sign === 1) {
-                    if ($value < 0) {
+                if (1 === $sign) {
+                    if (0 > $value) {
                         --$previousValue;
                         $value += $previousFactor;
                         $changed = true;
                     }
-                } elseif ($sign === -1) {
-                    if ($value > 0) {
+                } elseif (-1 === $sign) {
+                    if (0 < $value) {
                         ++$previousValue;
                         $value -= $previousFactor;
                         $changed = true;
@@ -1255,12 +1249,12 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      * exception will not be captured, allowing it to be thrown
      * normally.
      *
-     * @throws InvalidArgumentException if a `Period` is combined with some time units
-     *
      * @return Ok<static>|Error<ArithmeticError>
+     *
+     * @throws InvalidArgumentException if a `Period` is combined with some time units
      */
     public function add(
-        int|Period $years = 0,
+        int|self $years = 0,
         int $months = 0,
         int $days = 0,
         int $hours = 0,
@@ -1304,12 +1298,12 @@ class Period implements Formattable, Stringable, Copyable, Summable, Multipliabl
      * exception will not be captured, allowing it to be thrown
      * normally.
      *
-     * @throws InvalidArgumentException if a `Period` is combined with some time units
-     *
      * @return Ok<static>|Error<ArithmeticError>
+     *
+     * @throws InvalidArgumentException if a `Period` is combined with some time units
      */
     public function subtract(
-        int|Period $years = 0,
+        int|self $years = 0,
         int $months = 0,
         int $days = 0,
         int $hours = 0,

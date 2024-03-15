@@ -49,6 +49,8 @@ final class ConversionTest extends TestCase
 
     /**
      * @dataProvider timeZoneNames
+     *
+     * @param non-empty-string $timeZoneName
      */
     public function testOffsetNow(string $timeZoneName): void
     {

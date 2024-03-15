@@ -55,12 +55,12 @@ final class NormalizationTest extends TestCase
         yield [
             Period::of(years: 94, months: 11, days: 24, hours: 3848, microseconds: 7900),
             Period::of(years: 95, months: 5, days: 4, hours: 8, microseconds: 7900),
-            //'P95Y5M4DT8H0.0079S',
+            // 'P95Y5M4DT8H0.0079S',
         ];
         yield [
             Period::of(milliseconds: 1040, microseconds: 3012),
             Period::of(seconds: 1, microseconds: 43012),
-            //'PT1.043012S',
+            // 'PT1.043012S',
         ];
     }
 

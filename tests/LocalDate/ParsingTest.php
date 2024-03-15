@@ -20,7 +20,7 @@ final class ParsingTest extends TestCase
         );
         self::assertException(
             InvalidArgumentException::class,
-            fn() => LocalDate::parse('25th of December, 1986', [])
+            fn () => LocalDate::parse('25th of December, 1986', [])
         );
         self::assertEquals(
             LocalDate::of(1986, 12, 25),

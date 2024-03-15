@@ -55,10 +55,10 @@ final class Adder
         NativeDateTime $dateTime,
         int $months,
     ): NativeDateTime {
-        $mayOverflow = ($dateTime->format('j') > 28);
+        $mayOverflow = (28 < $dateTime->format('j'));
 
         $dateInterval = new NativeDateInterval('PT0S');
-        $dateInterval->m = abs($months);
+        $dateInterval->m = \abs($months);
         $dateInterval->invert = (0 > $months) ? 1 : 0;
         $dateTime = $dateTime->add($dateInterval);
 
@@ -69,13 +69,13 @@ final class Adder
         $year = (int) $dateTime->format('Y');
 
         $month = ((int) $dateTime->format('m')) - 1;
-        if ($month === 0) {
+        if (0 === $month) {
             --$year;
             ++$month;
         }
 
         $day = self::MONTH_LAST_DAY[$month];
-        if ($month === 2 && $dateTime->format('L')) {
+        if (2 === $month && $dateTime->format('L')) {
             ++$day;
         }
 
@@ -86,14 +86,14 @@ final class Adder
         NativeDateTime $dateTime,
         int $years,
     ): NativeDateTime {
-        $isLeapDay = ($dateTime->format('n-j') === '2-29');
+        $isLeapDay = ('2-29' === $dateTime->format('n-j'));
 
         $dateInterval = new NativeDateInterval('PT0S');
-        $dateInterval->y = abs($years);
+        $dateInterval->y = \abs($years);
         $dateInterval->invert = (0 > $years) ? 1 : 0;
         $dateTime = $dateTime->add($dateInterval);
 
-        if (!$isLeapDay || $dateTime->format('n') !== '3') {
+        if (!$isLeapDay || '3' !== $dateTime->format('n')) {
             return $dateTime;
         }
 

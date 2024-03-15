@@ -55,15 +55,15 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, -1 given'),
-            fn() => LocalDate::of(-2, -1)
+            fn () => LocalDate::of(-2, -1)
         );
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 0 given'),
-            fn() => LocalDate::of(1986, 0)
+            fn () => LocalDate::of(1986, 0)
         );
         self::assertException(
             new OutOfRangeException('month must be between 1 and 12, 13 given'),
-            fn() => LocalDate::of(month: 13)
+            fn () => LocalDate::of(month: 13)
         );
     }
 
@@ -77,35 +77,35 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, -1 given'),
-            fn() => LocalDate::of(day: -1)
+            fn () => LocalDate::of(day: -1)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 0 given'),
-            fn() => LocalDate::of(-1, 1, 0)
+            fn () => LocalDate::of(-1, 1, 0)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 31, 32 given'),
-            fn() => LocalDate::of(1986, 1, 32)
+            fn () => LocalDate::of(1986, 1, 32)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 30, 31 given'),
-            fn() => LocalDate::of(1986, 4, 31)
+            fn () => LocalDate::of(1986, 4, 31)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 28, 29 given'),
-            fn() => LocalDate::of(1986, 2, 29)
+            fn () => LocalDate::of(1986, 2, 29)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 29, 30 given'),
-            fn() => LocalDate::of(1960, 2, 30)
+            fn () => LocalDate::of(1960, 2, 30)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 28, 29 given'),
-            fn() => LocalDate::of(1900, 2, 29)
+            fn () => LocalDate::of(1900, 2, 29)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 29, 30 given'),
-            fn() => LocalDate::of(2000, 2, 30)
+            fn () => LocalDate::of(2000, 2, 30)
         );
     }
 
@@ -150,24 +150,26 @@ final class CreationTest extends TestCase
     {
         self::assertException(
             new OutOfRangeException('day must be between 1 and 365, -1 given'),
-            fn() => LocalDate::fromDayOfYear(day: -1)
+            fn () => LocalDate::fromDayOfYear(day: -1)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 365, 0 given'),
-            fn() => LocalDate::fromDayOfYear(-1, 0)
+            fn () => LocalDate::fromDayOfYear(-1, 0)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 365, 366 given'),
-            fn() => LocalDate::fromDayOfYear(1986, 366)
+            fn () => LocalDate::fromDayOfYear(1986, 366)
         );
         self::assertException(
             new OutOfRangeException('day must be between 1 and 366, 367 given'),
-            fn() => LocalDate::fromDayOfYear(1960, 367)
+            fn () => LocalDate::fromDayOfYear(1960, 367)
         );
     }
 
     /**
      * @dataProvider timeZoneNames
+     *
+     * @param non-empty-string $timeZoneName
      */
     public function testNow(string $timeZoneName): void
     {

@@ -45,11 +45,11 @@ final class AdditionTest extends TestCase
     {
         self::assertException(
             ArithmeticError::class,
-            fn() => Offset::zero()->plus(hours: \PHP_INT_MAX)
+            fn () => Offset::zero()->plus(hours: \PHP_INT_MAX)
         );
         self::assertException(
             ArithmeticError::class,
-            fn() => Offset::zero()->plus(seconds: \PHP_INT_MAX, minutes: 1)
+            fn () => Offset::zero()->plus(seconds: \PHP_INT_MAX, minutes: 1)
         );
     }
 
@@ -57,23 +57,23 @@ final class AdditionTest extends TestCase
     {
         self::assertException(
             OutOfRangeException::class,
-            fn() => Offset::of(Offset::HOURS_MAX)->plus(hours: 1)
+            fn () => Offset::of(Offset::HOURS_MAX)->plus(hours: 1)
         );
         self::assertException(
             OutOfRangeException::class,
-            fn() => Offset::of(Offset::HOURS_MAX, Offset::MINUTES_MAX)->plus(minutes: 1)
+            fn () => Offset::of(Offset::HOURS_MAX, Offset::MINUTES_MAX)->plus(minutes: 1)
         );
         self::assertException(
             OutOfRangeException::class,
-            fn() => Offset::of(Offset::HOURS_MAX, Offset::MINUTES_MAX, Offset::SECONDS_MAX)->plus(seconds: 1)
+            fn () => Offset::of(Offset::HOURS_MAX, Offset::MINUTES_MAX, Offset::SECONDS_MAX)->plus(seconds: 1)
         );
         self::assertException(
             OutOfRangeException::class,
-            fn() => Offset::fromTotalMinutes(Offset::TOTAL_MINUTES_MAX)->plus(minutes: 1)
+            fn () => Offset::fromTotalMinutes(Offset::TOTAL_MINUTES_MAX)->plus(minutes: 1)
         );
         self::assertException(
             OutOfRangeException::class,
-            fn() => Offset::fromTotalSeconds(Offset::TOTAL_SECONDS_MAX)->plus(seconds: 1)
+            fn () => Offset::fromTotalSeconds(Offset::TOTAL_SECONDS_MAX)->plus(seconds: 1)
         );
     }
 }

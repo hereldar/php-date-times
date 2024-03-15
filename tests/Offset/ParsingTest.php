@@ -108,7 +108,7 @@ final class ParsingTest extends TestCase
     {
         self::assertException(
             InvalidArgumentException::class,
-            fn() => Offset::parse('01:02:03', [])
+            fn () => Offset::parse('01:02:03', [])
         );
         self::assertEquals(
             Offset::of(1, 2, 3),
