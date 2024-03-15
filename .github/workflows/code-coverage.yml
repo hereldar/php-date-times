@@ -8,7 +8,7 @@ on:
 
 jobs:
   code-coverage:
-    name: Codecov/Coveralls - PHP ${{ matrix.php }} Ubuntu
+    name: Codecov & Coveralls - PHP ${{ matrix.php }} Ubuntu
 
     strategy:
       fail-fast: false
