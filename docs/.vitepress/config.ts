@@ -1,7 +1,5 @@
-import { defineConfig } from 'vitepress'
-
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default {
   lang: 'en-US',
   title: "Hereldar\\DateTimes",
   description: "Immutable classes to work with dates and times without mixing concepts",
@@ -21,7 +19,7 @@ export default defineConfig({
     ]
   },
   base: '/php-date-times/'
-})
+}
 
 function nav() {
   return [
