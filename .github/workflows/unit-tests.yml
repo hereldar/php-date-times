@@ -1,6 +1,10 @@
 name: Unit Tests
 
-on: [pull_request, push]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '25 9 * * 4'
 
 jobs:
   phpunit:
