@@ -20,7 +20,7 @@
         "hereldar/results": "^0.9"
     },
     "require-dev": {
-        "hereldar/coding-style": "^0.1.0",
+        "hereldar/coding-style": "^0.1.2",
         "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^10.1",
         "psalm/plugin-phpunit": "^0.18.4",

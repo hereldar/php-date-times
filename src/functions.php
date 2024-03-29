@@ -5,7 +5,6 @@ declare(strict_types=1);
 if (!function_exists('intadd')) {
     /**
      * @phpstan-pure
-     *
      * @psalm-pure
      */
     function intadd(int ...$nums): int
@@ -31,7 +30,6 @@ if (!function_exists('intadd')) {
 if (!function_exists('intsub')) {
     /**
      * @phpstan-pure
-     *
      * @psalm-pure
      */
     function intsub(int $num1, int $num2): int
@@ -50,7 +48,6 @@ if (!function_exists('intsub')) {
 if (!function_exists('intmul')) {
     /**
      * @phpstan-pure
-     *
      * @psalm-pure
      */
     function intmul(int $num1, int $num2): int
