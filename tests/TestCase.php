@@ -29,7 +29,7 @@ abstract class TestCase extends PHPUnitTestCase
      */
     public static function assertException(
         Throwable|string $expectedException,
-        callable $callback
+        callable $callback,
     ): void {
         $exception = null;
 

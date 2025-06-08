@@ -13,7 +13,7 @@ final class ParseException extends InvalidArgumentException
         private readonly string $string,
         private readonly string $format,
         private readonly ?string $error = null,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         $message = \sprintf(
             'String %s does not match format %s',

@@ -377,7 +377,7 @@ class LocalTime implements Timelike, Formattable, Stringable, Copyable, Summable
      * values will be ignored.
      */
     public static function fromNative(
-        NativeDateTimeInterface $value
+        NativeDateTimeInterface $value,
     ): static {
         $string = $value->format('G:i:s.u');
 

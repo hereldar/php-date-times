@@ -75,7 +75,7 @@ class DateTime implements Datelike, Timelike, Formattable, Stringable, Copyable,
      * @internal
      */
     private function __construct(
-        private readonly NativeDateTime $value
+        private readonly NativeDateTime $value,
     ) {}
 
     /**

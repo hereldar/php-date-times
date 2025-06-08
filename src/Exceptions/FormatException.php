@@ -12,7 +12,7 @@ final class FormatException extends InvalidArgumentException
     public function __construct(
         private readonly string $format,
         private readonly ?string $error = null,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         $message = \sprintf(
             'Format %s is not valid',
