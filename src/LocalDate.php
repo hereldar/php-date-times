@@ -343,7 +343,7 @@ class LocalDate implements Datelike, Formattable, Stringable, Copyable, Summable
      * values will be ignored.
      */
     public static function fromNative(
-        NativeDateTimeInterface $value
+        NativeDateTimeInterface $value,
     ): static {
         $string = $value->format('Y-n-j');
 
