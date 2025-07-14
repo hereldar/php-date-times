@@ -23,6 +23,7 @@ use Hereldar\Results\Error;
 use Hereldar\Results\Ok;
 use InvalidArgumentException;
 use OutOfRangeException;
+use Override;
 use Stringable;
 
 /**

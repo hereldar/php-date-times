@@ -22,8 +22,8 @@ final class ConversionTest extends TestCase
         self::assertOffset(TimeZone::of('Europe/Paris')->toOffset($summer), 2, 0);
         self::assertOffset(TimeZone::of('Europe/Paris')->toOffset($winter), 1, 0);
 
-        self::assertOffset(TimeZone::of('Asia/Calcutta')->toOffset($summer), 5, 30);
-        self::assertOffset(TimeZone::of('Asia/Calcutta')->toOffset($winter), 5, 30);
+        self::assertOffset(TimeZone::of('Asia/Kolkata')->toOffset($summer), 5, 30);
+        self::assertOffset(TimeZone::of('Asia/Kolkata')->toOffset($winter), 5, 30);
 
         self::assertOffset(TimeZone::of('Pacific/Chatham')->toOffset($summer), 12, 45);
         self::assertOffset(TimeZone::of('Pacific/Chatham')->toOffset($winter), 13, 45);

@@ -16,15 +16,15 @@
         }
     ],
     "require": {
-        "php": "^8.1.17|^8.2.4|^8.3.0",
+        "php": "^8.1.17|^8.2.4|^8.3.0|^8.4.0",
         "hereldar/results": "^0.9"
     },
     "require-dev": {
         "hereldar/coding-style": "^0.1.2",
         "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^10.1",
-        "psalm/plugin-phpunit": "^0.18.4",
-        "vimeo/psalm": "^5.23.0"
+        "psalm/plugin-phpunit": "^0.19.5",
+        "vimeo/psalm": "6.12.1"
     },
     "autoload": {
         "psr-4": {
